@@ -1,73 +1,69 @@
-'use client';
+"use client";
 
 import { FloatingDock } from "@/components/ui/floating-dock";
 import {
-  IconBrandGithub,
-  IconBrandX,
-  IconExchange,
-  IconHome,
-  IconNewSection,
-  IconTerminal2,
+  IconSquareRoundedPlusFilled,
+  IconSquareRoundedMinusFilled,
+  IconAdjustmentsHorizontal,
+  IconHeadphones,
+  IconHeadphonesOff,
+  IconDownload,
+  IconTransformFilled
 } from "@tabler/icons-react";
 
+import { useState } from "react";
+
 export default function ToolBar() {
+  const [bgMusicPlaying, setBgMusicPlaying] = useState(false);
+
   const links = [
     {
-      title: "Home",
+      title: "Add State",
       icon: (
-        <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconSquareRoundedPlusFilled className="h-full w-full text-neutral-300" />
       ),
       href: "#",
     },
 
     {
-      title: "Products",
+      title: "Remove State",
       icon: (
-        <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconSquareRoundedMinusFilled className="h-full w-full text-neutral-300" />
       ),
       href: "#",
     },
     {
-      title: "Components",
+      title: "Edit State",
       icon: (
-        <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconAdjustmentsHorizontal className="h-full w-full text-neutral-300" />
       ),
       href: "#",
     },
     {
-      title: "Aceternity UI",
-      icon: (
-        <img
-          src="https://assets.aceternity.com/logo-dark.png"
-          width={20}
-          height={20}
-          alt="Aceternity Logo"
-        />
+      title: "Play Music",
+      icon: bgMusicPlaying ? (
+        <IconHeadphones onClick={() => setBgMusicPlaying(!bgMusicPlaying)} className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ) : (
+        <IconHeadphonesOff onClick={() => setBgMusicPlaying(!bgMusicPlaying)} className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "#",
     },
     {
-      title: "Changelog",
+      title: "Download FSM",
       icon: (
-        <IconExchange className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconDownload className="h-full w-full text-neutral-300" />
       ),
       href: "#",
     },
 
     {
-      title: "Twitter",
+      title: "Convert FSM",
       icon: (
-        <IconBrandX className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconTransformFilled className="h-full w-full text-neutral-300"/>
       ),
-      href: "#",
-    },
-    {
-      title: "GitHub",
-      icon: (
-        <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
+      href: '#'
+    }
+
   ];
   return (
     <div className="flex items-center justify-center">
