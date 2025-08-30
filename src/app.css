@@ -1,3 +1,17 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+
+@font-face {
+    font-family: "github";
+    src: url(lib/assets/github_font.ttf);
+}
+
+@theme {
+    --font-github: github;
+    --color-primary: oklch(0.3244 0.0229 264.18);
+    --color-secondary: oklch(0.3792 0.029 266.47);
+    --color-teritiary: oklch(0.4157 0.0324 264.13);
+    --color-fourth: oklch(0.4523 0.0352 264.13);
+}
