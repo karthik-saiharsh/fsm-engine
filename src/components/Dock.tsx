@@ -7,7 +7,7 @@ const Dock = () => {
   const DockIconSize = 24;
   const DockIconColor = "#ffffff";
 
-
+  // Global editor state store
   const currentState = useAtomValue(editorState);
   const setCurrentState = useSetAtom(editorState);
 
@@ -16,6 +16,7 @@ const Dock = () => {
       <div className="w-100 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
         {/* Dock Items */}
 
+        {/* Select Nodes */}
         <div
           onClick={() =>
             currentState == "select"
@@ -33,6 +34,7 @@ const Dock = () => {
           <MousePointer2 size={DockIconSize} color={DockIconColor} className="pointer-events-none"/>
         </div>
 
+        {/* Create Node */}
         <div
           onClick={() =>
             currentState == "create"
@@ -50,6 +52,7 @@ const Dock = () => {
           <PlusCircleIcon size={DockIconSize} color={DockIconColor} className="pointer-events-none"/>
         </div>
 
+        {/* Delete Node */}
         <div
           onClick={() =>
             currentState == "delete"
