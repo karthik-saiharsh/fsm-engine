@@ -1,1 +1,0 @@
-<p class="font-github text-white">design page</p>
