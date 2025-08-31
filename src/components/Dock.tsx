@@ -1,6 +1,11 @@
-import { MousePointer2, PlusCircleIcon, MinusCircleIcon } from "lucide-react";
+import {
+  MousePointer2,
+  PlusCircleIcon,
+  MinusCircleIcon,
+  Hand,
+} from "lucide-react";
 import clsx from "clsx";
-import { editorState } from "../backend";
+import { editorState } from "../lib/backend";
 import { useAtomValue, useSetAtom } from "jotai";
 
 const Dock = () => {
@@ -16,7 +21,29 @@ const Dock = () => {
       <div className="w-100 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
         {/* Dock Items */}
 
-        {/* Select Nodes */}
+        {/* Grab/Move Editor */}
+        <div
+          onClick={() =>
+            currentState == "grab"
+              ? setCurrentState("nil")
+              : setCurrentState("grab")
+          }
+          className={clsx(
+            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            {
+              "bg-secondary-bg": currentState != "grab",
+              "bg-blue-500": currentState == "grab",
+            }
+          )}
+        >
+          <Hand
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
+        </div>
+
+        {/* Select/Move Nodes */}
         <div
           onClick={() =>
             currentState == "select"
@@ -31,7 +58,11 @@ const Dock = () => {
             }
           )}
         >
-          <MousePointer2 size={DockIconSize} color={DockIconColor} className="pointer-events-none"/>
+          <MousePointer2
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
         </div>
 
         {/* Create Node */}
@@ -49,7 +80,11 @@ const Dock = () => {
             }
           )}
         >
-          <PlusCircleIcon size={DockIconSize} color={DockIconColor} className="pointer-events-none"/>
+          <PlusCircleIcon
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
         </div>
 
         {/* Delete Node */}
@@ -67,7 +102,11 @@ const Dock = () => {
             }
           )}
         >
-          <MinusCircleIcon size={DockIconSize} color={DockIconColor} className="pointer-events-none"/>
+          <MinusCircleIcon
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
         </div>
 
         {/* Dock Items */}

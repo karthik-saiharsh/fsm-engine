@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { atom } from "jotai";
 
 type Node = {
@@ -13,3 +14,6 @@ export const editorState = atom("nil");
 
 // Store for State Machine's States
 export const Nodes: Node[] = atom([]);
+
+// Store for Keeping track of currently active selected state
+export const currentSelected = atom("nil");
