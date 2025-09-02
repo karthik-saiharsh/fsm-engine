@@ -1,5 +1,6 @@
 import Dock from "./components/Dock";
 import Editor from "./components/Editor";
+import Settings from "./components/Settings";
 
 // @ts-ignore
 import GridLines from "react-gridlines";
@@ -24,6 +25,9 @@ function App() {
       </div>
 
       <Dock />
+
+      {/* Settings Menu  */}
+      <Settings />
     </>
   );
 }

@@ -3,6 +3,7 @@ import {
   PlusCircleIcon,
   MinusCircleIcon,
   Hand,
+  Settings,
 } from "lucide-react";
 import clsx from "clsx";
 import { editorState } from "../lib/backend";
@@ -103,6 +104,28 @@ const Dock = () => {
           )}
         >
           <MinusCircleIcon
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
+        </div>
+
+        {/* Settings of a Node */}
+        <div
+          onClick={() =>
+            currentState == "settings"
+              ? setCurrentState("nil")
+              : setCurrentState("settings")
+          }
+          className={clsx(
+            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            {
+              "bg-secondary-bg": currentState != "settings",
+              "bg-blue-500": currentState == "settings",
+            }
+          )}
+        >
+          <Settings
             size={DockIconSize}
             color={DockIconColor}
             className="pointer-events-none"

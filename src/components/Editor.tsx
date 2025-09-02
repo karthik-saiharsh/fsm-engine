@@ -6,19 +6,19 @@ import { Nodes } from "../lib/backend";
 import { useRef } from "react";
 
 const Editor = () => {
-  const currentEditorState = useAtomValue(editorState);
+  let currentEditorState = useAtomValue(editorState);
 
-  const nodeList = useAtomValue(Nodes);
-  const updateNodeList = useSetAtom(Nodes);
+  let nodeList = useAtomValue(Nodes);
+  let updateNodeList = useSetAtom(Nodes);
 
-  const currSelected = useAtomValue(currentSelected);
-  const setCurrSelected = useSetAtom(currentSelected);
+  let currSelected = useAtomValue(currentSelected);
+  let setCurrSelected = useSetAtom(currentSelected);
 
   // Konva Layer Reference
-  const layerRef = useRef(null);
+  let layerRef = useRef(null);
 
   // Handle Creating Nodes by clicking
-  function createNode(e: any) {
+  function handleEditorClick(e: any) {
     // Return if not in create mode
     if (currentEditorState != "create") return;
 
@@ -43,11 +43,23 @@ const Editor = () => {
 
   // Handle Node Deletion
   function deleteNode(id) {
-    const selectedNode = layerRef.current.findOne(`#${id}`);
-
     // If editor state is set to delete mode, remove the state
+    const deletedNode = layerRef.current.findOne(`#${id}`);
+    deletedNode.opacity(0);
+
     if (currentEditorState == "delete") {
-      selectedNode.destroy();
+      // Update the Node List state to reflect the update in nodes
+      let nodesCopy = nodeList;
+      nodesCopy.splice(id, 1);
+
+      // Update the id values of other nodes to account for the gap
+      for(let i=id; i < nodesCopy.length; i++) {
+        nodesCopy[i].id = i;
+      }
+
+      // Set new nodelist values
+      updateNodeList(nodesCopy);
+
       return;
     }
 
@@ -67,11 +79,12 @@ const Editor = () => {
         strokeWidth: 0,
         easing: Konva.Easings.EaseInOut,
       });
+      
     }
 
     // If same node is clicked, toggle selection
     if (currSelected == id) {
-      setCurrSelected('nil')
+      setCurrSelected("nil");
     } else {
       // Update value of current selected
       setCurrSelected(id);
@@ -83,10 +96,10 @@ const Editor = () => {
       width={window.innerWidth}
       height={window.innerHeight}
       draggable={currentEditorState == "grab"}
-      onClick={createNode}
+      onClick={handleEditorClick}
     >
       <Layer ref={layerRef}>
-        <Group>
+        <Group key={nodeList.length}>
           {nodeList.map((node) => (
             <Circle
               key={node.id}
