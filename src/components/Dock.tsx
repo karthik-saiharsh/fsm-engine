@@ -23,7 +23,7 @@ const Dock = () => {
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
-      <div className="w-100 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
+      <div className="w-fit px-5 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
         {/* Dock Items */}
 
         {/* Grab/Move Editor */}
@@ -34,7 +34,7 @@ const Dock = () => {
               : setCurrentState("grab")
           }
           className={clsx(
-            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "grab",
               "bg-blue-500": currentState == "grab",
@@ -46,6 +46,7 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
+          <p className="text-white font-github font-semibold text-balance">Grab</p>
         </div>
 
         {/* Select/Move Nodes */}
@@ -56,7 +57,7 @@ const Dock = () => {
               : setCurrentState("select")
           }
           className={clsx(
-            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "select",
               "bg-blue-500": currentState == "select",
@@ -68,6 +69,8 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
+
+          <p className="text-white font-github font-semibold text-balance">Select</p>
         </div>
 
         {/* Create Node */}
@@ -78,7 +81,7 @@ const Dock = () => {
               : setCurrentState("create")
           }
           className={clsx(
-            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "create",
               "bg-blue-500": currentState == "create",
@@ -90,6 +93,7 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
+          <p className="text-white font-github font-semibold text-balance">Add</p>
         </div>
 
         {/* Delete Node */}
@@ -100,7 +104,7 @@ const Dock = () => {
               : setCurrentState("delete")
           }
           className={clsx(
-            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "delete",
               "bg-blue-500": currentState == "delete",
@@ -112,6 +116,7 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
+          <p className="text-white font-github font-semibold text-balance">Delete</p>
         </div>
 
         {/* Settings of a Node */}
@@ -127,7 +132,7 @@ const Dock = () => {
             }
           }}
           className={clsx(
-            "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "settings",
               "bg-blue-500": currentState == "settings",
@@ -139,6 +144,7 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
+          <p className="text-white font-github font-semibold text-balance">Controls</p>
         </div>
 
         {/* Dock Items */}

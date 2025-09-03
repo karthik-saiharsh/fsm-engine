@@ -4,6 +4,7 @@ import Editor from "./components/Editor";
 import Settings from "./components/Settings";
 import { alert } from "./lib/backend";
 import { useAtomValue } from "jotai";
+import Error from "./components/Error";
 
 // @ts-ignore
 import GridLines from "react-gridlines";
@@ -37,6 +38,9 @@ function App() {
 
       {/* Alert Box */}
       <Alert message={alertMsg} />
+
+      {/* Error Page */}
+      <Error />
     </>
   );
 }

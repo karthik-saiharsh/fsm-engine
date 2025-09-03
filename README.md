@@ -4,7 +4,7 @@ Create and Manage Finite State Machines
 ## To run
 - Clone the repo
 ```bash
-https://github.com/karthik-saiharsh/fsm-engine.git
+git clone https://github.com/karthik-saiharsh/fsm-engine.git
 ```
 
 - Install Dependencies
