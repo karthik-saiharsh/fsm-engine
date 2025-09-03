@@ -6,7 +6,7 @@ import {
   Settings,
 } from "lucide-react";
 import clsx from "clsx";
-import { editorState } from "../lib/backend";
+import { editorState, currentSelected, alert } from "../lib/backend";
 import { useAtomValue, useSetAtom } from "jotai";
 
 const Dock = () => {
@@ -16,6 +16,10 @@ const Dock = () => {
   // Global editor state store
   const currentState = useAtomValue(editorState);
   const setCurrentState = useSetAtom(editorState);
+
+  const currSelected = useAtomValue(currentSelected);
+
+  const setAlertMsg = useSetAtom(alert);
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
@@ -112,11 +116,16 @@ const Dock = () => {
 
         {/* Settings of a Node */}
         <div
-          onClick={() =>
-            currentState == "settings"
-              ? setCurrentState("nil")
-              : setCurrentState("settings")
-          }
+          onClick={() => {
+            if (currSelected != "nil") {
+              currentState == "settings"
+                ? setCurrentState("nil")
+                : setCurrentState("settings");
+            } else {
+              setAlertMsg("You must select a State to view its Settings!");
+              setTimeout(() => setAlertMsg("nil"), 3000);
+            }
+          }}
           className={clsx(
             "p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {

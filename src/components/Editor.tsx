@@ -37,34 +37,32 @@ const Editor = () => {
         id: nodes.length,
         strokeWidth: 0,
         strokeColor: "#ffffff",
+        name: `q${nodes.length}`,
+        type: nodeList.length == 0 ? "initial" : "intermediate",
       },
     ]);
   }
 
-  // Handle Node Deletion
-  function deleteNode(id) {
+  // Handle Node Deletion/Selection
+  function handleNodeClick(id) {
     // If editor state is set to delete mode, remove the state
-    const deletedNode = layerRef.current.findOne(`#${id}`);
-    deletedNode.opacity(0);
+    const clickedNode = layerRef.current.findOne(`#${id}`);
 
-    if (currentEditorState == "delete") {
-      // Update the Node List state to reflect the update in nodes
-      let nodesCopy = nodeList;
-      nodesCopy.splice(id, 1);
+    if(currentEditorState == "delete") {
+      clickedNode.destroy(); // Delete the Node
 
-      // Update the id values of other nodes to account for the gap
-      for(let i=id; i < nodesCopy.length; i++) {
-        nodesCopy[i].id = i;
-      }
+      // Update the nodeList store
+      nodeList[id] = undefined;
+      updateNodeList(nodeList);
 
-      // Set new nodelist values
-      updateNodeList(nodesCopy);
-
+      // If the deleted Node is the one currently selected
+      // Then deselect it
+      if(currSelected == id) setCurrSelected("nil");
       return;
     }
 
     // Draw a stroke around the selected node
-    selectedNode.to({
+    clickedNode.to({
       duration: 0.1,
       strokeWidth: 2,
       easing: Konva.Easings.EaseInOut,
@@ -91,6 +89,15 @@ const Editor = () => {
     }
   }
 
+  // Handle Updating Node Positions when dragged around
+  function handleNodeDrag(id) {
+    const draggedNode = layerRef.current.findOne(`#${id}`);
+
+    nodeList[id].x = draggedNode.x();
+    nodeList[id].y = draggedNode.y();
+    updateNodeList(nodeList);
+  }
+
   return (
     <Stage
       width={window.innerWidth}
@@ -99,8 +106,9 @@ const Editor = () => {
       onClick={handleEditorClick}
     >
       <Layer ref={layerRef}>
-        <Group key={nodeList.length}>
+        <Group key={nodeList}>
           {nodeList.map((node) => (
+            node &&
             <Circle
               key={node.id}
               x={node.x}
@@ -109,9 +117,10 @@ const Editor = () => {
               fill={node.fill}
               draggable={currentEditorState == "select"}
               id={`${node.id}`}
-              onClick={() => deleteNode(node.id)}
+              onClick={() => handleNodeClick(node.id)}
               strokeWidth={node.strokeWidth}
               stroke={node.strokeColor}
+              onDragEnd={() => handleNodeDrag(node.id)}
             />
           ))}
         </Group>

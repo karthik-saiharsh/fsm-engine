@@ -1,11 +1,17 @@
+import Alert from "./components/Alert";
 import Dock from "./components/Dock";
 import Editor from "./components/Editor";
 import Settings from "./components/Settings";
+import { alert } from "./lib/backend";
+import { useAtomValue } from "jotai";
 
 // @ts-ignore
 import GridLines from "react-gridlines";
 
 function App() {
+
+  const alertMsg = useAtomValue(alert);
+
   return (
     <>
       <div
@@ -28,6 +34,9 @@ function App() {
 
       {/* Settings Menu  */}
       <Settings />
+
+      {/* Alert Box */}
+      <Alert message={alertMsg} />
     </>
   );
 }
