@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { Stage, Layer, Group, Circle } from "react-konva";
+import { Stage, Layer, Group, Circle, Text } from "react-konva";
 import { editorState, currentSelected } from "../lib/backend";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
@@ -48,8 +48,9 @@ const Editor = () => {
     // If editor state is set to delete mode, remove the state
     const clickedNode = layerRef.current.findOne(`#${id}`);
 
-    if(currentEditorState == "delete") {
-      clickedNode.destroy(); // Delete the Node
+    if (currentEditorState == "delete") {
+      const clickedGroup = layerRef.current.findOne(`#g${id}`);
+      clickedGroup.destroy(); // Delete the Node
 
       // Update the nodeList store
       nodeList[id] = undefined;
@@ -57,7 +58,7 @@ const Editor = () => {
 
       // If the deleted Node is the one currently selected
       // Then deselect it
-      if(currSelected == id) setCurrSelected("nil");
+      if (currSelected == id) setCurrSelected("nil");
       return;
     }
 
@@ -77,7 +78,6 @@ const Editor = () => {
         strokeWidth: 0,
         easing: Konva.Easings.EaseInOut,
       });
-      
     }
 
     // If same node is clicked, toggle selection
@@ -91,7 +91,7 @@ const Editor = () => {
 
   // Handle Updating Node Positions when dragged around
   function handleNodeDrag(id) {
-    const draggedNode = layerRef.current.findOne(`#${id}`);
+    const draggedNode = layerRef.current.findOne(`#g${id}`);
 
     nodeList[id].x = draggedNode.x();
     nodeList[id].y = draggedNode.y();
@@ -107,22 +107,41 @@ const Editor = () => {
     >
       <Layer ref={layerRef}>
         <Group key={nodeList}>
-          {nodeList.map((node) => (
-            node &&
-            <Circle
-              key={node.id}
-              x={node.x}
-              y={node.y}
-              radius={node.radius}
-              fill={node.fill}
-              draggable={currentEditorState == "select"}
-              id={`${node.id}`}
-              onClick={() => handleNodeClick(node.id)}
-              strokeWidth={node.strokeWidth}
-              stroke={node.strokeColor}
-              onDragEnd={() => handleNodeDrag(node.id)}
-            />
-          ))}
+          {nodeList.map(
+            (node) =>
+              node && (
+                <Group
+                  key={node.name}
+                  x={node.x}
+                  y={node.y}
+                  id={`g${node.id}`}
+                  draggable={currentEditorState == "select"}
+                  onClick={() => handleNodeClick(node.id)}
+                  onDragEnd={() => handleNodeDrag(node.id)}
+                >
+                  <Circle
+                    x={0}
+                    y={0}
+                    id={`${node.id}`}
+                    radius={2 * node.name.length + node.radius}
+                    fill={node.fill}
+                    strokeWidth={node.strokeWidth}
+                    stroke={node.strokeColor}
+                  />
+
+                  <Text
+                    x={-node.radius}
+                    y={-node.radius/3}
+                    width={2 * node.radius}
+                    height={2 * node.radius}
+                    text={node.name}
+                    fontSize={20}
+                    fill="#ffffff"
+                    align="center"
+                  />
+                </Group>
+              )
+          )}
         </Group>
       </Layer>
     </Stage>

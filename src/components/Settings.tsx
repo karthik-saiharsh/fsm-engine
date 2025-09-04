@@ -20,7 +20,7 @@ const Settings = () => {
   function setDefaultSettingsValues() {
     if (currSelected != "nil") {
       setStateName(nodeList[currSelected].name);
-      setStateColor(nodeList[currSelected].fill);
+      setStateColor(nodeList[currSelected].fill.substring(0, 7));
       setStateType(nodeList[currSelected].type);
     }
   }
@@ -75,7 +75,7 @@ const Settings = () => {
           </p>
           <input
             type="color"
-            value={stateColor.substring(0, 7)}
+            value={stateColor}
             onChange={(e) => setStateColor(e.target.value)}
             className="rounded-lg border-3 border-border-bg"
           />

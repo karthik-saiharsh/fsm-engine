@@ -23,7 +23,7 @@ const Dock = () => {
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
-      <div className="w-fit px-5 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
+      <div className="w-fit px-2 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
         {/* Dock Items */}
 
         {/* Grab/Move Editor */}
