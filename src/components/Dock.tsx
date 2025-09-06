@@ -4,9 +4,15 @@ import {
   MinusCircleIcon,
   Hand,
   Settings,
+  Cable,
 } from "lucide-react";
 import clsx from "clsx";
-import { editorState, currentSelected, alert } from "../lib/backend";
+import {
+  editorState,
+  currentSelected,
+  alert,
+  arrowStates,
+} from "../lib/backend";
 import { useAtomValue, useSetAtom } from "jotai";
 
 const Dock = () => {
@@ -20,6 +26,8 @@ const Dock = () => {
   const currSelected = useAtomValue(currentSelected);
 
   const setAlertMsg = useSetAtom(alert);
+
+  const setTransitionTracker = useSetAtom(arrowStates);
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
@@ -46,7 +54,9 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
-          <p className="text-white font-github font-semibold text-balance">Grab</p>
+          <p className="text-white font-github font-semibold text-balance">
+            Grab
+          </p>
         </div>
 
         {/* Select/Move Nodes */}
@@ -70,7 +80,9 @@ const Dock = () => {
             className="pointer-events-none"
           />
 
-          <p className="text-white font-github font-semibold text-balance">Select</p>
+          <p className="text-white font-github font-semibold text-balance">
+            Select
+          </p>
         </div>
 
         {/* Create Node */}
@@ -93,7 +105,9 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
-          <p className="text-white font-github font-semibold text-balance">Add</p>
+          <p className="text-white font-github font-semibold text-balance">
+            Add
+          </p>
         </div>
 
         {/* Delete Node */}
@@ -116,7 +130,9 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
-          <p className="text-white font-github font-semibold text-balance">Delete</p>
+          <p className="text-white font-github font-semibold text-balance">
+            Delete
+          </p>
         </div>
 
         {/* Settings of a Node */}
@@ -144,7 +160,38 @@ const Dock = () => {
             color={DockIconColor}
             className="pointer-events-none"
           />
-          <p className="text-white font-github font-semibold text-balance">Controls</p>
+          <p className="text-white font-github font-semibold text-balance">
+            Controls
+          </p>
+        </div>
+
+        {/* Connect Nodes */}
+        <div
+          onClick={() => {
+            if (currSelected == "connect") setCurrentState("nil");
+            else {
+              setCurrentState("connect");
+              setTransitionTracker(undefined);
+              console.log("Came here");
+            }
+          }}
+          className={clsx(
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            {
+              "bg-secondary-bg": currentState != "connect",
+              "bg-blue-500": currentState == "connect",
+            }
+          )}
+        >
+          <Cable
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
+
+          <p className="text-white font-github font-semibold text-balance">
+            Connect
+          </p>
         </div>
 
         {/* Dock Items */}

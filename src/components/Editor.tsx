@@ -1,18 +1,24 @@
 //@ts-nocheck
-import { Stage, Layer, Group, Circle, Text } from "react-konva";
-import { editorState, currentSelected } from "../lib/backend";
-import { useAtomValue, useSetAtom } from "jotai";
+import { Stage, Layer, Group, Circle, Text, Arrow } from "react-konva";
+import {
+  editorState,
+  currentSelected,
+  arrowStates,
+  arrows,
+} from "../lib/backend";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
 import { useRef } from "react";
 
 const Editor = () => {
-  let currentEditorState = useAtomValue(editorState);
+  const currentEditorState = useAtomValue(editorState);
 
-  let nodeList = useAtomValue(Nodes);
-  let updateNodeList = useSetAtom(Nodes);
+  const [nodeList, updateNodeList] = useAtom(Nodes);
 
-  let currSelected = useAtomValue(currentSelected);
-  let setCurrSelected = useSetAtom(currentSelected);
+  const [currSelected, setCurrSelected] = useAtom(currentSelected);
+
+  const [transitionTracker, setTransitionTracker] = useAtom(arrowStates);
+  const [transitions, updateTransitions] = useAtom(arrows);
 
   // Konva Layer Reference
   let layerRef = useRef(null);
@@ -62,6 +68,44 @@ const Editor = () => {
       return;
     }
 
+    // If current editor state is connect
+    if (currentEditorState == "connect") {
+      // Track which two states are clicked on
+      if (transitionTracker == undefined) {
+        setTransitionTracker(id);
+        return;
+      } else {
+        const points = getPoints(transitionTracker, id);
+
+        const newTransition = {
+          id: transitions.length,
+          points: points,
+          stroke: "#ffffff",
+          strokeWidth: 2,
+          fill: "#ffffff",
+        };
+
+        transitions.push(newTransition);
+        updateTransitions(transitions);
+
+        // Add this transition to the correcponding node
+        nodeList[transitionTracker].transitions = {
+          from: undefined,
+          to: id,
+          trId: transitions.length - 1,
+        };
+
+        nodeList[id].transitions = {
+          from: transitionTracker,
+          to: undefined,
+          trId: transitions.length - 1,
+        };
+        updateNodeList(nodeList);
+        setTransitionTracker(undefined);
+        return;
+      }
+    }
+
     // Draw a stroke around the selected node
     clickedNode.to({
       duration: 0.1,
@@ -96,6 +140,66 @@ const Editor = () => {
     nodeList[id].x = draggedNode.x();
     nodeList[id].y = draggedNode.y();
     updateNodeList(nodeList);
+
+    if (nodeList[id].transitions != undefined) {
+      let points = [];
+      if (nodeList[id].transitions.from == undefined)
+        points = getPoints(id, nodeList[id].transitions.to);
+
+      if(nodeList[id].transitions.to == undefined)
+        points = getPoints(nodeList[id].transitions.from, id);
+
+      transitions[nodeList[id].transitions.trId].points = points;
+      updateTransitions(transitions);
+
+      const arr = layerRef.current.findOne(
+        `#tr${nodeList[id].transitions.trId}`
+      );
+      arr.points(points);
+    }
+  }
+
+  // Generate Points for drawing transition arrow
+  function getPoints(id1, id2) {
+    const clickedGroup = layerRef.current.findOne(`#g${id2}`);
+
+    const startNode = layerRef.current.findOne(`#g${id1}`);
+
+    const dx = clickedGroup.x() - startNode.x();
+    const dy = clickedGroup.y() - startNode.y();
+    let angle = Math.atan2(-dy, dx);
+
+    const radius = 50;
+
+    const start = [
+      startNode.x() + -radius * Math.cos(angle + Math.PI),
+      startNode.y() + radius * Math.sin(angle + Math.PI),
+    ];
+
+    const end = [
+      clickedGroup.x() + -radius * Math.cos(angle),
+      clickedGroup.y() + radius * Math.sin(angle),
+    ];
+
+    const midpoint = [(start[0] + end[0]) / 2, (start[1] + end[1]) / 2];
+
+    const dist = Math.sqrt((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2);
+
+    const subpoint2 =
+      start[0] < end[0]
+        ? [midpoint[0], midpoint[1] - 0.3 * dist]
+        : [midpoint[0], midpoint[1] + 0.3 * dist];
+
+    const points = [
+      start[0],
+      start[1],
+      subpoint2[0],
+      subpoint2[1],
+      end[0],
+      end[1],
+    ];
+
+    return points;
   }
 
   return (
@@ -106,7 +210,7 @@ const Editor = () => {
       onClick={handleEditorClick}
     >
       <Layer ref={layerRef}>
-        <Group key={nodeList}>
+        <Group key={nodeList || transitions}>
           {nodeList.map(
             (node) =>
               node && (
@@ -117,7 +221,7 @@ const Editor = () => {
                   id={`g${node.id}`}
                   draggable={currentEditorState == "select"}
                   onClick={() => handleNodeClick(node.id)}
-                  onDragEnd={() => handleNodeDrag(node.id)}
+                  onDragMove={() => handleNodeDrag(node.id)}
                 >
                   <Circle
                     x={0}
@@ -131,7 +235,7 @@ const Editor = () => {
 
                   <Text
                     x={-node.radius}
-                    y={-node.radius/3}
+                    y={-node.radius / 3}
                     width={2 * node.radius}
                     height={2 * node.radius}
                     text={node.name}
@@ -142,6 +246,18 @@ const Editor = () => {
                 </Group>
               )
           )}
+          {/* Transition Arrows */}
+          {transitions.map((transition) => (
+            <Arrow
+              key={transition.id}
+              id={`tr${transition.id}`}
+              stroke={transition.stroke}
+              strokeWidth={transition.strokeWidth}
+              fill={transition.fill}
+              points={transition.points}
+              tension={0.5}
+            />
+          ))}
         </Group>
       </Layer>
     </Stage>

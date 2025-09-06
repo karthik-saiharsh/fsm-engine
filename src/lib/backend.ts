@@ -1,6 +1,13 @@
 //@ts-nocheck
 import { atom } from "jotai";
 
+type nodeTransition = {
+  from: string;
+  to: string;
+  name: string;
+  trID: string;
+}
+
 type Node = {
   x: number;
   y: number;
@@ -11,7 +18,16 @@ type Node = {
   strokeColor: string;
   name: string;
   type: "initial" | "final" | "intermediate";
+  transitions: nodeTransition[];
 };
+
+type Arrow = {
+  x: number;
+  y: number;
+  points: number[];
+  stroke: string;
+  strokeWidth: string;
+}
 
 // Store for current editor state
 export const editorState = atom("nil");
@@ -24,3 +40,10 @@ export const currentSelected = atom("nil");
 
 // Alert Message
 export const alert = atom("nil");
+
+// Store for State transitions
+export const arrows = atom([]);
+
+// Store for tracking connections
+export const arrowStates = atom(undefined);
+
