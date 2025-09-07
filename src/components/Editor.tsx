@@ -45,6 +45,7 @@ const Editor = () => {
         strokeColor: "#ffffff",
         name: `q${nodes.length}`,
         type: nodeList.length == 0 ? "initial" : "intermediate",
+        transitions: [],
       },
     ]);
   }
@@ -65,6 +66,7 @@ const Editor = () => {
       // If the deleted Node is the one currently selected
       // Then deselect it
       if (currSelected == id) setCurrSelected("nil");
+
       return;
     }
 
@@ -89,17 +91,17 @@ const Editor = () => {
         updateTransitions(transitions);
 
         // Add this transition to the correcponding node
-        nodeList[transitionTracker].transitions = {
+        nodeList[transitionTracker].transitions.push({
           from: undefined,
           to: id,
           trId: transitions.length - 1,
-        };
+        });
 
-        nodeList[id].transitions = {
+        nodeList[id].transitions.push({
           from: transitionTracker,
           to: undefined,
           trId: transitions.length - 1,
-        };
+        });
         updateNodeList(nodeList);
         setTransitionTracker(undefined);
         return;
@@ -141,21 +143,23 @@ const Editor = () => {
     nodeList[id].y = draggedNode.y();
     updateNodeList(nodeList);
 
-    if (nodeList[id].transitions != undefined) {
-      let points = [];
-      if (nodeList[id].transitions.from == undefined)
-        points = getPoints(id, nodeList[id].transitions.to);
+    // Update position of arrows if they exist
+    if (nodeList[id].transitions.length > 0) {
+      nodeList[id].transitions.forEach((tr) => {
+        let points = [];
 
-      if(nodeList[id].transitions.to == undefined)
-        points = getPoints(nodeList[id].transitions.from, id);
+        if (tr.from == undefined) points = getPoints(id, tr.to);
 
-      transitions[nodeList[id].transitions.trId].points = points;
-      updateTransitions(transitions);
+        if (tr.to == undefined) points = getPoints(tr.from, id);
 
-      const arr = layerRef.current.findOne(
-        `#tr${nodeList[id].transitions.trId}`
-      );
-      arr.points(points);
+        // Update points in the global store
+        transitions[tr.trId].points = points;
+        updateTransitions(transitions);
+
+        // Update position on the editor
+        const arr = layerRef.current.findOne(`#tr${tr.trId}`);
+        arr.points(points);
+      });
     }
   }
 
