@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { CircleX, RefreshCw } from "lucide-react";
+import { CircleX, CircleCheck } from "lucide-react";
 import { editorState, currentSelected, Nodes } from "../lib/backend";
 import { useAtomValue, useSetAtom, useAtom } from "jotai";
 import { useState, useEffect } from "react";
@@ -146,7 +146,7 @@ const Settings = () => {
             className="flex text-sm font-github gap-2 items-center rounded-xl text-white bg-blue-500 px-5 py-2 hover:scale-110 transition-all cursor-pointer active:scale-100 ease-in-out"
           >
             Save
-            <RefreshCw size={20} color="#ffffff" />
+            <CircleCheck size={20} color="#ffffff" />
           </button>
         </span>
       </div>
