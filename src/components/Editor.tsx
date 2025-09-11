@@ -82,9 +82,9 @@ const Editor = () => {
         const newTransition = {
           id: transitions.length,
           points: points,
-          stroke: "#ffffff",
+          stroke: "#ffffffe6",
           strokeWidth: 2,
-          fill: "#ffffff",
+          fill: "#ffffffe6",
         };
 
         transitions.push(newTransition);
@@ -247,6 +247,33 @@ const Editor = () => {
                     fill="#ffffff"
                     align="center"
                   />
+                  {/* If state is final, draw an extra outer circle */}
+                  {node.type == "final" && (
+                    <Circle
+                      x={0}
+                      y={0}
+                      id={`${node.id}`}
+                      radius={2 * node.name.length + node.radius + 5}
+                      fill={node.fill}
+                      opacity={0.5}
+                      strokeWidth={3}
+                      stroke={node.fill}
+                    />
+                  )}
+
+                  {/* If state is initial, draw an incoming arrow */}
+                  {node.type == "initial" && 
+                    <Arrow 
+                      x={-1 * (node.radius + 40)}
+                      y={0}
+                      points={[-node.radius/1.5, 0, node.radius - 5, 0]}
+                      pointerLength={10}
+                      pointerWidth={10}
+                      fill={"#ffffff80"}
+                      stroke={"#ffffff80"}
+                      strokeWidth={3}
+                    />
+                  }
                 </Group>
               )
           )}
