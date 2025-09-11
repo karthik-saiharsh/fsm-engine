@@ -85,6 +85,7 @@ const Editor = () => {
           stroke: "#ffffffe6",
           strokeWidth: 2,
           fill: "#ffffffe6",
+          tension: transitionTracker == id ? 1 : 0.5,
         };
 
         transitions.push(newTransition);
@@ -165,6 +166,24 @@ const Editor = () => {
 
   // Generate Points for drawing transition arrow
   function getPoints(id1, id2) {
+
+    if(id1 == id2) {
+      // Self-loop
+      const node = layerRef.current.findOne(`#g${id1}`);
+      const x = node.x();
+      const y = node.y();
+      const radius = node.children[0].radius();
+      const offset = 30;
+
+      const points = [
+        x - radius/1.5, y - radius, // Start point (left of the node)
+        x, y - radius - 2*offset, // Control point (top)
+        x + radius/1.5, y - radius, // End point (right of the node)
+      ];
+
+      return points;
+    }
+
     const clickedGroup = layerRef.current.findOne(`#g${id2}`);
 
     const startNode = layerRef.current.findOne(`#g${id1}`);
@@ -286,7 +305,7 @@ const Editor = () => {
               strokeWidth={transition.strokeWidth}
               fill={transition.fill}
               points={transition.points}
-              tension={0.5}
+              tension={transition.tension}
             />
           ))}
         </Group>
