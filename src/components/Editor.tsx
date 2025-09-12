@@ -59,6 +59,37 @@ const Editor = () => {
       const clickedGroup = layerRef.current.findOne(`#g${id}`);
       clickedGroup.destroy(); // Delete the Node
 
+      transitions.forEach((tr) => {
+        let tre = null;
+        if (tr && (tr.from == id || tr.to == id)) {
+          tre = layerRef.current.findOne(`#tr${tr.id}`);
+          tre.destroy(); // Delete the arrow
+
+          // Delete the transition for the other node participating in the state
+          if (tr.from == id) {
+            const aliveNodeTransitions = nodeList[tr.to].transitions;
+
+            for (let i = 0; i < aliveNodeTransitions.length; i++) {
+              if (aliveNodeTransitions[i].trId == tr.id) {
+                nodeList[tr.to].transitions.splice(i, 1);
+              }
+            }
+          } else {
+            const aliveNodeTransitions = nodeList[tr.from].transitions;
+
+            for (let i = 0; i < aliveNodeTransitions.length; i++) {
+              if (aliveNodeTransitions[i].trId == tr.id) {
+                nodeList[tr.from].transitions.splice(i, 1);
+              }
+            }
+          }
+
+          transitions[tr.id] = undefined; // remove the arrow entry from the array
+        }
+      });
+
+      updateTransitions(transitions);
+
       // Update the nodeList store
       nodeList[id] = undefined;
       updateNodeList(nodeList);
@@ -81,6 +112,8 @@ const Editor = () => {
 
         const newTransition = {
           id: transitions.length,
+          from: transitionTracker,
+          to: id,
           points: points,
           stroke: "#ffffffe6",
           strokeWidth: 2,
@@ -166,8 +199,7 @@ const Editor = () => {
 
   // Generate Points for drawing transition arrow
   function getPoints(id1, id2) {
-
-    if(id1 == id2) {
+    if (id1 == id2) {
       // Self-loop
       const node = layerRef.current.findOne(`#g${id1}`);
       const x = node.x();
@@ -176,9 +208,12 @@ const Editor = () => {
       const offset = 30;
 
       const points = [
-        x - radius/1.5, y - radius, // Start point (left of the node)
-        x, y - radius - 2*offset, // Control point (top)
-        x + radius/1.5, y - radius, // End point (right of the node)
+        x - radius / 1.5,
+        y - radius, // Start point (left of the node)
+        x,
+        y - radius - 2 * offset, // Control point (top)
+        x + radius / 1.5,
+        y - radius, // End point (right of the node)
       ];
 
       return points;
@@ -297,17 +332,20 @@ const Editor = () => {
               )
           )}
           {/* Transition Arrows */}
-          {transitions.map((transition) => (
-            <Arrow
-              key={transition.id}
-              id={`tr${transition.id}`}
-              stroke={transition.stroke}
-              strokeWidth={transition.strokeWidth}
-              fill={transition.fill}
-              points={transition.points}
-              tension={transition.tension}
-            />
-          ))}
+          {transitions.map(
+            (transition) =>
+              transition && (
+                <Arrow
+                  key={transition.id}
+                  id={`tr${transition.id}`}
+                  stroke={transition.stroke}
+                  strokeWidth={transition.strokeWidth}
+                  fill={transition.fill}
+                  points={transition.points}
+                  tension={transition.tension}
+                />
+              )
+          )}
         </Group>
       </Layer>
     </Stage>
