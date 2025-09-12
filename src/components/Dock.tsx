@@ -1,10 +1,11 @@
 import {
-  MousePointer2,
+  Move3d,
   PlusCircleIcon,
   MinusCircleIcon,
-  Hand,
+  Move,
   Settings,
   Cable,
+  HardDriveDownload,
 } from "lucide-react";
 import clsx from "clsx";
 import {
@@ -30,7 +31,7 @@ const Dock = () => {
   const setTransitionTracker = useSetAtom(arrowStates);
 
   return (
-    <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
+    <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center select-none">
       <div className="w-fit px-2 h-15 z-10 bg-secondary-bg rounded-2xl border border-border-bg flex justify-center items-center gap-5 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.5)]">
         {/* Dock Items */}
 
@@ -49,13 +50,13 @@ const Dock = () => {
             }
           )}
         >
-          <Hand
+          <Move3d
             size={DockIconSize}
             color={DockIconColor}
             className="pointer-events-none"
           />
           <p className="text-white font-github font-semibold text-balance">
-            Grab
+            Displace
           </p>
         </div>
 
@@ -74,14 +75,14 @@ const Dock = () => {
             }
           )}
         >
-          <MousePointer2
+          <Move
             size={DockIconSize}
             color={DockIconColor}
             className="pointer-events-none"
           />
 
           <p className="text-white font-github font-semibold text-balance">
-            Select
+            Move
           </p>
         </div>
 
@@ -172,7 +173,6 @@ const Dock = () => {
             else {
               setCurrentState("connect");
               setTransitionTracker(undefined);
-              console.log("Came here");
             }
           }}
           className={clsx(
@@ -191,6 +191,31 @@ const Dock = () => {
 
           <p className="text-white font-github font-semibold text-balance">
             Connect
+          </p>
+        </div>
+
+        {/* Save/Download FSM */}
+        <div
+          onClick={() =>
+            currentState == "save"
+              ? setCurrentState("nil")
+              : setCurrentState("save")
+          }
+          className={clsx(
+            "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            {
+              "bg-secondary-bg": currentState != "save",
+              "bg-blue-500": currentState == "save",
+            }
+          )}
+        >
+          <HardDriveDownload
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
+          <p className="text-white font-github font-semibold text-balance">
+            Save FSM
           </p>
         </div>
 
