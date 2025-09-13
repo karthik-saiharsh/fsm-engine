@@ -69,9 +69,13 @@ const Editor = () => {
 
       transitions.forEach((tr) => {
         let tre = null;
+        let trText = null;
         if (tr && (tr.from == id || tr.to == id)) {
           tre = layerRef.current.findOne(`#tr${tr.id}`);
           tre.destroy(); // Delete the arrow
+
+          trText = layerRef.current.findOne(`#trtext${tr.id}`);
+          trText.destroy(); // Also delete the Label of the transition
 
           // Delete the transition for the other node participating in the state
           if (tr.from == id) {
@@ -269,7 +273,7 @@ const Editor = () => {
       subpoint2[0],
       subpoint2[1],
       end[0],
-      end[1],
+      start[0] < end[0] ? end[1] - 20 : end[1] + 20,
     ];
 
     return points;
