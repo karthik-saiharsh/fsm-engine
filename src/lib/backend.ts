@@ -47,3 +47,5 @@ export const arrows = atom([]);
 // Store for tracking connections
 export const arrowStates = atom(undefined);
 
+// Store to manage visibility of save actions editor
+export const saveFSMAtom = atom(false);

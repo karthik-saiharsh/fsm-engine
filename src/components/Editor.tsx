@@ -5,6 +5,7 @@ import {
   currentSelected,
   arrowStates,
   arrows,
+  saveFSMAtom,
 } from "../lib/backend";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
@@ -27,6 +28,10 @@ const Editor = () => {
     undefined,
     undefined,
   ]); // Will have [show/hide, current text, transition text id]
+
+  const [showSaveFSM, setShowSaveFSM] = useAtom(saveFSMAtom);
+
+  const [saveFSM, setSaveFSM] = useState([1, "", ".png"]); // Pop settings for downloading FSM
 
   // Konva Layer Reference
   let layerRef = useRef(null);
@@ -376,8 +381,8 @@ const Editor = () => {
                       fill="#ffffff"
                       align="center"
                       onClick={() =>
-                        (currentEditorState != "create" &&
-                          currentEditorState != "delete") &&
+                        currentEditorState != "create" &&
+                        currentEditorState != "delete" &&
                         setTrNameEditor([true, transition.name, transition.id])
                       }
                     />
@@ -429,6 +434,72 @@ const Editor = () => {
 
               // Reset editor state
               setTrNameEditor([false, undefined, undefined]);
+            }}
+            className="rounded-xl text-black bg-blue-500 ml-2 px-2 py-2 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
+          >
+            <Check size={20} color="#ffffff" />
+          </button>
+        </span>
+      </TransitionNameEditor>
+
+      {/* Popup for Save FSM */}
+      <TransitionNameEditor showVar={showSaveFSM}>
+        <span className="absolute text-center leading-13 w-fit px-2 h-15 bg-primary-bg border border-border-bg rounded-2xl shadow-[0px_0px_100px_0px_#000000] transition-all ease-in-out duration-300 flex justify-center items-center">
+          <select
+            value={saveFSM[0]}
+            onChange={(e) => {
+              setSaveFSM([parseInt(e.target.value), saveFSM[1]]);
+            }}
+            className="text-white font-github text-base px-2 border border-border-bg hover:border-input-active focus:border-2 focus:border-blue-500 transition-all ease-in-out outline-none h-10 rounded-lg mr-2"
+          >
+            <option value={1}>1x</option>
+            <option value={2}>2x</option>
+            <option value={3}>3x</option>
+            <option value={4}>4x</option>
+            <option value={5}>5x</option>
+          </select>
+
+          <input
+            type="text"
+            placeholder="Enter File Name..."
+            value={saveFSM[1] ?? ""}
+            required
+            onChange={(e) => {
+              setSaveFSM([saveFSM[0], e.target.value]);
+            }}
+            className="text-white font-github text-base px-2 border border-border-bg hover:border-input-active focus:border-2 focus:border-blue-500 transition-all ease-in-out outline-none w-full h-10 rounded-lg"
+          />
+
+          <button
+            onClick={() => {
+              setShowSaveFSM(false);
+              setSaveFSM([1, ""]);
+            }}
+            className="rounded-xl text-black bg-white ml-2 px-2 py-2 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
+          >
+            <X size={20} color="#000000" />
+          </button>
+
+          <button
+            onClick={() => {
+              console.log(saveFSM);
+              // Save the FSM to disk
+
+              if(saveFSM[1].trim() == "") {alert("Enter a valid file name"); return}
+
+              const group = layerRef.current.findOne("Group");
+              const dataUrl = group.toDataURL({pixelRatio: saveFSM[0] /* Resolution */});
+
+              const link = document.createElement('a');
+
+              link.download = saveFSM[1]; // Name
+              console.log(`Gon download as ${link.download}`)
+              link.href = dataUrl;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+
+              setShowSaveFSM(false)
             }}
             className="rounded-xl text-black bg-blue-500 ml-2 px-2 py-2 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
           >

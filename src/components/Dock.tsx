@@ -13,6 +13,7 @@ import {
   currentSelected,
   alert,
   arrowStates,
+  saveFSMAtom,
 } from "../lib/backend";
 import { useAtomValue, useSetAtom } from "jotai";
 
@@ -29,6 +30,9 @@ const Dock = () => {
   const setAlertMsg = useSetAtom(alert);
 
   const setTransitionTracker = useSetAtom(arrowStates);
+
+  const setSaveFSM = useSetAtom(saveFSMAtom);
+  const saveFSM = useAtomValue(saveFSMAtom);
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center select-none">
@@ -196,16 +200,12 @@ const Dock = () => {
 
         {/* Save/Download FSM */}
         <div
-          onClick={() =>
-            currentState == "save"
-              ? setCurrentState("nil")
-              : setCurrentState("save")
-          }
+          onClick={() => setSaveFSM(!saveFSM)}
           className={clsx(
             "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
-              "bg-secondary-bg": currentState != "save",
-              "bg-blue-500": currentState == "save",
+              "bg-secondary-bg": !saveFSM,
+              "bg-blue-500": saveFSM,
             }
           )}
         >
