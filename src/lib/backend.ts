@@ -49,3 +49,9 @@ export const arrowStates = atom(undefined);
 
 // Store to manage visibility of save actions editor
 export const saveFSMAtom = atom(false);
+
+// Track the node whose controls were changed most recently
+export const recentStateSave = atom("nil");
+
+// Keep track of starting state
+export const start_state = atom("nil");

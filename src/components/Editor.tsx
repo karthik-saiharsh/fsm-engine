@@ -6,10 +6,12 @@ import {
   arrowStates,
   arrows,
   saveFSMAtom,
+  recentStateSave,
+  start_state,
 } from "../lib/backend";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import clsx from "clsx";
 import { Check, X } from "lucide-react";
 
@@ -33,6 +35,46 @@ const Editor = () => {
 
   const [saveFSM, setSaveFSM] = useState([1, "", ".png"]); // Pop settings for downloading FSM
 
+  const [recentStateControlSaved, setRecentStateControlSaved] =
+    useAtom(recentStateSave);
+
+  const [startState, setStartState] = useAtom(start_state);
+
+  // Every time a state's controls are changed(size), it's transition arrows should also be updated
+  useEffect(() => {
+    if (recentStateControlSaved == "nil") return;
+    else {
+      // Update the transition arrow's positions
+      for (let i = 0; i < transitions.length; i++) {
+        if (
+          transitions[i].to == recentStateControlSaved ||
+          transitions[i].from == recentStateControlSaved
+        ) {
+          const newPoints = getPoints(transitions[i].from, transitions[i].to);
+          transitions[i].points = newPoints;
+          const arrow = layerRef.current.findOne(`#tr${transitions[i].id}`);
+          arrow.points(newPoints);
+          continue;
+        }
+      }
+
+      // If node is a start state, additionally update it's start arrow as well
+      if (recentStateControlSaved == startState) {
+        const startArrow = layerRef.current.findOne(`#startarrow`);
+        const startNode = layerRef.current.findOne(`#${startState}`);
+
+        const nodeRadius = startNode.radius();
+
+        const points = [-nodeRadius / 1.5, 0, nodeRadius - 5, 0];
+
+        startArrow.x(-1 * (nodeRadius + 40));
+        startArrow.points(points);
+      }
+
+      setRecentStateControlSaved("nil");
+    }
+  }, [recentStateControlSaved]);
+
   // Konva Layer Reference
   let layerRef = useRef(null);
 
@@ -45,7 +87,10 @@ const Editor = () => {
     if (!group) return;
 
     const clickPos = group.getRelativePointerPosition();
-
+    // if node is the first one, then make it the starting state
+    if (nodeList.length == 0) {
+      setStartState("0");
+    }
     updateNodeList((nodes: Node[]) => [
       ...nodes,
       {
@@ -344,6 +389,7 @@ const Editor = () => {
                     {node.type == "initial" && (
                       <Arrow
                         x={-1 * (node.radius + 40)}
+                        id="startarrow"
                         y={0}
                         points={[-node.radius / 1.5, 0, node.radius - 5, 0]}
                         pointerLength={10}
@@ -419,7 +465,7 @@ const Editor = () => {
                 `#trtext${trNameEditor[2]}`
               );
 
-              if (trNameEditor[1].length == 0) return; // Prevent empty transition names
+              if (trNameEditor[1].trim().length == 0) return; // Prevent empty transition names
 
               trText.text(trNameEditor[1]); // Update transition text
               transitions[trNameEditor[2]].name = trNameEditor[1]; // Update transition name in store
@@ -482,24 +528,27 @@ const Editor = () => {
 
           <button
             onClick={() => {
-              console.log(saveFSM);
               // Save the FSM to disk
 
-              if(saveFSM[1].trim() == "") {alert("Enter a valid file name"); return}
+              if (saveFSM[1].trim() == "") {
+                alert("Enter a valid file name");
+                return;
+              }
 
               const group = layerRef.current.findOne("Group");
-              const dataUrl = group.toDataURL({pixelRatio: saveFSM[0] /* Resolution */});
+              const dataUrl = group.toDataURL({
+                pixelRatio: saveFSM[0] /* Resolution */,
+              });
 
-              const link = document.createElement('a');
+              const link = document.createElement("a");
 
               link.download = saveFSM[1]; // Name
-              console.log(`Gon download as ${link.download}`)
               link.href = dataUrl;
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
 
-              setShowSaveFSM(false)
+              setShowSaveFSM(false);
             }}
             className="rounded-xl text-black bg-blue-500 ml-2 px-2 py-2 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
           >

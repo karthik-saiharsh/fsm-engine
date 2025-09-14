@@ -1,6 +1,13 @@
 //@ts-nocheck
 import { CircleX, CircleCheck } from "lucide-react";
-import { editorState, currentSelected, Nodes } from "../lib/backend";
+import {
+  editorState,
+  currentSelected,
+  Nodes,
+  recentStateSave,
+  start_state,
+  alert,
+} from "../lib/backend";
 import { useAtomValue, useSetAtom, useAtom } from "jotai";
 import { useState, useEffect } from "react";
 import clsx from "clsx";
@@ -17,6 +24,12 @@ const Settings = () => {
   const [stateColor, setStateColor] = useState("");
   const [stateType, setStateType] = useState("");
 
+  const setRecentStateChange = useSetAtom(recentStateSave);
+
+  const [startState, setStartState] = useAtom(start_state);
+
+  const setAlert = useSetAtom(alert);
+
   function setDefaultSettingsValues() {
     if (currSelected != "nil") {
       setStateName(nodeList[currSelected].name);
@@ -27,9 +40,33 @@ const Settings = () => {
 
   function saveSettingsToNode() {
     if (currSelected != "nil") {
-      nodeList[currSelected].name = stateName;
+      if (nodeList[currSelected].type != stateType) {
+        if (stateType == "initial" && startState != "nil") {
+          setAlert("There can only be one Initial State");
+          setTimeout(() => setAlert("nil"), 3000);
+          return;
+        }
+
+        if (stateType != "initial") {
+          nodeList[currSelected].type = stateType;
+          if (currSelected == startState) setStartState("nil");
+        } else if (stateType == "initial" && startState == "nil") {
+          nodeList[currSelected].type = stateType;
+          if (currSelected == startState) setStartState(currSelected);
+        }
+
+        // Update radius of node after changing its name
+        nodeList[currSelected].radius =
+          2 * nodeList[currSelected].name.length +
+          nodeList[currSelected].radius;
+      }
+
       nodeList[currSelected].fill = stateColor + "80";
-      nodeList[currSelected].type = stateType;
+
+      if (nodeList[currSelected].name != stateName) {
+        nodeList[currSelected].name = stateName;
+        setRecentStateChange(currSelected);
+      }
       updateNodeList(nodeList);
     }
   }
