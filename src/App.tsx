@@ -2,15 +2,15 @@ import Alert from "./components/Alert";
 import Dock from "./components/Dock";
 import Editor from "./components/Editor";
 import Settings from "./components/Settings";
+import Error from "./components/Error";
+import Welcome from "./components/Welcome";
 import { alert } from "./lib/backend";
 import { useAtomValue } from "jotai";
-import Error from "./components/Error";
 
 // @ts-ignore
 import GridLines from "react-gridlines";
 
 function App() {
-
   const alertMsg = useAtomValue(alert);
 
   return (
@@ -41,6 +41,9 @@ function App() {
 
       {/* Error Page */}
       <Error />
+
+      {/* Welcome Page */}
+      <Welcome />
     </>
   );
 }

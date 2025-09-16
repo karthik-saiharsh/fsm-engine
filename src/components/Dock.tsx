@@ -6,6 +6,7 @@ import {
   Settings,
   Cable,
   HardDriveDownload,
+  BookMarked,
 } from "lucide-react";
 import clsx from "clsx";
 import {
@@ -216,6 +217,31 @@ const Dock = () => {
           />
           <p className="text-white font-github font-semibold text-balance">
             Save FSM
+          </p>
+        </div>
+
+        {/* Help/Welcome FSM */}
+        <div
+          onClick={() =>
+            currentState == "welcome"
+              ? setCurrentState("nil")
+              : setCurrentState("welcome")
+          }
+          className={clsx(
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            {
+              "bg-secondary-bg": currentState != "welcome",
+              "bg-blue-500": currentState == "welcome",
+            }
+          )}
+        >
+          <BookMarked
+            size={DockIconSize}
+            color={DockIconColor}
+            className="pointer-events-none"
+          />
+          <p className="text-white font-github font-semibold text-balance">
+            Welcome
           </p>
         </div>
 
