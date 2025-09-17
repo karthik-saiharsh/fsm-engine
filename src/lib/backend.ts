@@ -30,7 +30,7 @@ type Arrow = {
 }
 
 // Store for current editor state
-export const editorState = atom("nil");
+export const editorState = atom("welcome");
 
 // Store for State Machine's States
 export const Nodes: Node[] = atom([]);

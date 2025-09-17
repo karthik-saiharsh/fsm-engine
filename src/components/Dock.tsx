@@ -174,7 +174,7 @@ const Dock = () => {
         {/* Connect Nodes */}
         <div
           onClick={() => {
-            if (currSelected == "connect") setCurrentState("nil");
+            if (currentState == "connect") setCurrentState("nil");
             else {
               setCurrentState("connect");
               setTransitionTracker(undefined);
