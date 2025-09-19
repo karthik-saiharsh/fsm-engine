@@ -23,7 +23,7 @@ A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Bu
   - First-run walkthrough with short clips
 
 ## Try it at
-fsm-engine.vercel.app
+https://fsm-engine.vercel.app
 
 ## Tech Stack
 
