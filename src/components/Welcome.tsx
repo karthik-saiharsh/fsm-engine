@@ -32,7 +32,7 @@ export default function Welcome() {
   return (
     <div
       className={clsx(
-        "absolute top-0 left-0 z-20 w-screen h-screen bg-[#1e1e1ebb] flex justify-center items-center transition-all ease-in-out duration-500",
+        "absolute top-0 left-0 z-20 w-screen h-screen bg-[#1e1e1ebb] flex justify-center items-center transition-all ease-in-out duration-500 max-lg:hidden",
         {
           "hidden pointer-events-none opacity-0":
             currentEditorState != "welcome",
@@ -67,7 +67,10 @@ export default function Welcome() {
           </button>
         </div>
         <button
-          onClick={() => {setCurrentEditorState("nil"); setDisplayIndex(0)}}
+          onClick={() => {
+            setCurrentEditorState("nil");
+            setDisplayIndex(0);
+          }}
           className="flex text-sm gap-2 font-github font-semibold items-center rounded-xl text-white bg-blue-500 px-5 py-2 hover:scale-110 transition-all cursor-pointer active:scale-100 ease-in-out"
         >
           Go to FSM-Engine
@@ -111,10 +114,12 @@ function Intro(props: { show: boolean }) {
         If you are interested to contribute, and help the project grow, feel
         free to open a pull request. Would love to see the project grow!
       </p>
-      <button className="flex text-sm gap-2 font-github font-semibold mt-5 items-center rounded-xl text-white bg-blue-500 px-5 py-2 hover:scale-110 transition-all cursor-pointer active:scale-100 ease-in-out">
-        View Github Repo
-        <ArrowUpRight color="#ffffff" size={24} />
-      </button>
+      <a href="https://github.com/karthik-saiharsh/fsm-engine" target="_blank">
+        <button className="flex text-sm gap-2 font-github font-semibold mt-5 items-center rounded-xl text-white bg-blue-500 px-5 py-2 hover:scale-110 transition-all cursor-pointer active:scale-100 ease-in-out">
+          View Github Repo
+          <ArrowUpRight color="#ffffff" size={24} />
+        </button>
+      </a>
     </div>
   );
 }
@@ -136,16 +141,27 @@ function Tutorial(props: { index: number; show: boolean }) {
         {TutorialContent[props.index].title}
       </h1>
       {TutorialContent[props.index].type == "vid" ? (
-        <video src={TutorialContent[props.index].src} controls></video>
+        <iframe
+          width="560"
+          height="315"
+          src={TutorialContent[props.index].src}
+          title="Tutorial"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
       ) : (
-        <img src={TutorialContent[props.index].src} width={250} height={250}/>
+        <img src={TutorialContent[props.index].src} width={250} height={250} />
       )}
       <p className="font-github text-base text-white mt-2 text-center">
         {TutorialContent[props.index].content}
       </p>
-      {props.index > 0 && <p className="font-github text-base text-blue-500 mt-2 text-center">
-        Watch the above video for better clarity
-      </p>}
+      {props.index > 0 && (
+        <p className="font-github text-base text-blue-500 mt-2 text-center">
+          Watch the above video for better clarity
+        </p>
+      )}
     </div>
   );
 }
