@@ -2,12 +2,12 @@
 
 A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Built with React, TypeScript, Tailwind CSS, Jotai, and React Konva for an interactive canvas experience.
 
-<!-- ![FSM Engine Screenshot](./.github/screenshot.png) -->
+<img width="2770" height="1522" alt="FSM Engine Demo" src="https://github.com/user-attachments/assets/8ebd2706-f122-41ce-84ed-8d0ec04c0c74" />
 
 ## Features
 
 - Interactive Canvas Editor
-  - Zoom and Pan across an infinite canvas
+  - Zoom(To be Implemented) and Pan across an infinite canvas
   - Smooth drag to reposition states
 - Multiple Modes
   - Create: Click on the canvas to add new states
@@ -39,14 +39,12 @@ Contributions are welcome!
 - Discuss larger changes in an issue first
 
 ## Roadmap
-
+- [ ] Zoom Control
 - [ ] Undo/Redo
 - [ ] Export Project to JSON
 - [ ] Import Project from JSON
+- [ ] Generate the transition table for a given NFA/DFA
 - [ ] NFA → DFA conversion
 - [ ] DFA minimization
 - [ ] Validation and error hints (unreachable states, parse a regex)
 - [ ] Keyboard shortcuts and accessibility improvements
-
-## License
-<!--Yet to add a license-->
