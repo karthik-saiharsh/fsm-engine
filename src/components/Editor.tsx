@@ -173,6 +173,14 @@ const Editor = () => {
         setTransitionTracker(id);
         return;
       } else {
+        // Checks if a transition between selected state(s) already exists to prevent dupe transitions
+        for (const tr of nodeList[transitionTracker].transitions) {
+          if (tr.to != null && tr.to == id) {
+            setTransitionTracker(undefined);
+            return;
+          }
+        }
+
         const points = getPoints(transitionTracker, id);
 
         const newTransition = {
@@ -190,7 +198,7 @@ const Editor = () => {
         transitions.push(newTransition);
         updateTransitions(transitions);
 
-        // Add this transition to the correcponding node
+        // Add this transition to the corresponding node
         nodeList[transitionTracker].transitions.push({
           from: undefined,
           to: id,
