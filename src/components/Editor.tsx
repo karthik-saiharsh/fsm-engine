@@ -18,6 +18,12 @@ import { Check, X } from "lucide-react";
 const Editor = () => {
   const currentEditorState = useAtomValue(editorState);
 
+  // Konva Layer Reference
+  let layerRef = useRef(null);
+
+  // Konva Stage Ref
+  let stageRef = useRef(null);
+
   const [nodeList, updateNodeList] = useAtom(Nodes);
 
   const [currSelected, setCurrSelected] = useAtom(currentSelected);
@@ -74,9 +80,6 @@ const Editor = () => {
       setRecentStateControlSaved("nil");
     }
   }, [recentStateControlSaved]);
-
-  // Konva Layer Reference
-  let layerRef = useRef(null);
 
   // Handle Creating Nodes by clicking
   function handleEditorClick(e: any) {
@@ -329,6 +332,40 @@ const Editor = () => {
     return points;
   }
 
+  // Handle Zoom control for the editor
+  function handleWheel(e) {
+    e.evt.preventDefault();
+
+    const stage = stageRef.current;
+    const oldScale = stage.scaleX();
+    const pointer = stage.getPointerPosition();
+
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    };
+
+    // how to scale? Zoom in? Or zoom out?
+    let direction = e.evt.deltaY > 0 ? 1 : -1;
+
+    // when we zoom on trackpad, e.evt.ctrlKey is true
+    // in that case lets revert direction
+    if (e.evt.ctrlKey) {
+      direction = -direction;
+    }
+
+    const scaleBy = 1.01;
+    const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+    stage.scale({ x: newScale, y: newScale });
+
+    const newPos = {
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale,
+    };
+    stage.position(newPos);
+  }
+
   return (
     <>
       <Stage
@@ -336,6 +373,8 @@ const Editor = () => {
         height={window.innerHeight}
         draggable={currentEditorState == "grab"}
         onClick={handleEditorClick}
+        ref={stageRef}
+        onWheel={handleWheel}
       >
         <Layer ref={layerRef}>
           <Group key={nodeList}>
