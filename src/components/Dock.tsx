@@ -48,7 +48,7 @@ const Dock = () => {
               : setCurrentState("grab")
           }
           className={clsx(
-            "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "grab",
               "bg-blue-500": currentState == "grab",
@@ -73,7 +73,7 @@ const Dock = () => {
               : setCurrentState("select")
           }
           className={clsx(
-            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "select",
               "bg-blue-500": currentState == "select",
@@ -99,7 +99,7 @@ const Dock = () => {
               : setCurrentState("create")
           }
           className={clsx(
-            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "create",
               "bg-blue-500": currentState == "create",
@@ -124,7 +124,7 @@ const Dock = () => {
               : setCurrentState("delete")
           }
           className={clsx(
-            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "delete",
               "bg-blue-500": currentState == "delete",
@@ -154,7 +154,7 @@ const Dock = () => {
             }
           }}
           className={clsx(
-            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "settings",
               "bg-blue-500": currentState == "settings",
@@ -181,7 +181,7 @@ const Dock = () => {
             }
           }}
           className={clsx(
-            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "connect",
               "bg-blue-500": currentState == "connect",
@@ -203,7 +203,7 @@ const Dock = () => {
         <div
           onClick={() => setSaveFSM(!saveFSM)}
           className={clsx(
-            "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "group p-2 border flex gap-2 border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": !saveFSM,
               "bg-blue-500": saveFSM,
@@ -228,7 +228,7 @@ const Dock = () => {
               : setCurrentState("welcome")
           }
           className={clsx(
-            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-130 hover:-translate-y-5 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
+            "flex gap-2 p-2 border border-border-bg rounded-xl hover:scale-110 hover:-translate-y-1 active:scale-100 cursor-pointer transition-all ease-in-out duration-300",
             {
               "bg-secondary-bg": currentState != "welcome",
               "bg-blue-500": currentState == "welcome",
