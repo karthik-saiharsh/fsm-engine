@@ -276,6 +276,13 @@ const Editor = () => {
     }
   }
 
+  // Handle Deleting a transition
+  function handleTransitionDelete(tr) {
+    nodeList[tr.from].transitions = nodeList[tr.from].transitions.filter((transition) => transition.id != tr.id);
+    nodeList[tr.to].transitions = nodeList[tr.to].transitions.filter((transition) => transition.id != tr.id);
+    updateTransitions(transitions.filter((transition) => transition.id != tr.id));
+  }
+
   // Generate Points for drawing transition arrow
   function getPoints(id1, id2) {
     if (id1 == id2) {
@@ -453,7 +460,7 @@ const Editor = () => {
             {transitions.map(
               (transition) =>
                 transition && (
-                  <Group key={transition.id}>
+                  <Group key={transition.id} onClick={() => (currentEditorState == "delete") && handleTransitionDelete(transition)}>
                     {/* Transition arrow object */}
                     <Arrow
                       key={transition.id}
