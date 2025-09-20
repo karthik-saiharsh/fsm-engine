@@ -7,7 +7,7 @@ A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Bu
 ## Features
 
 - Interactive Canvas Editor
-  - Zoom(To be Implemented) and Pan across an infinite canvas
+  - Zoom and Pan across an infinite canvas
   - Smooth drag to reposition states
 - Multiple Modes
   - Create: Click on the canvas to add new states
@@ -42,7 +42,6 @@ Contributions are welcome!
 - Discuss larger changes in an issue first
 
 ## Roadmap
-- [ ] Zoom Control
 - [ ] Undo/Redo
 - [ ] Export Project to JSON
 - [ ] Import Project from JSON
