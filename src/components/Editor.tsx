@@ -278,9 +278,19 @@ const Editor = () => {
 
   // Handle Deleting a transition
   function handleTransitionDelete(tr) {
-    nodeList[tr.from].transitions = nodeList[tr.from].transitions.filter((transition) => transition.id != tr.id);
-    nodeList[tr.to].transitions = nodeList[tr.to].transitions.filter((transition) => transition.id != tr.id);
-    updateTransitions(transitions.filter((transition) => transition.id != tr.id));
+    // Removing transition from states related to the transition
+    nodeList[tr.from].transitions = nodeList[tr.from].transitions.filter((transition) => transition.trId != tr.id);
+    nodeList[tr.to].transitions = nodeList[tr.to].transitions.filter((transition) => transition.trId != tr.id);
+
+    // Yoinked code from node delete
+    const tre = layerRef.current.findOne(`#tr${tr.id}`);
+    tre.destroy(); // Delete the arrow
+
+    const trText = layerRef.current.findOne(`#trtext${tr.id}`);
+    trText.destroy(); // Also delete the Label of the transition
+
+    transitions[tr.id] = undefined; // remove arrow entry from array
+    updateTransitions(transitions);
   }
 
   // Generate Points for drawing transition arrow
