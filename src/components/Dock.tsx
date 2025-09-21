@@ -57,22 +57,6 @@ const Dock = () => {
 			},
 		},
 		{
-			name: "Move",
-			condition: [currentState != "select", currentState == "select"],
-			icon: (
-				<Move
-					size={DockIconSize}
-					color={DockIconColor}
-					className="pointer-events-none"
-				/>
-			),
-			onclick: () => {
-				currentState == "select"
-					? setCurrentState("nil")
-					: setCurrentState("select");
-			},
-		},
-		{
 			name: "Add",
 			condition: [currentState != "create", currentState == "create"],
 			icon: (
