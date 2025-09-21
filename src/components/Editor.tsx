@@ -8,6 +8,7 @@ import {
   saveFSMAtom,
   recentStateSave,
   start_state,
+  alert
 } from "../lib/backend";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
@@ -46,6 +47,8 @@ const Editor = () => {
 
   const [startState, setStartState] = useAtom(start_state);
 
+  const setAlertMsg = useSetAtom(alert);
+  
   // Deletes node based off node id
   const deleteNode = useCallback((id) => {
     const clickedGroup = layerRef.current.findOne(`#g${id}`);
@@ -145,8 +148,19 @@ const Editor = () => {
 
   // Handle Creating Nodes by clicking
   function handleEditorClick(e: any) {
-    // Return if not in create mode
-    if (currentEditorState != "create") return;
+    // Return if not in create mode, and deselects if a node is selected
+    if (currentEditorState != "create") {
+      if (currSelected != "nil") {
+        const selectedNode = layerRef.current.findOne(`#${currSelected}`);
+        selectedNode.to({
+          duration: 0.1,
+          strokeWidth: 0,
+          easing: Konva.Easings.EaseInOut,
+        });
+        setCurrSelected("nil");
+      }
+      return;
+    }
 
     const group = e.target.getStage().findOne("Group");
     if (!group) return;
@@ -194,6 +208,8 @@ const Editor = () => {
         for (const tr of nodeList[transitionTracker].transitions) {
           if (tr.to != null && tr.to == id) {
             setTransitionTracker(undefined);
+            setAlertMsg("This transition already exists!");
+            setTimeout(() => setAlertMsg("nil"), 3000);
             return;
           }
         }
