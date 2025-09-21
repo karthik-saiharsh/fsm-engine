@@ -2,32 +2,32 @@
 import { atom } from "jotai";
 
 type nodeTransition = {
-  from: string;
-  to: string;
-  name: string;
-  trID: string;
-}
+	from: string;
+	to: string;
+	name: string;
+	trID: string;
+};
 
 type Node = {
-  x: number;
-  y: number;
-  radius: number;
-  fill: string;
-  id: number;
-  strokeWidth: number;
-  strokeColor: string;
-  name: string;
-  type: "initial" | "final" | "intermediate";
-  transitions: nodeTransition[];
+	x: number;
+	y: number;
+	radius: number;
+	fill: string;
+	id: number;
+	strokeWidth: number;
+	strokeColor: string;
+	name: string;
+	type: "initial" | "final" | "intermediate";
+	transitions: nodeTransition[];
 };
 
 type Arrow = {
-  x: number;
-  y: number;
-  points: number[];
-  stroke: string;
-  strokeWidth: string;
-}
+	x: number;
+	y: number;
+	points: number[];
+	stroke: string;
+	strokeWidth: string;
+};
 
 // Store for current editor state
 export const editorState = atom("welcome");
