@@ -36,8 +36,8 @@ const TutorialContent = [
   {
     title: "Delete",
     src: "https://www.youtube.com/embed/VNAN27cCGUY?si=DnGpzma27Ehb5sft",
-    content: `Delete, as the name suggests lets you remove states from your project.
-    Choose "Delete" and left-click on the State you wish to remove.`,
+    content: `Delete, as the name suggests lets you remove states or transitions from your project.
+    Choose "Delete" and left-click on the State or transition you wish to remove.`,
     type: "vid",
   },
 
