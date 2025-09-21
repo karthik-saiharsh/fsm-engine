@@ -11,7 +11,7 @@ import {
 } from "../lib/backend";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { Check, X } from "lucide-react";
 
@@ -45,6 +45,55 @@ const Editor = () => {
     useAtom(recentStateSave);
 
   const [startState, setStartState] = useAtom(start_state);
+
+  // Deletes node based off node id
+  const deleteNode = useCallback((id) => {
+    const clickedGroup = layerRef.current.findOne(`#g${id}`);
+    clickedGroup.destroy(); // Delete the Node
+
+    transitions.forEach((tr) => {
+      let tre = null;
+      let trText = null;
+      if (tr && (tr.from == id || tr.to == id)) {
+        tre = layerRef.current.findOne(`#tr${tr.id}`);
+        tre.destroy(); // Delete the arrow
+
+        trText = layerRef.current.findOne(`#trtext${tr.id}`);
+        trText.destroy(); // Also delete the Label of the transition
+
+        // Delete the transition for the other node participating in the state
+        if (tr.from == id) {
+          const aliveNodeTransitions = nodeList[tr.to].transitions;
+
+          for (let i = 0; i < aliveNodeTransitions.length; i++) {
+            if (aliveNodeTransitions[i].trId == tr.id) {
+              nodeList[tr.to].transitions.splice(i, 1);
+            }
+          }
+        } else {
+          const aliveNodeTransitions = nodeList[tr.from].transitions;
+
+          for (let i = 0; i < aliveNodeTransitions.length; i++) {
+            if (aliveNodeTransitions[i].trId == tr.id) {
+              nodeList[tr.from].transitions.splice(i, 1);
+            }
+          }
+        }
+
+        transitions[tr.id] = undefined; // remove the arrow entry from the array
+      }
+    });
+
+    updateTransitions(transitions);
+
+    // Update the nodeList store
+    nodeList[id] = undefined;
+    updateNodeList(nodeList);
+
+    // If the deleted Node is the one currently selected
+    // Then deselect it
+    if (currSelected == id) setCurrSelected("nil");
+  }, [currSelected, nodeList, setCurrSelected, transitions, updateNodeList, updateTransitions]);
 
   // Every time a state's controls are changed(size), it's transition arrows should also be updated
   useEffect(() => {
@@ -80,6 +129,19 @@ const Editor = () => {
       setRecentStateControlSaved("nil");
     }
   }, [recentStateControlSaved]);
+
+  // Handles delete keybind
+  useEffect(() => {
+    const handleKeybinds = (e: KeyboardEvent) => {
+      if (e.key == "Delete" && currSelected != "nil" && currentEditorState != "settings") {
+        deleteNode(currSelected);
+      }
+    }
+    window.addEventListener("keyup", handleKeybinds);
+    return () => {
+      window.removeEventListener("keyup", handleKeybinds);
+    }
+  },[currSelected, setCurrSelected, deleteNode, currentEditorState]);
 
   // Handle Creating Nodes by clicking
   function handleEditorClick(e: any) {
@@ -117,52 +179,7 @@ const Editor = () => {
     const clickedNode = layerRef.current.findOne(`#${id}`);
 
     if (currentEditorState == "delete") {
-      const clickedGroup = layerRef.current.findOne(`#g${id}`);
-      clickedGroup.destroy(); // Delete the Node
-
-      transitions.forEach((tr) => {
-        let tre = null;
-        let trText = null;
-        if (tr && (tr.from == id || tr.to == id)) {
-          tre = layerRef.current.findOne(`#tr${tr.id}`);
-          tre.destroy(); // Delete the arrow
-
-          trText = layerRef.current.findOne(`#trtext${tr.id}`);
-          trText.destroy(); // Also delete the Label of the transition
-
-          // Delete the transition for the other node participating in the state
-          if (tr.from == id) {
-            const aliveNodeTransitions = nodeList[tr.to].transitions;
-
-            for (let i = 0; i < aliveNodeTransitions.length; i++) {
-              if (aliveNodeTransitions[i].trId == tr.id) {
-                nodeList[tr.to].transitions.splice(i, 1);
-              }
-            }
-          } else {
-            const aliveNodeTransitions = nodeList[tr.from].transitions;
-
-            for (let i = 0; i < aliveNodeTransitions.length; i++) {
-              if (aliveNodeTransitions[i].trId == tr.id) {
-                nodeList[tr.from].transitions.splice(i, 1);
-              }
-            }
-          }
-
-          transitions[tr.id] = undefined; // remove the arrow entry from the array
-        }
-      });
-
-      updateTransitions(transitions);
-
-      // Update the nodeList store
-      nodeList[id] = undefined;
-      updateNodeList(nodeList);
-
-      // If the deleted Node is the one currently selected
-      // Then deselect it
-      if (currSelected == id) setCurrSelected("nil");
-
+      deleteNode(id);
       return;
     }
 
@@ -521,7 +538,7 @@ const Editor = () => {
               // Update location of text
               trText.x(
                 transitions[trNameEditor[2]].points[2] -
-                  3 * trNameEditor[1].length
+                3 * trNameEditor[1].length
               );
               trText.y(transitions[trNameEditor[2]].points[3] - 20);
 

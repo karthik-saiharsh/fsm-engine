@@ -17,6 +17,7 @@ import {
   saveFSMAtom,
 } from "../lib/backend";
 import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
 
 const Dock = () => {
   const DockIconSize = 24;
@@ -34,6 +35,63 @@ const Dock = () => {
 
   const setSaveFSM = useSetAtom(saveFSMAtom);
   const saveFSM = useAtomValue(saveFSMAtom);
+
+  // Keybind Handling
+  useEffect(() => {
+    // Setting keybind for saving fsm
+    const ctrls = (e: KeyboardEvent) => (e.ctrlKey || e.metaKey) && e.key == "s";
+
+    // Prevents browser from doing default command for whatever the keybind above is
+    const ignore = (e: KeyboardEvent) => {
+      if (ctrls(e)) {
+        e.preventDefault();
+      }
+    }
+
+    // Put this in a different handler because this only works if ignore is on keydown and this command is on keyup, and quite frankly keyup feels terrible to use for the other keybinds
+    const handleSave = (e: KeyboardEvent) => {
+      if (ctrls(e)) setSaveFSM(true);
+    }
+
+    // Assigning keybinds to the tools
+    const handleKeybinds = (e: KeyboardEvent) => {
+      if (e.key == "1") {
+        if (currentState == "grab") setCurrentState("nil");
+        else setCurrentState("grab");
+      }
+      else if (e.key == "2") {
+        if (currentState == "select") setCurrentState("nil");
+        else setCurrentState("select");
+      }
+      else if (e.key == "3") {
+        if (currentState == "create") setCurrentState("nil");
+        else setCurrentState("create");
+
+      }
+      else if (e.key == "4") {
+        if (currentState == "delete") setCurrentState("nil");
+        else setCurrentState("delete");
+      }
+      else if (e.key == "5" && currSelected != "nil") setCurrentState("settings");
+      else if (e.key == "6") {
+        if (currentState == "connect") setCurrentState("nil");
+        else setCurrentState("connect");
+      }
+      else if (e.key == "Escape") { // Deselect everything
+        setSaveFSM(false);
+        setCurrentState("nil");
+      }
+    }
+
+    window.addEventListener("keydown", handleKeybinds);
+    window.addEventListener("keyup", handleSave);
+    window.addEventListener("keydown", ignore);
+    return () => {
+      window.removeEventListener("keydown", handleKeybinds);
+      window.removeEventListener("keyup", handleSave);
+      window.removeEventListener("keydown", ignore)
+    }
+  }, [setCurrentState, currSelected, setSaveFSM, currentState]);
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center select-none max-lg:hidden">
