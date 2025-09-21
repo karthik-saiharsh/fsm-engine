@@ -8,6 +8,7 @@ import {
   saveFSMAtom,
   recentStateSave,
   start_state,
+  alert
 } from "../lib/backend";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
@@ -45,6 +46,8 @@ const Editor = () => {
     useAtom(recentStateSave);
 
   const [startState, setStartState] = useAtom(start_state);
+
+  const setAlertMsg = useSetAtom(alert);
 
   // Every time a state's controls are changed(size), it's transition arrows should also be updated
   useEffect(() => {
@@ -177,6 +180,8 @@ const Editor = () => {
         for (const tr of nodeList[transitionTracker].transitions) {
           if (tr.to != null && tr.to == id) {
             setTransitionTracker(undefined);
+            setAlertMsg("This transition already exists!");
+            setTimeout(() => setAlertMsg("nil"), 3000);
             return;
           }
         }
@@ -521,7 +526,7 @@ const Editor = () => {
               // Update location of text
               trText.x(
                 transitions[trNameEditor[2]].points[2] -
-                  3 * trNameEditor[1].length
+                3 * trNameEditor[1].length
               );
               trText.y(transitions[trNameEditor[2]].points[3] - 20);
 
