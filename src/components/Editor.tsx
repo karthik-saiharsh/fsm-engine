@@ -8,7 +8,7 @@ import {
   saveFSMAtom,
   recentStateSave,
   start_state,
-  alert
+  alert,
 } from "../lib/backend";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Nodes } from "../lib/backend";
@@ -224,7 +224,7 @@ const Editor = () => {
           stroke: "#ffffffe6",
           strokeWidth: 2,
           fill: "#ffffffe6",
-          name: `transition ${transitions.length}`,
+          name: `transition ${transitions.length + 1}`,
           tension: transitionTracker == id ? 1 : 0.5,
         };
 
@@ -427,7 +427,9 @@ const Editor = () => {
                     x={node.x}
                     y={node.y}
                     id={`g${node.id}`}
-                    draggable={currentEditorState == "select"}
+                    draggable={
+                      !["create", "delete"].includes(currentEditorState)
+                    }
                     onClick={() => handleNodeClick(node.id)}
                     onDragMove={() => handleNodeDrag(node.id)}
                   >
@@ -554,7 +556,7 @@ const Editor = () => {
               // Update location of text
               trText.x(
                 transitions[trNameEditor[2]].points[2] -
-                3 * trNameEditor[1].length
+                  3 * trNameEditor[1].length
               );
               trText.y(transitions[trNameEditor[2]].points[3] - 20);
 

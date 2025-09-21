@@ -19,9 +19,8 @@ const TutorialContent = [
   {
     title: "Move",
     src: "https://www.youtube.com/embed/INyTezJ5w8Y?si=a583BlEeUFyyeV_C",
-    content: `The Move function allows you to move a single selected State. 
-    To move a state, choose "Move" from the Dock, then just left-click
-     drag on the State you wish to move.`,
+    content: `Move used to be a mode which you had to select to move/drag states. Now you can
+	move/drag states across the canvas by simply left-clicking and dragging them.`,
     type: "vid",
   },
 

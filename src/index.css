@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: "github";
-    src: url("assets/github_font.ttf");
+	font-family: "github";
+	src: url("assets/github_font.ttf");
 }
 
 @theme {
-    --font-github: github;
-    --color-primary-bg: #1E1E1E;
-    --color-secondary-bg: #2c2c2c;
+	--font-github: github;
+	--color-primary-bg: #1e1e1e;
+	--color-secondary-bg: #2c2c2c;
 
-    --color-border-bg: #414141;
+	--color-border-bg: #414141;
 
-    --color-primary-fg: #171717;
-    --color-secondary-fg: #e5e9f0;
-    --color-teritiary-fg: #eceff4;
+	--color-primary-fg: #171717;
+	--color-secondary-fg: #e5e9f0;
+	--color-teritiary-fg: #eceff4;
 
-    --color-input-active: #b1b1b1;
+	--color-input-active: #b1b1b1;
 }
