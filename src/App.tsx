@@ -11,41 +11,41 @@ import { useAtomValue } from "jotai";
 import GridLines from "react-gridlines";
 
 function App() {
-  const alertMsg = useAtomValue(alert);
+	const alertMsg = useAtomValue(alert);
 
-  return (
-    <>
-      <div
-        id="editorwin"
-        className="w-screen h-screen overflow-x-hidden overflow-y-hidden bg-primary-bg"
-      >
-        <GridLines
-          className="grid-area"
-          cellWidth={100}
-          strokeWidth={3}
-          cellWidth2={10}
-          lineColor="#ffffff33"
-          lineColor2="#ffffff1a"
-        >
-          <Editor />
-        </GridLines>
-      </div>
+	return (
+		<>
+			<div
+				id="editorwin"
+				className="w-screen h-screen overflow-x-hidden overflow-y-hidden bg-primary-bg"
+			>
+				<GridLines
+					className="grid-area"
+					cellWidth={100}
+					strokeWidth={3}
+					cellWidth2={10}
+					lineColor="#ffffff33"
+					lineColor2="#ffffff1a"
+				>
+					<Editor />
+				</GridLines>
+			</div>
 
-      <Dock />
+			<Dock />
 
-      {/* Settings Menu  */}
-      <Settings />
+			{/* Settings Menu  */}
+			<Settings />
 
-      {/* Alert Box */}
-      <Alert message={alertMsg} />
+			{/* Alert Box */}
+			<Alert message={alertMsg} />
 
-      {/* Error Page */}
-      <Error />
+			{/* Error Page */}
+			<Error />
 
-      {/* Welcome Page */}
-      <Welcome />
-    </>
-  );
+			{/* Welcome Page */}
+			<Welcome />
+		</>
+	);
 }
 
 export default App;
