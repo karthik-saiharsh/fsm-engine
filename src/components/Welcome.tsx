@@ -42,7 +42,7 @@ export default function Welcome() {
       {/* Settings Window */}
       <div
         className={clsx(
-          "flex flex-col justify-center items-center py-8 px-5 gap-5 w-150 h-fit bg-primary-bg border border-border-bg rounded-4xl shadow-[0px_0px_100px_0px_#00000080] transition-all ease-in-out duration-500",
+          "flex flex-col justify-center items-center py-8 px-5 gap-5 w-150 h-170 bg-primary-bg border border-border-bg rounded-4xl shadow-[0px_0px_100px_0px_#00000080] transition-all ease-in-out duration-500",
           {
             "hidden pointer-events-none opacity-0 scale-0":
               currentEditorState != "welcome",
