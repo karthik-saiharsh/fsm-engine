@@ -2,7 +2,6 @@ import {
 	Move3d,
 	PlusCircleIcon,
 	MinusCircleIcon,
-	Move,
 	Settings,
 	Cable,
 	HardDriveDownload,
