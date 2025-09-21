@@ -86,8 +86,19 @@ const Editor = () => {
 
   // Handle Creating Nodes by clicking
   function handleEditorClick(e: any) {
-    // Return if not in create mode
-    if (currentEditorState != "create") return;
+    // Return if not in create mode, and deselects if a node is selected
+    if (currentEditorState != "create") {
+      if (currSelected != "nil") {
+        const selectedNode = layerRef.current.findOne(`#${currSelected}`);
+        selectedNode.to({
+          duration: 0.1,
+          strokeWidth: 0,
+          easing: Konva.Easings.EaseInOut,
+        });
+        setCurrSelected("nil");
+      }
+      return;
+    }
 
     const group = e.target.getStage().findOne("Group");
     if (!group) return;
