@@ -11,7 +11,7 @@ If you have a bug fix or a new feature you'd like to add, here's how you can do 
 1.  **Fork the repository** on GitHub.
 2.  **Create a new branch** for your changes. Something like `fix/your-bug-fix` or `feature/your-new-feature`.
 3.  **Make your changes** in your branch.
-4.  **Submit a Pull Request** to the `main` branch of this repository.
+4.  **Submit a Pull Request** to the `dev` branch of this repository.
 
 ## Pull Requests
 
