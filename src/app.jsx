@@ -1,6 +1,7 @@
 import Dock from "./components/Dock";
 import Editor from "./components/Editor";
 import Settings from "./components/Settings";
+import Controls from "./components/Controls";
 import { useEffect } from "react";
 
 export function App() {
@@ -23,6 +24,8 @@ export function App() {
       <Dock />
 
       <Settings />
+
+      <Controls />
     </div>
   );
 }

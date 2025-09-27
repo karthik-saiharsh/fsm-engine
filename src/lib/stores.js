@@ -14,6 +14,9 @@ export const layer_ref = atom(null);
 // Global Store to keep track of States
 export const node_list = atom([]);
 
+// Global Store to keep track of Transitions
+export const transition_list = atom([]);
+
 // A array to keep track of deleted State Id's
 // Why?
 /*
@@ -28,5 +31,9 @@ export const current_selected = atom(null);
 
 // Keep track of which state is the initial state
 export const initial_state = atom(null);
+
+// Keep track of the two states that are clicked on when in Connect Mode
+export const transition_pairs = atom(null);
+
 // Export store provider
 export const store = createStore();
