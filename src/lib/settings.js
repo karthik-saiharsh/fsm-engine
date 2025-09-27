@@ -8,6 +8,8 @@ import {
   editor_state,
   store,
   initial_state,
+  transition_pairs,
+  transition_list,
 } from "./stores";
 
 export function HandleSaveSettings(newName, newColor, newType) {
@@ -20,7 +22,7 @@ export function HandleSaveSettings(newName, newColor, newType) {
 
   if (newName != name) {
     // If name of the state has changed
-    const newRadius = 2 * newName.length + 35;
+    const newRadius = newName.length + 35;
 
     // Update Name in Store
     store.set(node_list, (prev) => {
@@ -60,6 +62,7 @@ export function HandleSaveSettings(newName, newColor, newType) {
 
     store.set(node_list, (prev) => {
       prev[id].type = newType;
+
       return prev;
     });
   }

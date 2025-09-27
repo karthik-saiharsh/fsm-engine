@@ -7,7 +7,7 @@ import {
   Settings,
   ImageDown,
 } from "lucide-react";
-import { editor_state } from "../lib/stores";
+import { editor_state, transition_pairs } from "../lib/stores";
 import { useAtom } from "jotai";
 
 // Define the Components of the Dock
@@ -33,7 +33,7 @@ const dockItems = [
     icon: <Cable stroke={iconFillColor} size={iconSize} />,
   },
   {
-    name: "Options",
+    name: "Controls",
     icon: <Settings stroke={iconFillColor} size={iconSize} />,
   },
   {
@@ -49,6 +49,7 @@ const dockItems = [
 const Dock = () => {
   // Jotai Atoms
   const [editorState, setEditorState] = useAtom(editor_state);
+  const [transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
   // Jotai Atoms
 
   return (
@@ -57,11 +58,12 @@ const Dock = () => {
         {dockItems.map((item, idx) => (
           <button
             key={idx}
-            onClick={() =>
+            onClick={() => {
+              if (item.name == "Connect") setTransitionPairs(null);
               item.name == editorState
                 ? setEditorState(null)
-                : setEditorState(item.name)
-            }
+                : setEditorState(item.name);
+            }}
             className={`flex gap-2 justify-center items-center font-github ${
               item.name == editorState ? "bg-blue-500" : "bg-secondary-bg"
             } text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}

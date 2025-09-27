@@ -71,6 +71,19 @@ const Settings = () => {
     setEditorState(null);
   }
 
+  // Validate the Statetype Change
+  useEffect(() => {
+    // Make sure that the user does not uncheck everything
+    // A state cannot be neither initial, intermeditate, or final
+    if (
+      stateType.initial == false &&
+      stateType.intermediate == false &&
+      stateType.final == false
+    ) {
+      setStateType({ initial: false, intermediate: true, final: false });
+    }
+  }, [stateType]);
+
   useEffect(() => {
     if (currentSelected) setDefaultValues();
   }, [currentSelected]);
