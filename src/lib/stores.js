@@ -35,5 +35,11 @@ export const initial_state = atom(null);
 // Keep track of the two states that are clicked on when in Connect Mode
 export const transition_pairs = atom(null);
 
+// Store to keep track of current FSM Mode
+export const engine_mode = atom({
+  type: "Free Style",
+  alphabets: [],
+});
+
 // Export store provider
 export const store = createStore();
