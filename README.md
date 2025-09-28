@@ -1,18 +1,54 @@
-# React + Vite
+# FSM Engine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### ⚠️ This is the development branch and currently work for Version 2 has begun, check the main branch for the latest stable release.
 
-Currently, two official plugins are available:
+A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Built with React, TypeScript, Tailwind CSS, Jotai, and React Konva for an interactive canvas experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<img width="2770" height="1522" alt="FSM Engine Demo" src="https://github.com/user-attachments/assets/8ebd2706-f122-41ce-84ed-8d0ec04c0c74" />
 
-## React Compiler
+## Features
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- Interactive Canvas Editor
+  - Zoom and Pan across an infinite canvas
+  - Smooth drag to reposition states
+- Multiple Modes
+  - Create: Click on the canvas to add new states
+  - Select: Drag states to move them
+  - Connect: Click two states to create a directed transition (supports self-loops)
+  - Delete: Remove states with a single click
+  - Grab: Move the Nodes
+- State Types
+  - initial, intermediate, final
+- Dynamic Transitions
+  - Arrows automatically adjust their position and curve as you move states
+- Welcome/Tutorial Overlay
+  - First-run walkthrough with short clips
 
-Note: This will impact Vite dev & build performances.
+## Try it at
+https://fsm-engine.vercel.app
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Frontend: React + TypeScript
+- State Management: Jotai
+- Canvas: React Konva
+- Styling: Tailwind CSS
+- Tooling: Vite
+- Icons: lucide-react
+
+## Contributing
+
+Contributions are welcome!
+- Open issues for bugs or feature requests
+- Submit pull requests for fixes or enhancements
+- Discuss larger changes in an issue first
+
+## Roadmap
+- [ ] Undo/Redo
+- [ ] Export Project to JSON
+- [ ] Import Project from JSON
+- [ ] Generate the transition table for a given NFA/DFA
+- [ ] NFA → DFA conversion
+- [ ] DFA minimization
+- [ ] Validation and error hints (unreachable states, parse a regex)
+- [ ] Keyboard shortcuts and accessibility improvements

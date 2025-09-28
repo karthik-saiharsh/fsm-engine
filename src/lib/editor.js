@@ -372,6 +372,8 @@ function makeTransition(id, start_node, end_node) {
     fontStyle: "bold",
     name_fill: "#ffffff",
     name_align: "center",
+    from: start_node,
+    to: end_node,
   };
 
   return newTransition;
