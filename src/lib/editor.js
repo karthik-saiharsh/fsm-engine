@@ -12,6 +12,7 @@ import {
   initial_state,
   transition_pairs,
   transition_list,
+  alert,
 } from "./stores";
 
 // Handler function that is called when the editor is clicked
@@ -151,6 +152,18 @@ export function HandleStateClick(e, id) {
       const start_node = store.get(transition_pairs);
       const end_node = id;
 
+      // Check if this transition already exists
+      for (let i = 0; i < store.get(transition_list).length; i++) {
+        if (store.get(transition_list)[i].from == start_node && store.get(transition_list)[i].to == id) {
+          store.set(alert, "This Transition Already Exists!");
+          setTimeout(() => {
+            store.set(alert, "");
+          }, 3000);
+          store.set(transition_pairs, () => null);
+          return;
+        }
+      }
+
       const tr_id = store.get(transition_list).length;
 
       // Define a new Transition
@@ -242,7 +255,10 @@ export function HandleStateDrag(e, id) {
     transition.points(points); // Update it on display
 
     // Update transition Label display
-    transition_label.x(points[2] - 2 * `tr${tr.tr_name}`.length);
+    transition_label.x(
+      points[2] -
+        2 * store.get(transition_list)[tr.tr_name].name.toString().length
+    );
     transition_label.y(points[3] - 30);
   });
 }
@@ -360,6 +376,8 @@ export function getTransitionPoints(id1, id2) {
 function makeTransition(id, start_node, end_node) {
   const points = getTransitionPoints(start_node, end_node);
 
+  const name = [`tr${id}`];
+
   const newTransition = {
     id: id,
     stroke: "#ffffffdd",
@@ -367,7 +385,7 @@ function makeTransition(id, start_node, end_node) {
     fill: "#ffffffdd",
     points: points,
     tension: start_node == end_node ? 1 : 0.5,
-    name: `tr${id}`,
+    name: name,
     fontSize: 20,
     fontStyle: "bold",
     name_fill: "#ffffff",

@@ -46,6 +46,8 @@ const Controls = () => {
 
   function cancelPressed() {
     setEditorState(null);
+    setFSMType(EngineMode.type);
+    setAlphabets(EngineMode.alphabets.toString());
   }
 
   function savePressed() {

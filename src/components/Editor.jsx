@@ -118,9 +118,12 @@ const Editor = () => {
                       {/* Add a Label to the middle of the arrow */}
                       <Text
                         id={`trtext_${transition.id}`}
-                        x={transition.points[2] - 2 * transition.name.length}
+                        x={
+                          transition.points[2] -
+                          2 * transition.name.toString().length
+                        }
                         y={transition.points[3] - 30}
-                        text={transition.name}
+                        text={transition.name.toString()}
                         fontSize={transition.fontSize}
                         fontStyle={transition.fontStyle}
                         fill={transition.name_fill}

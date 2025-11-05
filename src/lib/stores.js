@@ -41,5 +41,8 @@ export const engine_mode = atom({
   alphabets: [],
 });
 
+// Alert Message
+export const alert  = atom("");
+
 // Export store provider
 export const store = createStore();
