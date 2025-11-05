@@ -3,6 +3,7 @@ import Editor from "./components/Editor";
 import Settings from "./components/Settings";
 import Controls from "./components/Controls";
 import { useEffect } from "react";
+import Alert from "./components/Alert";
 
 export function App() {
   // Disable right click context menu
@@ -26,6 +27,8 @@ export function App() {
       <Settings />
 
       <Controls />
+
+      <Alert />
     </div>
   );
 }
