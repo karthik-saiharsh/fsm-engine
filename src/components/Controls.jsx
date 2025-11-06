@@ -1,5 +1,5 @@
-import { editor_state, engine_mode } from "../lib/stores";
-import { useAtom } from "jotai";
+import { editor_state, engine_mode, alert } from "../lib/stores";
+import { useAtom, useSetAtom } from "jotai";
 import {
   CircleDot,
   Layers2,
@@ -9,6 +9,7 @@ import {
   CircleDotDashed,
 } from "lucide-react";
 import { useState } from "react";
+import { newProject } from "../lib/editor";
 
 const FSMTypes = [
   {
@@ -33,6 +34,7 @@ const Controls = () => {
   // Jotai Stores
   const [editorState, setEditorState] = useAtom(editor_state);
   const [EngineMode, setEngineMode] = useAtom(engine_mode);
+  const setAlert = useSetAtom(alert);
   // Jotai Stores
 
   const [alphabets, setAlphabets] = useState(EngineMode.alphabets.toString());
@@ -55,10 +57,11 @@ const Controls = () => {
     const alp = alphabets;
 
     const alph_seperated = alp.split(",");
-    const alph_trimmed = alph_seperated.map((item) => item.trim());
+    let alph_trimmed = alph_seperated.map((item) => item.trim());
 
     if (alp.trim().length == 0) {
       alert("Alphabets cannot be empty");
+      return;
     }
 
     if (FSMType != EngineMode.type) {
@@ -67,10 +70,21 @@ const Controls = () => {
       );
 
       if (!ans) return;
+      else {
+        // Start a New Project
+        newProject();
+        if (type == "NFA" && !alph_trimmed.includes("λ"))
+          alph_trimmed.push("λ");
+        if (type != "NFA" && alph_trimmed.includes("λ"))
+          alph_trimmed = alph_trimmed.filter((x) => x != "λ");
+      }
     }
     // Write Values to Store
     const new_controls = { type: type, alphabets: alph_trimmed };
     setEngineMode(new_controls);
+    setEditorState(null);
+    setAlert(`State Machine Type set to ${type}`);
+    setTimeout(() => setAlert(""), 3000);
   }
 
   return (
