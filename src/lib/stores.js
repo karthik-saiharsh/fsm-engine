@@ -44,5 +44,9 @@ export const engine_mode = atom({
 // Alert Message
 export const alert  = atom("");
 
+// Show Popup
+export const show_popup  = atom(false);
+export const active_transition = atom(null);
+
 // Export store provider
 export const store = createStore();

@@ -12,7 +12,10 @@ import {
   initial_state,
   transition_pairs,
   transition_list,
+  show_popup,
+  active_transition,
   alert,
+  engine_mode,
 } from "./stores";
 
 // Handler function that is called when the editor is clicked
@@ -154,7 +157,10 @@ export function HandleStateClick(e, id) {
 
       // Check if this transition already exists
       for (let i = 0; i < store.get(transition_list).length; i++) {
-        if (store.get(transition_list)[i].from == start_node && store.get(transition_list)[i].to == id) {
+        if (
+          store.get(transition_list)[i].from == start_node &&
+          store.get(transition_list)[i].to == id
+        ) {
           store.set(alert, "This Transition Already Exists!");
           setTimeout(() => {
             store.set(alert, "");
@@ -240,7 +246,6 @@ export function HandleStateDrag(e, id) {
   let transition_label;
 
   state.transitions.forEach((tr) => {
-    console.log("Moving...");
     transition = group.findOne(`#transition_${tr.tr_name}`);
     transition_label = group.findOne(`#trtext_${tr.tr_name}`);
 
@@ -284,7 +289,7 @@ function makeCircle(position, id) {
       intermediate: id != 0,
       final: false,
     },
-    transitions: [], // This will have the object {from: num,to: num,tr_name: number,}
+    transitions: [], // This will have the object {from: num,to: num,tr_name: number}
   };
   return circle;
 }
@@ -376,7 +381,7 @@ export function getTransitionPoints(id1, id2) {
 function makeTransition(id, start_node, end_node) {
   const points = getTransitionPoints(start_node, end_node);
 
-  const name = [`tr${id}`];
+  const name = store.get(engine_mode).type === "Free Style" ? [`tr${id}`] : [];
 
   const newTransition = {
     id: id,
@@ -395,4 +400,16 @@ function makeTransition(id, start_node, end_node) {
   };
 
   return newTransition;
+}
+
+export function newProject() {
+  // Clear all stores and start a new project
+  store.set(node_list, () => []);
+  store.set(transition_list, () => []);
+  store.set(deleted_nodes, () => []);
+  store.set(current_selected, () => null);
+  store.set(initial_state, () => null);
+  store.set(transition_pairs, () => null);
+  store.set(show_popup, () => false);
+  store.set(active_transition, () => null);
 }

@@ -5,7 +5,7 @@ import {
   stage_ref,
   transition_list,
 } from "../lib/stores";
-import { useAtom, useAtomValue } from "jotai";
+
 import {
   HandleEditorClick,
   HandleDragEnd,
@@ -13,6 +13,10 @@ import {
   HandleScrollWheel,
   HandleStateDrag,
 } from "../lib/editor";
+
+import { handleTransitionClick } from "../lib/transitions";
+
+import { useAtom, useAtomValue } from "jotai";
 
 const Editor = () => {
   // Jotai Atoms
@@ -114,6 +118,7 @@ const Editor = () => {
                         fill={transition.fill}
                         points={transition.points}
                         tension={transition.tension}
+                        onClick={() => handleTransitionClick(transition.id)}
                       />
                       {/* Add a Label to the middle of the arrow */}
                       <Text
@@ -123,11 +128,12 @@ const Editor = () => {
                           2 * transition.name.toString().length
                         }
                         y={transition.points[3] - 30}
-                        text={transition.name.toString()}
+                        text={transition.name.length == 0 ? 'tr' : transition.name.toString()}
                         fontSize={transition.fontSize}
                         fontStyle={transition.fontStyle}
                         fill={transition.name_fill}
                         align={transition.name_align}
+                        onClick={() => handleTransitionClick(transition.id)}
                       />
                     </Group>
                   )
