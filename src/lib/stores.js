@@ -6,7 +6,7 @@ import { atom, createStore } from "jotai";
 export const stage_ref = atom(null);
 
 // Global Store to hold value of Konva Stage ref
-export const editor_state = atom(null);
+export const editor_state = atom("Guide");
 
 // Global Store to hold value of Konva Layer ref
 export const layer_ref = atom(null);
