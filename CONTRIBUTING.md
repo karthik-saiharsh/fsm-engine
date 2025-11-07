@@ -6,8 +6,6 @@ This is a small project, and contributions are always welcome.
 
 ## How to Contribute
 
-### ⚠️ This is the development branch and currently work for Version 2 has begun, check the main branch for the latest stable release.
-
 If you have a bug fix or a new feature you'd like to add, here's how you can do it:
 
 1.  **Fork the repository** on GitHub.
