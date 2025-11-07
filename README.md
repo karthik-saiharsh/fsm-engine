@@ -1,7 +1,5 @@
 # FSM Engine
 
-### ⚠️ This is the development branch and currently work for Version 2 has begun, check the main branch for the latest stable release.
-
 A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Built with React, TypeScript, Tailwind CSS, Jotai, and React Konva for an interactive canvas experience.
 
 <img width="2770" height="1522" alt="FSM Engine Demo" src="https://github.com/user-attachments/assets/8ebd2706-f122-41ce-84ed-8d0ec04c0c74" />
