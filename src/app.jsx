@@ -5,6 +5,8 @@ import Controls from "./components/Controls";
 import { useEffect } from "react";
 import Alert from "./components/Alert";
 import Popup from "./components/Popup";
+import Guide from "./components/Guide";
+import SaveDialog from "./components/SaveDialog";
 
 export function App() {
   // Disable right click context menu
@@ -32,6 +34,10 @@ export function App() {
       <Alert />
 
       <Popup />
+
+      <Guide />
+
+      <SaveDialog />
     </div>
   );
 }

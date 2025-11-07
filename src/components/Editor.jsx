@@ -4,6 +4,7 @@ import {
   editor_state,
   stage_ref,
   transition_list,
+  layer_ref,
 } from "../lib/stores";
 
 import {
@@ -24,6 +25,7 @@ const Editor = () => {
   const editorState = useAtomValue(editor_state);
   const [stageRef, setStageRef] = useAtom(stage_ref);
   const [transitionList, setTransitionList] = useAtom(transition_list);
+  const [layerRef, setLayerRef] = useAtom(layer_ref);
   // Jotai Atoms
 
   return (
@@ -35,7 +37,7 @@ const Editor = () => {
       ref={(el) => setStageRef(el)}
       onWheel={HandleScrollWheel}
     >
-      <Layer>
+      <Layer ref={(el) => setLayerRef(el)}>
         <Group>
           {
             /******** Display The States of the FSM ********/
@@ -128,7 +130,11 @@ const Editor = () => {
                           2 * transition.name.toString().length
                         }
                         y={transition.points[3] - 30}
-                        text={transition.name.length == 0 ? 'tr' : transition.name.toString()}
+                        text={
+                          transition.name.length == 0
+                            ? "tr"
+                            : transition.name.toString()
+                        }
                         fontSize={transition.fontSize}
                         fontStyle={transition.fontStyle}
                         fill={transition.name_fill}

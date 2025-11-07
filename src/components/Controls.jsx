@@ -20,10 +20,10 @@ const FSMTypes = [
     type: "NFA",
     icon: <CircleDotDashed color="#ffffff" size={18} />,
   },
-  {
-    type: "PDA",
-    icon: <Layers2 color="#ffffff" size={18} />,
-  },
+  // {
+  //   type: "PDA",
+  //   icon: <Layers2 color="#ffffff" size={18} />,
+  // },
   {
     type: "Free Style",
     icon: <CircleFadingPlus color="#ffffff" size={18} />,
@@ -79,6 +79,7 @@ const Controls = () => {
           alph_trimmed = alph_trimmed.filter((x) => x != "λ");
       }
     }
+
     // Write Values to Store
     const new_controls = { type: type, alphabets: alph_trimmed };
     setEngineMode(new_controls);
@@ -93,14 +94,14 @@ const Controls = () => {
         editorState != "Controls" && "hidden"
       }`}
     >
-      <div className="flex flex-col gap-5 justify-center px-5 py-5 w-fit h-fit bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
+      <div className="flex flex-col gap-5 justify-center px-5 py-5 w-110 h-fit bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
         <h2 className="font-github text-2xl text-white font-medium text-center">
           State Machine Controls
         </h2>
 
         <span>
           <p
-            className={`font-github text-white text-base pb-2 font-semibold ${
+            className={`font-github text-white text-base pb-2 ${
               FSMType == "Free Style" && "hidden"
             }`}
           >
@@ -147,7 +148,7 @@ const Controls = () => {
             State Machine Type
           </p>
 
-          <span className="flex gap-2">
+          <span className="flex gap-2 justify-center">
             {FSMTypes.map((fsm, i) => (
               <span
                 key={i}
