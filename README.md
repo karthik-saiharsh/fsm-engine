@@ -1,6 +1,6 @@
 # FSM Engine
 
-A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Built with React, TypeScript, Tailwind CSS, Jotai, and React Konva for an interactive canvas experience.
+A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Built with React, JavaScript, Tailwind CSS, Jotai, and React Konva for an interactive canvas experience.
 
 <img width="2770" height="1522" alt="FSM Engine Demo" src="https://github.com/user-attachments/assets/8ebd2706-f122-41ce-84ed-8d0ec04c0c74" />
 
@@ -27,7 +27,7 @@ https://fsm-engine.vercel.app
 
 ## Tech Stack
 
-- Frontend: React + TypeScript
+- Frontend: React + JavaScript
 - State Management: Jotai
 - Canvas: React Konva
 - Styling: Tailwind CSS
