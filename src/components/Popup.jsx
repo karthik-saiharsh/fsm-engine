@@ -75,7 +75,9 @@ function ChooseTransitionLabelDFA() {
         ))}
       </div>
       <button
-        onClick={() => handleTransitionSave(labels)}
+        onClick={() => {
+          if (labels.length > 0) handleTransitionSave(labels);
+        }}
         className="font-github text-sm hover:scale-110 active:scale-100 transition-all ease-in-out text-white mt-5 bg-blue-500 cursor-pointer px-8 py-2 rounded-lg border border-border-bg flex gap-2 items-center"
       >
         <CircleCheck size={18} color="#ffffff" />
@@ -103,8 +105,10 @@ function ChooseTransitionLabelFreeStyle() {
       </span>
       <button
         onClick={() => {
-          handleTransitionSave([label]);
-          setLabel("");
+          if (label.trim().length > 0) {
+            handleTransitionSave([label]);
+            setLabel("");
+          }
         }}
         className="font-github text-sm hover:scale-110 active:scale-100 transition-all ease-in-out text-white mt-5 bg-blue-500 cursor-pointer px-8 py-2 rounded-lg border border-border-bg flex gap-2 items-center"
       >

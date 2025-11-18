@@ -157,6 +157,8 @@ export function HandleStateClick(e, id) {
 
       // Check if this transition already exists
       for (let i = 0; i < store.get(transition_list).length; i++) {
+        if (!store.get(transition_list)[i]) continue; // Skip if transition List had any undefined elements
+
         if (
           store.get(transition_list)[i].from == start_node &&
           store.get(transition_list)[i].to == id
@@ -191,8 +193,10 @@ export function HandleStateClick(e, id) {
         // Update for start node
         prev[start_node].transitions.push(tr);
 
-        // Update for end node
-        prev[end_node].transitions.push(tr);
+        if (start_node != end_node) {
+          // Update for end node
+          prev[end_node].transitions.push(tr);
+        }
 
         return prev;
       });
