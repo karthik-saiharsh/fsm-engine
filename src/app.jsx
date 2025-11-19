@@ -7,6 +7,7 @@ import Alert from "./components/Alert";
 import Popup from "./components/Popup";
 import Guide from "./components/Guide";
 import SaveDialog from "./components/SaveDialog";
+import { handleShortCuts } from "./lib/editor";
 
 export function App() {
   // Disable right click context menu
@@ -20,6 +21,19 @@ export function App() {
       document.removeEventListener("contextmenu", handleContextmenu);
     };
   }, []);
+
+  // Add KeyBoard Shortcuts
+  function handleKeyPress(event) {
+    handleShortCuts(event.key);
+  }
+
+  useEffect(() => {
+    document.addEventListener("keyup", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keyup", handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return (
     <div id="body" className="w-screen h-screen bg-primary-bg overflow-hidden">

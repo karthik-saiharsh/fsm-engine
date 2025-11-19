@@ -27,14 +27,14 @@ export function handleTransitionClick(id) {
     // Remove this transition from Node
     store.set(node_list, (old) => {
       old[from_state].transitions = old[from_state].transitions.filter(
-        (tr) => tr.from != from_state
+        (tr) => tr.from != from_state || tr.to != to_state
       );
+
       old[to_state].transitions = old[to_state].transitions.filter(
-        (tr) => tr.to != to_state
+        (tr) => tr.from != from_state || tr.to != to_state
       );
       return old;
     });
-
     return;
   }
   store.set(show_popup, true);
