@@ -272,6 +272,33 @@ export function HandleStateDrag(e, id) {
   });
 }
 
+export function handleShortCuts(key) {
+  const keyBindings = [
+    "Pan",
+    "Add",
+    "Remove",
+    "Connect",
+    "Controls",
+    "Save FSM",
+    "Guide",
+  ];
+
+  /* 
+    Key Bindings as follows:
+    1 -> Pan,
+    2 -> Add,
+    3 -> Remove,
+    ...
+  */
+
+  if (
+    !store.get(show_popup) &&
+    !["Controls", "Guide"].includes(store.get(editor_state)) &&
+    key - 1 < keyBindings.length
+  )
+    store.set(editor_state, (_) => keyBindings[key - 1]);
+}
+
 /************** HELPER FUNCTIONS ***************/
 /*
  * This function takes the x,y position of the circle and

@@ -1,6 +1,6 @@
 import { editor_state } from "../lib/stores";
 import { useAtom } from "jotai";
-import { ArrowRight, ArrowLeft, Target } from "lucide-react";
+import { ArrowRight, ArrowLeft, Target, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -131,6 +131,15 @@ function Page3() {
         Interested in contributing? I'd love that! Open a pull request and let's
         make FSM Engine even better together.
       </p>
+
+      <a
+        href="https://github.com/karthik-saiharsh/fsm-engine"
+        target="_blank"
+        className="flex items-center gap-1 bg-secondary-fg border border-border-bg font-github text-sm text-black px-1 py-1 rounded-md font-semibold cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out"
+      >
+        <ExternalLink size={15} color="#000000" strokeWidth={2.5} />
+        View Source Repository
+      </a>
     </>
   );
 }
@@ -170,6 +179,10 @@ function Page4() {
               )
           )}
       </div>
+      <p className="font-github text-white font-semibold text-base w-[90%] text-center">
+        Pro Tip: Use the Keyboard Shortcuts 1,2,3,4,5,6,7 to switch between the
+        7 modes!
+      </p>
     </>
   );
 }
