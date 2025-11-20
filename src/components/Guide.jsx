@@ -13,23 +13,25 @@ const Guide = () => {
 	return (
 		<div
 			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-secondary-bg/30 overflow-hidden ${
-				editorState != "Guide" && "hidden"
+				editorState !== "Guide" && "hidden"
 			}`}
 		>
 			<div className="flex flex-col gap-5 justify-center items-center px-5 py-5 w-[60%] h-[80%] bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
 				{slides[i]}
 				<span className="flex gap-5">
 					<button
+						type="button"
 						onClick={() => setI(i - 1)}
-						disabled={i == 0}
+						disabled={i === 0}
 						className="flex items-center gap-2 bg-blue-500 border border-border-bg font-github text-white px-4 py-2 rounded-lg font-semibold cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out disabled:bg-gray-600 disabled:pointer-events-none"
 					>
 						<ArrowLeft size={20} color="#ffffff" />
 						Back
 					</button>
 					<button
+						type="button"
 						onClick={() => setI(i + 1)}
-						disabled={i == slides.length - 1}
+						disabled={i === slides.length - 1}
 						className="flex items-center gap-2 bg-blue-500 border border-border-bg font-github text-white px-4 py-2 rounded-lg font-semibold cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out disabled:bg-gray-600 disabled:pointer-events-none"
 					>
 						Next
@@ -38,6 +40,7 @@ const Guide = () => {
 				</span>
 
 				<button
+					type="button"
 					onClick={() => {
 						setEditorState(null);
 						setI(0);
@@ -165,19 +168,18 @@ function Page4() {
 			</h1>
 
 			<div className="flex justify-center items-center gap-5 w-full">
-				{contributors &&
-					contributors.map(
-						(item, idx) =>
-							idx != 0 && (
-								<a key={idx} href={item.html_url}>
-									<img
-										src={item.avatar_url}
-										alt={item.login}
-										className="rounded-full w-20 h-20 border border-blue-500"
-									/>
-								</a>
-							),
-					)}
+				{contributors?.map(
+					(item, idx) =>
+						idx !== 0 && (
+							<a key={idx} href={item.html_url}>
+								<img
+									src={item.avatar_url}
+									alt={item.login}
+									className="rounded-full w-20 h-20 border border-blue-500"
+								/>
+							</a>
+						),
+				)}
 			</div>
 			<p className="font-github text-white font-semibold text-base w-[90%] text-center">
 				Pro Tip: Use the Keyboard Shortcuts 1,2,3,4,5,6,7 to switch between the

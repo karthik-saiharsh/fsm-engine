@@ -12,8 +12,8 @@ import { current_selected, editor_state, node_list } from "../lib/stores";
 
 const Settings = () => {
 	const [editorState, setEditorState] = useAtom(editor_state);
-	const [currentSelected, setCurrentSelected] = useAtom(current_selected);
-	const [nodeList, setNodeList] = useAtom(node_list);
+	const [currentSelected, _setCurrentSelected] = useAtom(current_selected);
+	const [nodeList, _setNodeList] = useAtom(node_list);
 
 	// State Hooks for input fields
 	const [stateName, setStateName] = useState("");
@@ -38,7 +38,7 @@ const Settings = () => {
 
 	// State Type Change Function
 	function HandleStateTypeChange(type) {
-		if (type == "initial") {
+		if (type === "initial") {
 			setStateType({
 				...stateType,
 				initial: !stateType.initial,
@@ -47,7 +47,7 @@ const Settings = () => {
 			return;
 		}
 
-		if (type == "final") {
+		if (type === "final") {
 			setStateType({
 				...stateType,
 				final: !stateType.final,
@@ -56,7 +56,7 @@ const Settings = () => {
 			return;
 		}
 
-		if (type == "intermediate") {
+		if (type === "intermediate") {
 			setStateType({
 				final: false,
 				initial: false,
@@ -75,9 +75,9 @@ const Settings = () => {
 		// Make sure that the user does not uncheck everything
 		// A state cannot be neither initial, intermeditate, or final
 		if (
-			stateType.initial == false &&
-			stateType.intermediate == false &&
-			stateType.final == false
+			stateType.initial === false &&
+			stateType.intermediate === false &&
+			stateType.final === false
 		) {
 			setStateType({ initial: false, intermediate: true, final: false });
 		}
@@ -85,12 +85,12 @@ const Settings = () => {
 
 	useEffect(() => {
 		if (currentSelected) setDefaultValues();
-	}, [currentSelected]);
+	}, [currentSelected, setDefaultValues]);
 
 	return (
 		<div
 			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-secondary-bg/30 ${
-				editorState != "settings" && "hidden"
+				editorState !== "settings" && "hidden"
 			}`}
 		>
 			<div className="flex flex-col gap-5 justify-center px-5 py-5 w-fit h-fit bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">

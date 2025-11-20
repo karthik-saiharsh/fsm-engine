@@ -49,7 +49,7 @@ const dockItems = [
 const Dock = () => {
 	// Jotai Atoms
 	const [editorState, setEditorState] = useAtom(editor_state);
-	const [transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
+	const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
 	// Jotai Atoms
 
 	return (
@@ -57,15 +57,16 @@ const Dock = () => {
 			<div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-2xl shadow-[0px_0px_50px_0px_#00000080] select-none">
 				{dockItems.map((item, idx) => (
 					<button
+						type="button"
 						key={idx}
 						onClick={() => {
-							if (item.name == "Connect") setTransitionPairs(null);
-							item.name == editorState
+							if (item.name === "Connect") setTransitionPairs(null);
+							item.name === editorState
 								? setEditorState(null)
 								: setEditorState(item.name);
 						}}
 						className={`flex gap-2 justify-center items-center font-github ${
-							item.name == editorState ? "bg-blue-500" : "bg-secondary-bg"
+							item.name === editorState ? "bg-blue-500" : "bg-secondary-bg"
 						} text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
 					>
 						{item.icon}

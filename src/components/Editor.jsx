@@ -21,9 +21,9 @@ const Editor = () => {
 	// Jotai Atoms
 	const nodeList = useAtomValue(node_list);
 	const editorState = useAtomValue(editor_state);
-	const [stageRef, setStageRef] = useAtom(stage_ref);
-	const [transitionList, setTransitionList] = useAtom(transition_list);
-	const [layerRef, setLayerRef] = useAtom(layer_ref);
+	const [_stageRef, setStageRef] = useAtom(stage_ref);
+	const [transitionList, _setTransitionList] = useAtom(transition_list);
+	const [_layerRef, setLayerRef] = useAtom(layer_ref);
 	// Jotai Atoms
 
 	return (
@@ -31,7 +31,7 @@ const Editor = () => {
 			width={window.innerWidth}
 			height={window.innerHeight}
 			onClick={HandleEditorClick}
-			draggable={editorState == "Pan"}
+			draggable={editorState === "Pan"}
 			ref={(el) => setStageRef(el)}
 			onWheel={HandleScrollWheel}
 		>
@@ -129,7 +129,7 @@ const Editor = () => {
 												}
 												y={transition.points[3] - 30}
 												text={
-													transition.name.length == 0
+													transition.name.length === 0
 														? "tr"
 														: transition.name.toString()
 												}

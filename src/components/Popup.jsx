@@ -48,11 +48,11 @@ function ChooseTransitionLabelDFA() {
 
 	useEffect(() => {
 		setLabels(TransitionList[ActiveTransition]?.name);
-	}, [ActiveTransition]);
+	}, [ActiveTransition, TransitionList[ActiveTransition]?.name]);
 
 	// Helper Function for Toggling Alphabets from Transition Name
 	function toggleAlphabet(val) {
-		if (labels.includes(val)) setLabels(labels.filter((x) => x != val));
+		if (labels.includes(val)) setLabels(labels.filter((x) => x !== val));
 		else setLabels([...labels, val]);
 	}
 
@@ -75,6 +75,7 @@ function ChooseTransitionLabelDFA() {
 				))}
 			</div>
 			<button
+				type="button"
 				onClick={() => {
 					if (labels.length > 0) handleTransitionSave(labels);
 				}}
@@ -104,6 +105,7 @@ function ChooseTransitionLabelFreeStyle() {
 				/>
 			</span>
 			<button
+				type="button"
 				onClick={() => {
 					if (label.trim().length > 0) {
 						handleTransitionSave([label]);
