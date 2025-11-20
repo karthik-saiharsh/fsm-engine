@@ -2,7 +2,7 @@
 
 A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Built with React, JavaScript, Tailwind CSS, Jotai, and React Konva for an interactive canvas experience.
 
-<img width="2770" height="1522" alt="FSM Engine Demo" src="https://github.com/user-attachments/assets/8ebd2706-f122-41ce-84ed-8d0ec04c0c74" />
+<img width="2775" height="1527" alt="Screenshot_20251119_190809" src="https://github.com/user-attachments/assets/4e85ac97-f47b-46ad-88b5-0760492dc26b" />
 
 ## Features
 
