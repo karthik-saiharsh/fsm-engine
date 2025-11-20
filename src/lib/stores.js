@@ -37,8 +37,8 @@ export const transition_pairs = atom(null);
 
 // Store to keep track of current FSM Mode
 export const engine_mode = atom({
-  type: "Free Style",
-  alphabets: [],
+	type: "Free Style",
+	alphabets: [],
 });
 
 // Alert Message
