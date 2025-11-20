@@ -10,7 +10,7 @@ import {
 
 // Handle a click event on a transition
 export function handleTransitionClick(id) {
-	if (store.get(editor_state) == "Remove") {
+	if (store.get(editor_state) === "Remove") {
 		const from_state = store.get(transition_list)[id].from;
 		const to_state = store.get(transition_list)[id].to;
 
@@ -27,11 +27,11 @@ export function handleTransitionClick(id) {
 		// Remove this transition from Node
 		store.set(node_list, (old) => {
 			old[from_state].transitions = old[from_state].transitions.filter(
-				(tr) => tr.from != from_state || tr.to != to_state,
+				(tr) => tr.from !== from_state || tr.to !== to_state,
 			);
 
 			old[to_state].transitions = old[to_state].transitions.filter(
-				(tr) => tr.from != from_state || tr.to != to_state,
+				(tr) => tr.from !== from_state || tr.to !== to_state,
 			);
 			return old;
 		});

@@ -15,7 +15,7 @@ const SaveDialog = () => {
 	return (
 		<div
 			className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${
-				EditorState == "Save FSM" ? "top-8" : "-top-20 opacity-0"
+				EditorState === "Save FSM" ? "top-8" : "-top-20 opacity-0"
 			}`}
 		>
 			<div className="h-full w-fit px-2 bg-primary-bg rounded-xl border-1 border-border-bg shadow-[0px_0px_50px_0px_#00000080] flex justify-center items-center gap-3">
@@ -44,6 +44,7 @@ const SaveDialog = () => {
 				</select>
 
 				<button
+					type="button"
 					onClick={() => setEditorState(null)}
 					className="flex gap-1 items-center rounded-xl text-black bg-white p-1.5 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
 				>
@@ -52,10 +53,11 @@ const SaveDialog = () => {
 				</button>
 
 				<button
+					type="button"
 					onClick={() => {
 						// Save the FSM to disk
 
-						if (saveDetails.name.trim() == "") {
+						if (saveDetails.name.trim() === "") {
 							alert("Enter a valid file name");
 							return;
 						}

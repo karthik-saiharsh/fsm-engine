@@ -5,7 +5,6 @@ import {
 	CircleDotDashed,
 	CircleFadingPlus,
 	CircleX,
-	Layers2,
 } from "lucide-react";
 import { useState } from "react";
 import { newProject } from "../lib/editor";
@@ -41,7 +40,7 @@ const Controls = () => {
 	const [FSMType, setFSMType] = useState(EngineMode.type);
 
 	function handleStateChange(type) {
-		if (type != FSMType) {
+		if (type !== FSMType) {
 			setFSMType(type);
 		}
 	}
@@ -59,12 +58,12 @@ const Controls = () => {
 		const alph_seperated = alp.split(",");
 		let alph_trimmed = alph_seperated.map((item) => item.trim());
 
-		if (alp.trim().length == 0) {
+		if (alp.trim().length === 0) {
 			alert("Alphabets cannot be empty");
 			return;
 		}
 
-		if (FSMType != EngineMode.type) {
+		if (FSMType !== EngineMode.type) {
 			const ans = confirm(
 				"Changing Engine Mode will open a new editor meaning, any unsaved work will be lost. Are you sure you want to continue?",
 			);
@@ -73,10 +72,10 @@ const Controls = () => {
 			else {
 				// Start a New Project
 				newProject();
-				if (type == "NFA" && !alph_trimmed.includes("λ"))
+				if (type === "NFA" && !alph_trimmed.includes("λ"))
 					alph_trimmed.push("λ");
-				if (type != "NFA" && alph_trimmed.includes("λ"))
-					alph_trimmed = alph_trimmed.filter((x) => x != "λ");
+				if (type !== "NFA" && alph_trimmed.includes("λ"))
+					alph_trimmed = alph_trimmed.filter((x) => x !== "λ");
 			}
 		}
 
@@ -91,7 +90,7 @@ const Controls = () => {
 	return (
 		<div
 			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-secondary-bg/30 ${
-				editorState != "Controls" && "hidden"
+				editorState !== "Controls" && "hidden"
 			}`}
 		>
 			<div className="flex flex-col gap-5 justify-center px-5 py-5 w-110 h-fit bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
@@ -102,7 +101,7 @@ const Controls = () => {
 				<span>
 					<p
 						className={`font-github text-white text-base pb-2 ${
-							FSMType == "Free Style" && "hidden"
+							FSMType === "Free Style" && "hidden"
 						}`}
 					>
 						Enter Alphabets in the Language
@@ -112,13 +111,13 @@ const Controls = () => {
 						onChange={(e) => setAlphabets(e.target.value)}
 						placeholder="Enter comma seperated values..."
 						className={`px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out ${
-							FSMType == "Free Style" && "hidden"
+							FSMType === "Free Style" && "hidden"
 						}`}
 						type="text"
 					/>
 					<p
 						className={`font-github text-white text-base py-1 ${
-							FSMType != "NFA" && "hidden"
+							FSMType !== "NFA" && "hidden"
 						}`}
 					>
 						Empty transition is automatically added
@@ -128,7 +127,7 @@ const Controls = () => {
 				<span>
 					<p
 						className={`font-github text-white text-base pb-2 font-semibold ${
-							FSMType != "PDA" && "hidden"
+							FSMType !== "PDA" && "hidden"
 						}`}
 					>
 						Enter Initial Stack Alphabet
@@ -137,7 +136,7 @@ const Controls = () => {
 						placeholder="Enter Initial Stack Alphabet..."
 						maxLength={1}
 						className={`px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out ${
-							FSMType != "PDA" && "hidden"
+							FSMType !== "PDA" && "hidden"
 						}`}
 						type="text"
 					/>
@@ -152,9 +151,9 @@ const Controls = () => {
 						{FSMTypes.map((fsm, i) => (
 							<span
 								key={i}
-								onClick={(e) => handleStateChange(fsm.type)}
+								onClick={(_e) => handleStateChange(fsm.type)}
 								className={`flex items-center justify-center gap-2  w-fit px-2 py-2 ${
-									fsm.type == FSMType ? "bg-blue-500" : "bg-secondary-bg"
+									fsm.type === FSMType ? "bg-blue-500" : "bg-secondary-bg"
 								} border border-border-bg rounded-lg cursor-pointer hover:scale-105 active:scale-95 transition-all ease-in-out`}
 							>
 								{fsm.icon}

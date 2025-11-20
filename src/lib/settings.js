@@ -8,8 +8,6 @@ import {
 	initial_state,
 	node_list,
 	store,
-	transition_list,
-	transition_pairs,
 } from "./stores";
 
 export function HandleSaveSettings(newName, newColor, newType) {
@@ -20,7 +18,7 @@ export function HandleSaveSettings(newName, newColor, newType) {
 	const color = nodeList[id].fill;
 	const type = nodeList[id].type;
 
-	if (newName != name) {
+	if (newName !== name) {
 		// If name of the state has changed
 		const newRadius = newName.length + 35;
 
@@ -33,15 +31,15 @@ export function HandleSaveSettings(newName, newColor, newType) {
 	}
 
 	//  color.substr because we only consider the first 6 chars for rgb and no alpha
-	if (newColor != color.substr(0, 7)) {
+	if (newColor !== color.substr(0, 7)) {
 		// Update Name in Store
 		store.set(node_list, (prev) => {
-			prev[id].fill = newColor + "80";
+			prev[id].fill = `${newColor}}80`;
 			return prev;
 		});
 	}
 
-	if (JSON.stringify(newType) != JSON.stringify(type)) {
+	if (JSON.stringify(newType) !== JSON.stringify(type)) {
 		// If this state has been set as initial state then update the stores
 		if (newType.initial) {
 			if (store.get(initial_state) == null) {
@@ -67,6 +65,6 @@ export function HandleSaveSettings(newName, newColor, newType) {
 		});
 	}
 
-	store.set(editor_state, (prev) => null);
+	store.set(editor_state, (_prev) => null);
 	return;
 }
