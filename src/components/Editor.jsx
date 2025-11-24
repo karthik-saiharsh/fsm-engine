@@ -1,4 +1,4 @@
-import { Stage, Layer, Group, Circle, Text, Arrow } from "react-konva";
+import { Stage, Layer, Group, Circle, Text, Arrow, Label, Tag } from "react-konva";
 import {
   node_list,
   editor_state,
@@ -123,24 +123,38 @@ const Editor = () => {
                         onClick={() => handleTransitionClick(transition.id)}
                       />
                       {/* Add a Label to the middle of the arrow */}
-                      <Text
+                      {/* Add a Label to the middle of the arrow */}
+                      <Label
                         id={`trtext_${transition.id}`}
                         x={
                           transition.points[2] -
                           2 * transition.name.toString().length
                         }
                         y={transition.points[3] - 30}
-                        text={
-                          transition.name.length == 0
-                            ? "tr"
-                            : transition.name.toString()
-                        }
-                        fontSize={transition.fontSize}
-                        fontStyle={transition.fontStyle}
-                        fill={transition.name_fill}
-                        align={transition.name_align}
                         onClick={() => handleTransitionClick(transition.id)}
-                      />
+                      >
+                        <Tag
+                          fill="#1e1e1e"
+                          opacity={0.8}
+                          cornerRadius={5}
+                          pointerDirection="down"
+                          pointerWidth={10}
+                          pointerHeight={10}
+                          lineJoin="round"
+                        />
+                        <Text
+                          text={
+                            transition.name.length == 0
+                              ? "tr"
+                              : transition.name.toString()
+                          }
+                          fontSize={transition.fontSize}
+                          fontStyle={transition.fontStyle}
+                          fill={transition.name_fill}
+                          align={transition.name_align}
+                          padding={5}
+                        />
+                      </Label>
                     </Group>
                   )
               )
