@@ -6,9 +6,11 @@ import {
   PlusCircleIcon,
   Settings,
   ImageDown,
+  Sparkles,
 } from "lucide-react";
 import { editor_state, transition_pairs } from "../lib/stores";
 import { useAtom } from "jotai";
+import { HandleAutoLayout } from "../lib/editor";
 
 // Define the Components of the Dock
 // Icon Look Constants
@@ -37,6 +39,10 @@ const dockItems = [
     icon: <Settings stroke={iconFillColor} size={iconSize} />,
   },
   {
+    name: "Auto Layout",
+    icon: <Sparkles stroke={iconFillColor} size={iconSize} />,
+  },
+  {
     name: "Save FSM",
     icon: <ImageDown stroke={iconFillColor} size={iconSize} />,
   },
@@ -59,14 +65,16 @@ const Dock = () => {
           <button
             key={idx}
             onClick={() => {
+              if (item.name == "Auto Layout") {
+                HandleAutoLayout();
+              }
               if (item.name == "Connect") setTransitionPairs(null);
               item.name == editorState
                 ? setEditorState(null)
                 : setEditorState(item.name);
             }}
-            className={`flex gap-2 justify-center items-center font-github ${
-              item.name == editorState ? "bg-blue-500" : "bg-secondary-bg"
-            } text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
+            className={`flex gap-2 justify-center items-center font-github whitespace-nowrap ${item.name == editorState ? "bg-blue-500" : "bg-secondary-bg"
+              } text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
           >
             {item.icon}
             {item.name}
