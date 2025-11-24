@@ -50,3 +50,6 @@ export const active_transition = atom(null);
 
 // Export store provider
 export const store = createStore();
+
+// Store to hold contributors list
+export const contributors_list = atom(null);
