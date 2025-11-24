@@ -1,8 +1,7 @@
-import { editor_state } from "../lib/stores";
+import { editor_state, contributors_list } from "../lib/stores";
 import { useAtom } from "jotai";
 import { ArrowRight, ArrowLeft, Target, ExternalLink } from "lucide-react";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Guide = () => {
   // Jotai Stores
@@ -145,10 +144,11 @@ function Page3() {
 }
 
 function Page4() {
-  const [contributors, setContributors] = useState(null);
+  const [contributors, setContributors] = useAtom(contributors_list);
 
   useEffect(() => {
     async function getContributors() {
+      if (contributors) return;
       let res = await fetch(
         "https://api.github.com/repos/karthik-saiharsh/fsm-engine/contributors"
       );
