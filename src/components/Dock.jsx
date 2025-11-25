@@ -1,3 +1,4 @@
+import { useAtom } from "jotai";
 import {
   BookHeart,
   Cable,
@@ -53,10 +54,10 @@ const dockItems = [
 ];
 // Define the Components of the Dock
 const Dock = () => {
-  // Jotai Atoms
-  const [editorState, setEditorState] = useAtom(editor_state);
-  const [transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
-  // Jotai Atoms
+	// Jotai Atoms
+	const [editorState, setEditorState] = useAtom(editor_state);
+	const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
+	// Jotai Atoms
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
