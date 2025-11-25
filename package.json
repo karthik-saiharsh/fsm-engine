@@ -1,39 +1,39 @@
 {
-	"name": "fsm-engine",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"lint": "biome check",
-		"format": "biome format --write",
-		"preview": "vite preview",
-		"prepare": "husky"
-	},
-	"dependencies": {
-		"@tailwindcss/vite": "^4.1.13",
-		"jotai": "^2.14.0",
-		"konva": "^10.0.2",
-		"lucide-react": "^0.544.0",
-		"react": "^19.1.1",
-		"react-dom": "^19.1.1",
-		"react-konva": "^19.0.10",
-		"tailwindcss": "^4.1.13"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.3.6",
-		"@eslint/js": "^9.36.0",
-		"@types/react": "^19.1.13",
-		"@types/react-dom": "^19.1.9",
-		"@vitejs/plugin-react": "^5.0.3",
-		"babel-plugin-react-compiler": "^19.1.0-rc.3",
-		"baseline-browser-mapping": "^2.8.29",
-		"globals": "^16.4.0",
-		"husky": "^9.1.7",
-		"vite": "npm:rolldown-vite@7.1.12"
-	},
-	"overrides": {
-		"vite": "npm:rolldown-vite@7.1.12"
-	}
+  "name": "fsm-engine",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "preview": "vite preview",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "dagre": "^0.8.5",
+    "jotai": "^2.14.0",
+    "konva": "^10.0.2",
+    "lucide-react": "^0.544.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-konva": "^19.0.10",
+    "tailwindcss": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.3",
+    "babel-plugin-react-compiler": "^19.1.0-rc.3",
+    "baseline-browser-mapping": "^2.8.29",
+    "globals": "^16.4.0",
+    "husky": "^9.1.7",
+    "vite": "npm:rolldown-vite@7.1.12"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.1.12"
+  }
 }

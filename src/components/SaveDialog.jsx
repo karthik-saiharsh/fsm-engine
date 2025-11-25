@@ -12,22 +12,21 @@ const SaveDialog = () => {
 		resolution: 2,
 	});
 
-	return (
-		<div
-			className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${
-				EditorState === "Save FSM" ? "top-8" : "-top-20 opacity-0"
-			}`}
-		>
-			<div className="h-full w-fit px-2 bg-primary-bg rounded-xl border-1 border-border-bg shadow-[0px_0px_50px_0px_#00000080] flex justify-center items-center gap-3">
-				<input
-					value={saveDetails.name}
-					className="px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out"
-					type="text"
-					placeholder="Enter File Name..."
-					onChange={(e) =>
-						setSaveDetails({ ...saveDetails, name: e.target.value })
-					}
-				/>
+  return (
+    <div
+      className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${EditorState == "Save FSM" ? "top-8" : "-top-20 opacity-0"
+        }`}
+    >
+      <div className="h-full w-fit px-2 bg-primary-bg rounded-xl border-1 border-border-bg shadow-[0px_0px_50px_0px_#00000080] flex justify-center items-center gap-3">
+        <input
+          value={saveDetails.name}
+          className="px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out"
+          type="text"
+          placeholder="Enter File Name..."
+          onChange={(e) =>
+            setSaveDetails({ ...saveDetails, name: e.target.value })
+          }
+        />
 
 				<select
 					value={saveDetails.resolution}
@@ -43,14 +42,13 @@ const SaveDialog = () => {
 					<option value={5}>5x</option>
 				</select>
 
-				<button
-					type="button"
-					onClick={() => setEditorState(null)}
-					className="flex gap-1 items-center rounded-xl text-black bg-white p-1.5 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
-				>
-					<X size={16} color="#000000" />
-					<p className="text-sm font-semibold text-black font-github">Cancel</p>
-				</button>
+        <button
+          onClick={() => setEditorState(null)}
+          className="flex items-center justify-center gap-2 bg-secondary-fg w-fit px-2 py-2 rounded-lg cursor-pointer hover:scale-105 active:scale-95 transition-all ease-in-out"
+        >
+          <X size={18} color="#000000" />
+          <p className="text-sm font-semibold text-black font-github">Cancel</p>
+        </button>
 
 				<button
 					type="button"
@@ -75,17 +73,17 @@ const SaveDialog = () => {
 						link.click();
 						document.body.removeChild(link);
 
-						setEditorState(null);
-						setSaveDetails({ name: "", resolution: 2 });
-					}}
-					className="flex gap-1 items-center rounded-xl text-black bg-blue-500 py-1.5 px-3 hover:scale-110 transition-all cursor-pointer active:scale-95 ease-in-out"
-				>
-					<HardDriveDownload size={16} color="#ffffff" />
-					<p className="text-sm font-semibold text-white font-github">Save</p>
-				</button>
-			</div>
-		</div>
-	);
+            setEditorState(null);
+            setSaveDetails({ name: "", resolution: 2 });
+          }}
+          className="flex items-center justify-center gap-2 bg-blue-500 w-fit px-2 py-2 rounded-lg cursor-pointer hover:scale-105 active:scale-95 transition-all ease-in-out"
+        >
+          <HardDriveDownload size={18} color="#ffffff" />
+          <p className="text-sm font-semibold text-white font-github">Save</p>
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default SaveDialog;
