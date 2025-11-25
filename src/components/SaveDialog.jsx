@@ -1,5 +1,5 @@
 import { X, HardDriveDownload } from "lucide-react";
-import { editor_state, layer_ref, node_list, transition_list } from "../lib/stores";
+import { editor_state, layer_ref, node_list, transition_list, deleted_nodes, engine_mode } from "../lib/stores";
 import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 
@@ -15,6 +15,8 @@ const SaveDialog = () => {
 
 	const NodeList = useAtomValue(node_list);
 	const TransitionList = useAtomValue(transition_list);
+	const DeletedNodes = useAtomValue(deleted_nodes);
+	const EngineMode = useAtomValue(engine_mode);
 
 	return (
 		<div
@@ -92,7 +94,9 @@ const SaveDialog = () => {
 						if (saveDetails.type == "json") {
 							const data = {
 								nodes: NodeList,
-								transitions: TransitionList
+								transitions: TransitionList,
+								deleted_nodes: DeletedNodes,
+								engine_mode: EngineMode
 							}
 
 							const jsonString = JSON.stringify(data, null, 2); // pretty formatted

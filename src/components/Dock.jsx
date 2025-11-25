@@ -5,12 +5,10 @@ import {
   MinusCircleIcon,
   Move,
   PlusCircleIcon,
-  Settings,
   ImageDown,
-  Sparkles,
 } from "lucide-react";
 import { editor_state, transition_pairs } from "../lib/stores";
-import { HandleAutoLayout } from "../lib/editor";
+
 
 // Define the Components of the Dock
 // Icon Look Constants
@@ -35,14 +33,6 @@ const dockItems = [
     icon: <Cable stroke={iconFillColor} size={iconSize} />,
   },
   {
-    name: "Controls",
-    icon: <Settings stroke={iconFillColor} size={iconSize} />,
-  },
-  {
-    name: "Auto Layout",
-    icon: <Sparkles stroke={iconFillColor} size={iconSize} />,
-  },
-  {
     name: "Save FSM",
     icon: <ImageDown stroke={iconFillColor} size={iconSize} />,
   },
@@ -53,10 +43,10 @@ const dockItems = [
 ];
 // Define the Components of the Dock
 const Dock = () => {
-	// Jotai Atoms
-	const [editorState, setEditorState] = useAtom(editor_state);
-	const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
-	// Jotai Atoms
+  // Jotai Atoms
+  const [editorState, setEditorState] = useAtom(editor_state);
+  const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
+  // Jotai Atoms
 
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
@@ -65,9 +55,6 @@ const Dock = () => {
           <button
             key={idx}
             onClick={() => {
-              if (item.name == "Auto Layout") {
-                HandleAutoLayout();
-              }
               if (item.name == "Connect") setTransitionPairs(null);
               item.name == editorState
                 ? setEditorState(null)

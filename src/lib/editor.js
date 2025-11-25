@@ -17,6 +17,8 @@ import {
 	transition_list,
 	transition_pairs,
 } from "./stores";
+import dagre from "dagre";
+import Konva from "konva";
 
 // Handler function that is called when the editor is clicked
 export function HandleEditorClick(e) {
@@ -278,7 +280,6 @@ export function handleShortCuts(key) {
 		"Add",
 		"Remove",
 		"Connect",
-		"Controls",
 		"Save FSM",
 		"Guide",
 	];
@@ -453,9 +454,6 @@ function makeTransition(id, start_node, end_node) {
 
   return newTransition;
 }
-
-import dagre from "dagre";
-import Konva from "konva";
 
 export function HandleAutoLayout() {
   const nodes = store.get(node_list);

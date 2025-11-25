@@ -8,6 +8,7 @@ import Popup from "./components/Popup";
 import SaveDialog from "./components/SaveDialog";
 import Settings from "./components/Settings";
 import { handleShortCuts } from "./lib/editor";
+import TopDock from "./components/TopDock";
 
 export function App() {
 	// Disable right click context menu
@@ -50,6 +51,8 @@ export function App() {
 			<Popup />
 
 			<Guide />
+
+			<TopDock />
 
 			<SaveDialog />
 		</div>
