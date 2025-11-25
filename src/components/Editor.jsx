@@ -1,12 +1,5 @@
-import { Stage, Layer, Group, Circle, Text, Arrow, Label, Tag } from "react-konva";
-import {
-  node_list,
-  editor_state,
-  stage_ref,
-  transition_list,
-  layer_ref,
-} from "../lib/stores";
 import { useAtom, useAtomValue } from "jotai";
+import { Arrow, Circle, Group, Layer, Stage, Text } from "react-konva";
 
 import {
 	HandleDragEnd,
@@ -95,80 +88,66 @@ const Editor = () => {
 											/>
 										)}
 
-                    {/* If state is final, draw an extra outer circle */}
-                    {circle.type.final && (
-                      <Circle
-                        x={0}
-                        y={0}
-                        radius={2 * circle.name.length + circle.radius + 5}
-                        fill={"transparent"}
-                        strokeWidth={3}
-                        stroke={circle.fill}
-                      />
-                    )}
-                  </Group>
-                )
-            )
-          }
-          <Group key={transitionList}>
-            {
-              /******** Display The Transitions of the FSM ********/
-              transitionList.map(
-                (transition, idx) =>
-                  transition && (
-                    <Group key={idx} id={`tr_${transition.id}`}>
-                      {/* Transition arrow object */}
-                      <Arrow
-                        id={`transition_${transition.id}`}
-                        stroke={transition.stroke}
-                        strokeWidth={transition.strokeWidth}
-                        fill={transition.fill}
-                        points={transition.points}
-                        tension={transition.tension}
-                        onClick={() => handleTransitionClick(transition.id)}
-                      />
-                      {/* Add a Label to the middle of the arrow */}
-                      {/* Add a Label to the middle of the arrow */}
-                      <Label
-                        id={`trtext_${transition.id}`}
-                        x={
-                          transition.points[2] -
-                          2 * transition.name.toString().length
-                        }
-                        y={transition.points[3] - 30}
-                        onClick={() => handleTransitionClick(transition.id)}
-                      >
-                        <Tag
-                          fill="#1e1e1e"
-                          opacity={0.8}
-                          cornerRadius={5}
-                          pointerDirection="down"
-                          pointerWidth={10}
-                          pointerHeight={10}
-                          lineJoin="round"
-                        />
-                        <Text
-                          text={
-                            transition.name.length == 0
-                              ? "tr"
-                              : transition.name.toString()
-                          }
-                          fontSize={transition.fontSize}
-                          fontStyle={transition.fontStyle}
-                          fill={transition.name_fill}
-                          align={transition.name_align}
-                          padding={5}
-                        />
-                      </Label>
-                    </Group>
-                  )
-              )
-            }
-          </Group>
-        </Group>
-      </Layer>
-    </Stage>
-  );
+										{/* If state is final, draw an extra outer circle */}
+										{circle.type.final && (
+											<Circle
+												x={0}
+												y={0}
+												radius={2 * circle.name.length + circle.radius + 5}
+												fill={"transparent"}
+												strokeWidth={3}
+												stroke={circle.fill}
+											/>
+										)}
+									</Group>
+								),
+						)
+					}
+					<Group key={transitionList}>
+						{
+							/******** Display The Transitions of the FSM ********/
+							transitionList.map(
+								(transition, idx) =>
+									transition && (
+										<Group key={idx} id={`tr_${transition.id}`}>
+											{/* Transition arrow object */}
+											<Arrow
+												id={`transition_${transition.id}`}
+												stroke={transition.stroke}
+												strokeWidth={transition.strokeWidth}
+												fill={transition.fill}
+												points={transition.points}
+												tension={transition.tension}
+												onClick={() => handleTransitionClick(transition.id)}
+											/>
+											{/* Add a Label to the middle of the arrow */}
+											<Text
+												id={`trtext_${transition.id}`}
+												x={
+													transition.points[2] -
+													2 * transition.name.toString().length
+												}
+												y={transition.points[3] - 30}
+												text={
+													transition.name.length === 0
+														? "tr"
+														: transition.name.toString()
+												}
+												fontSize={transition.fontSize}
+												fontStyle={transition.fontStyle}
+												fill={transition.name_fill}
+												align={transition.name_align}
+												onClick={() => handleTransitionClick(transition.id)}
+											/>
+										</Group>
+									),
+							)
+						}
+					</Group>
+				</Group>
+			</Layer>
+		</Stage>
+	);
 };
 
 export default Editor;
