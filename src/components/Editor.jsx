@@ -15,13 +15,6 @@ import {
 	HandleStateClick,
 	HandleStateDrag,
 } from "../lib/editor";
-import {
-	editor_state,
-	layer_ref,
-	node_list,
-	stage_ref,
-	transition_list,
-} from "../lib/stores";
 import { handleTransitionClick } from "../lib/transitions";
 
 const Editor = () => {

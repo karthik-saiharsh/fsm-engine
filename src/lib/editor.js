@@ -293,7 +293,7 @@ export function handleShortCuts(key) {
 
 	if (
 		!store.get(show_popup) &&
-		!["Controls", "Guide"].includes(store.get(editor_state)) &&
+		!["Controls", "Guide", "Save FSM"].includes(store.get(editor_state)) &&
 		key - 1 < keyBindings.length
 	)
 		store.set(editor_state, (_) => keyBindings[key - 1]);

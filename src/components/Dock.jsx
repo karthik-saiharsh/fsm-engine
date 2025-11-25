@@ -10,7 +10,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { editor_state, transition_pairs } from "../lib/stores";
-import { useAtom } from "jotai";
 import { HandleAutoLayout } from "../lib/editor";
 
 // Define the Components of the Dock
