@@ -1,16 +1,16 @@
-import { X, HardDriveDownload } from "lucide-react";
-import { editor_state, layer_ref } from "../lib/stores";
 import { useAtom, useAtomValue } from "jotai";
+import { HardDriveDownload, X } from "lucide-react";
 import { useState } from "react";
+import { editor_state, layer_ref } from "../lib/stores";
 
 const SaveDialog = () => {
-  const [EditorState, setEditorState] = useAtom(editor_state);
-  const LayerRef = useAtomValue(layer_ref);
+	const [EditorState, setEditorState] = useAtom(editor_state);
+	const LayerRef = useAtomValue(layer_ref);
 
-  const [saveDetails, setSaveDetails] = useState({
-    name: "",
-    resolution: 2,
-  });
+	const [saveDetails, setSaveDetails] = useState({
+		name: "",
+		resolution: 2,
+	});
 
   return (
     <div
@@ -28,19 +28,19 @@ const SaveDialog = () => {
           }
         />
 
-        <select
-          value={saveDetails.resolution}
-          onChange={(e) =>
-            setSaveDetails({ ...saveDetails, resolution: e.target.value })
-          }
-          className="text-white font-github text-base px-2 border border-border-bg hover:border-input-active focus:border-2 focus:border-blue-500 transition-all ease-in-out outline-none h-9 rounded-lg mr-2"
-        >
-          <option value={1}>1x</option>
-          <option value={2}>2x</option>
-          <option value={3}>3x</option>
-          <option value={4}>4x</option>
-          <option value={5}>5x</option>
-        </select>
+				<select
+					value={saveDetails.resolution}
+					onChange={(e) =>
+						setSaveDetails({ ...saveDetails, resolution: e.target.value })
+					}
+					className="text-white font-github text-base px-2 border border-border-bg hover:border-input-active focus:border-2 focus:border-blue-500 transition-all ease-in-out outline-none h-9 rounded-lg mr-2"
+				>
+					<option value={1}>1x</option>
+					<option value={2}>2x</option>
+					<option value={3}>3x</option>
+					<option value={4}>4x</option>
+					<option value={5}>5x</option>
+				</select>
 
         <button
           onClick={() => setEditorState(null)}
@@ -50,27 +50,28 @@ const SaveDialog = () => {
           <p className="text-sm font-semibold text-black font-github">Cancel</p>
         </button>
 
-        <button
-          onClick={() => {
-            // Save the FSM to disk
+				<button
+					type="button"
+					onClick={() => {
+						// Save the FSM to disk
 
-            if (saveDetails.name.trim() == "") {
-              alert("Enter a valid file name");
-              return;
-            }
+						if (saveDetails.name.trim() === "") {
+							alert("Enter a valid file name");
+							return;
+						}
 
-            const group = LayerRef.findOne("Group");
-            const dataUrl = group.toDataURL({
-              pixelRatio: saveDetails.resolution, // Resolution
-            });
+						const group = LayerRef.findOne("Group");
+						const dataUrl = group.toDataURL({
+							pixelRatio: saveDetails.resolution, // Resolution
+						});
 
-            const link = document.createElement("a");
+						const link = document.createElement("a");
 
-            link.download = saveDetails.name;
-            link.href = dataUrl;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+						link.download = saveDetails.name;
+						link.href = dataUrl;
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
 
             setEditorState(null);
             setSaveDetails({ name: "", resolution: 2 });

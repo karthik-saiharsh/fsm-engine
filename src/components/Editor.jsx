@@ -6,89 +6,94 @@ import {
   transition_list,
   layer_ref,
 } from "../lib/stores";
-
-import {
-  HandleEditorClick,
-  HandleDragEnd,
-  HandleStateClick,
-  HandleScrollWheel,
-  HandleStateDrag,
-} from "../lib/editor";
-
-import { handleTransitionClick } from "../lib/transitions";
-
 import { useAtom, useAtomValue } from "jotai";
 
+import {
+	HandleDragEnd,
+	HandleEditorClick,
+	HandleScrollWheel,
+	HandleStateClick,
+	HandleStateDrag,
+} from "../lib/editor";
+import {
+	editor_state,
+	layer_ref,
+	node_list,
+	stage_ref,
+	transition_list,
+} from "../lib/stores";
+import { handleTransitionClick } from "../lib/transitions";
+
 const Editor = () => {
-  // Jotai Atoms
-  const nodeList = useAtomValue(node_list);
-  const editorState = useAtomValue(editor_state);
-  const [stageRef, setStageRef] = useAtom(stage_ref);
-  const [transitionList, setTransitionList] = useAtom(transition_list);
-  const [layerRef, setLayerRef] = useAtom(layer_ref);
-  // Jotai Atoms
+	// Jotai Atoms
+	const nodeList = useAtomValue(node_list);
+	const editorState = useAtomValue(editor_state);
+	const [_stageRef, setStageRef] = useAtom(stage_ref);
+	const [transitionList, _setTransitionList] = useAtom(transition_list);
+	const [_layerRef, setLayerRef] = useAtom(layer_ref);
+	// Jotai Atoms
 
-  return (
-    <Stage
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onClick={HandleEditorClick}
-      draggable={editorState == "Pan"}
-      ref={(el) => setStageRef(el)}
-      onWheel={HandleScrollWheel}
-    >
-      <Layer ref={(el) => setLayerRef(el)}>
-        <Group>
-          {
-            /******** Display The States of the FSM ********/
-            nodeList.map(
-              (circle, i) =>
-                circle && (
-                  <Group
-                    key={i}
-                    id={`state_${circle.id}`}
-                    x={circle.x}
-                    y={circle.y}
-                    draggable={!["Add", "Remove"].includes(editorState)}
-                    onDragEnd={(e) => {
-                      HandleDragEnd(e, circle.id);
-                      HandleStateDrag(e, circle.id);
-                    }}
-                    // onDragMove={(e) => HandleStateDrag(e, circle.id)}
-                    onClick={(e) => HandleStateClick(e, circle.id)}
-                  >
-                    <Circle
-                      x={0}
-                      y={0}
-                      radius={2 * circle.name.length + circle.radius}
-                      fill={circle.fill}
-                    />
-                    <Text
-                      x={-circle.radius - circle.name.length / 2}
-                      y={-circle.radius / 4}
-                      width={2 * circle.radius + circle.name.length}
-                      height={2 * circle.radius}
-                      text={circle.name}
-                      fontSize={20}
-                      fontStyle="bold"
-                      fill="#ffffff"
-                      align="center"
-                    />
+	return (
+		<Stage
+			width={window.innerWidth}
+			height={window.innerHeight}
+			onClick={HandleEditorClick}
+			draggable={editorState === "Pan"}
+			ref={(el) => setStageRef(el)}
+			onWheel={HandleScrollWheel}
+		>
+			<Layer ref={(el) => setLayerRef(el)}>
+				<Group>
+					{
+						/******** Display The States of the FSM ********/
+						nodeList.map(
+							(circle, i) =>
+								circle && (
+									<Group
+										key={i}
+										id={`state_${circle.id}`}
+										x={circle.x}
+										y={circle.y}
+										draggable={!["Add", "Remove"].includes(editorState)}
+										onDragEnd={(e) => {
+											HandleDragEnd(e, circle.id);
+											HandleStateDrag(e, circle.id);
+										}}
+										// onDragMove={(e) => HandleStateDrag(e, circle.id)}
+										onClick={(e) => HandleStateClick(e, circle.id)}
+									>
+										<Circle
+											x={0}
+											y={0}
+											radius={2 * circle.name.length + circle.radius}
+											fill={circle.fill}
+										/>
+										<Text
+											x={-circle.radius - circle.name.length / 2}
+											y={-circle.radius / 4}
+											width={2 * circle.radius + circle.name.length}
+											height={2 * circle.radius}
+											text={circle.name}
+											fontSize={20}
+											fontStyle="bold"
+											fill="#ffffff"
+											align="center"
+										/>
 
-                    {/* If state is initial, draw an incoming arrow */}
-                    {circle.type.initial && (
-                      <Arrow
-                        id="start_arrow"
-                        x={-1 * (2 * circle.radius + 2.5 * circle.name.length)}
-                        y={0}
-                        points={[-circle.radius / 1.5, 0, circle.radius - 5, 0]}
-                        pointerLength={10}
-                        pointerWidth={10}
-                        fill={"#ffffffdd"}
-                        stroke={"#ffffffdd"}
-                        strokeWidth={3}
-                      />
-                    )}
+										{/* If state is initial, draw an incoming arrow */}
+										{circle.type.initial && (
+											<Arrow
+												id="start_arrow"
+												x={-1 * (2 * circle.radius + 2.5 * circle.name.length)}
+												y={0}
+												points={[-circle.radius / 1.5, 0, circle.radius - 5, 0]}
+												pointerLength={10}
+												pointerWidth={10}
+												fill={"#ffffffdd"}
+												stroke={"#ffffffdd"}
+												strokeWidth={3}
+											/>
+										)}
 
                     {/* If state is final, draw an extra outer circle */}
                     {circle.type.final && (
