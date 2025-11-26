@@ -1,6 +1,7 @@
 import {
 	active_transition,
 	editor_state,
+	layer_ref,
 	node_list,
 	show_popup,
 	stage_ref,
@@ -57,8 +58,13 @@ export function handleTransitionSave(labels) {
 	displayText.text(labels.toString());
 
 	// Update Position in UI
+	const label = store
+		.get(stage_ref)
+		.findOne(`#tr_label${store.get(active_transition)}`);
+
 	const points =
 		store.get(transition_list)[store.get(active_transition)].points;
-	displayText.x(points[2] - 2 * labels.toString().length);
+
+	label.x(points[2] - 2 * labels.toString().length);
 	store.set(active_transition, () => null);
 }

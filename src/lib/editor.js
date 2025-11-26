@@ -62,7 +62,7 @@ export function HandleEditorClick(e) {
 export function HandleDragEnd(e, id) {
   const draggedState = store.get(stage_ref).findOne(`#state_${id}`); // Get the Circle
   const position = [draggedState.x(), draggedState.y()]; // Get it's positions
-  // Update the State's Position
+  // Update the State's Position in store
   store.set(node_list, (prev) => {
     const newNodes = [...prev];
     newNodes[id] = { ...newNodes[id], x: position[0], y: position[1] };
@@ -253,7 +253,7 @@ export function HandleStateDrag(e, id) {
 
   state.transitions.forEach((tr) => {
     transition = group.findOne(`#transition_${tr.tr_name}`);
-    transition_label = group.findOne(`#trtext_${tr.tr_name}`);
+    transition_label = group.findOne(`#tr_label${tr.tr_name}`);
 
     const points = getTransitionPoints(tr.from, tr.to, tr.tr_name);
 
@@ -270,7 +270,7 @@ export function HandleStateDrag(e, id) {
       points[2] -
       2 * store.get(transition_list)[tr.tr_name].name.toString().length
     );
-    transition_label.y(points[3] - 30);
+    transition_label.y(points[3] - 10);
   });
 }
 
@@ -615,7 +615,7 @@ export function HandleAutoLayout() {
     transitions.forEach(tr => {
       if (!tr) return;
       const trShape = stage.findOne(`#transition_${tr.id}`);
-      const trLabel = stage.findOne(`#trtext_${tr.id}`);
+      const trLabel = stage.findOne(`#tr_label${tr.id}`);
 
       if (trShape) {
         const points = getTransitionPoints(tr.from, tr.to, tr.id, currentNodes);
