@@ -3,12 +3,12 @@ import {
   BookHeart,
   Cable,
   MinusCircleIcon,
-  Move,
   PlusCircleIcon,
   ImageDown,
+  FilePlus
 } from "lucide-react";
 import { editor_state, transition_pairs } from "../lib/stores";
-
+import { newProject } from "../lib/editor";
 
 // Define the Components of the Dock
 // Icon Look Constants
@@ -17,8 +17,14 @@ const iconSize = 18;
 
 const dockItems = [
   {
-    name: "Pan",
-    icon: <Move stroke={iconFillColor} size={iconSize} />,
+    name: "New Project",
+    icon: <FilePlus stroke={iconFillColor} size={iconSize} />,
+    onclick: () => {
+      const ans = confirm(
+        "Are you sure you want to start a new project? Any unsaved work will be lost!",
+      );
+      if (ans) newProject();
+    }
   },
   {
     name: "Add",
@@ -48,18 +54,20 @@ const Dock = () => {
   const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
   // Jotai Atoms
 
+  function default_onclick(item) {
+    if (item.name == "Connect") setTransitionPairs(null);
+    item.name == editorState
+      ? setEditorState(null)
+      : setEditorState(item.name);
+  }
+
   return (
     <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
       <div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-2xl shadow-[0px_0px_50px_0px_#00000080] select-none">
         {dockItems.map((item, idx) => (
           <button
             key={idx}
-            onClick={() => {
-              if (item.name == "Connect") setTransitionPairs(null);
-              item.name == editorState
-                ? setEditorState(null)
-                : setEditorState(item.name);
-            }}
+            onClick={item.onclick ? item.onclick : () => default_onclick(item)}
             className={`flex gap-2 justify-center items-center font-github whitespace-nowrap ${item.name == editorState ? "bg-blue-500" : "bg-secondary-bg"
               } text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
           >

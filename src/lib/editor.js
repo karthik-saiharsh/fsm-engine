@@ -3,59 +3,59 @@
  */
 
 import {
-	active_transition,
-	alert,
-	current_selected,
-	deleted_nodes,
-	editor_state,
-	engine_mode,
-	initial_state,
-	node_list,
-	show_popup,
-	stage_ref,
-	store,
-	transition_list,
-	transition_pairs,
+  active_transition,
+  alert,
+  current_selected,
+  deleted_nodes,
+  editor_state,
+  engine_mode,
+  initial_state,
+  node_list,
+  show_popup,
+  stage_ref,
+  store,
+  transition_list,
+  transition_pairs,
 } from "./stores";
 import dagre from "dagre";
 import Konva from "konva";
 
 // Handler function that is called when the editor is clicked
 export function HandleEditorClick(e) {
-	const group = e.target.getStage().findOne("Layer");
-	if (!group) return;
+  const group = e.target.getStage().findOne("Layer");
+  if (!group) return;
 
-	if (store.get(editor_state) === "Add") {
-		// Add a new State to the editor if it is in Add Mode
-		const clickPos = group.getRelativePointerPosition();
+  if (store.get(editor_state) === "Add") {
+    // Add a new State to the editor if it is in Add Mode
+    const clickPos = group.getRelativePointerPosition();
 
-		let circle_id = store.get(node_list).length;
+    let circle_id = store.get(node_list).length;
 
-		if (store.get(deleted_nodes).length > 0) {
-			// Check if a deleted state id is available
-			circle_id = store.get(deleted_nodes)[0];
-			store.set(deleted_nodes, (prev) => {
-				prev.shift();
-				return prev;
-			});
-		}
+    if (store.get(deleted_nodes).length > 0) {
+      // Check if a deleted state id is available
+      circle_id = store.get(deleted_nodes)[0];
+      store.set(deleted_nodes, (prev) => {
+        prev.shift();
+        return prev;
+      });
+    }
 
-		const circle = makeCircle(clickPos, circle_id);
-		const nodes_copy = store.get(node_list).slice();
+    const circle = makeCircle(clickPos, circle_id);
+    const nodes_copy = store.get(node_list).slice();
 
-		if (circle_id !== nodes_copy.length) {
-			nodes_copy[circle_id] = circle;
-		} else {
-			if (circle_id === 0) {
-				// This is the first state and so the initial one
-				if (store.get(initial_state) == null)
-					store.set(initial_state, (_) => 0);
-			}
-			nodes_copy.push(circle);
-		}
+    if (circle_id !== nodes_copy.length) {
+      nodes_copy[circle_id] = circle;
+    } else {
+      if (circle_id === 0) {
+        // This is the first state and so the initial one
+        if (store.get(initial_state) == null)
+          store.set(initial_state, (_) => 0);
+      }
+      nodes_copy.push(circle);
+    }
 
-		store.set(node_list, (_prev) => nodes_copy); // Update Node List
-	}
+    store.set(node_list, (_prev) => nodes_copy); // Update Node List
+  }
 }
 
 // Handler function to update Position of nodes when they are dragged around
@@ -72,175 +72,175 @@ export function HandleDragEnd(e, id) {
 
 // Handler Function for when a State is clicked
 export function HandleStateClick(e, id) {
-	const clickType =
-		e.evt.button === 0 ? "left" : e.evt.button === 2 ? "right" : "middle";
+  const clickType =
+    e.evt.button === 0 ? "left" : e.evt.button === 2 ? "right" : "middle";
 
-	if (clickType === "right") {
-		// Set Current Selected to the node's id
-		store.set(current_selected, (_prev) => id);
-		// Open the Settings for the State on right Click
-		store.set(editor_state, (_prev) => "settings");
-		return;
-	}
+  if (clickType === "right") {
+    // Set Current Selected to the node's id
+    store.set(current_selected, (_prev) => id);
+    // Open the Settings for the State on right Click
+    store.set(editor_state, (_prev) => "settings");
+    return;
+  }
 
-	const clickedNode = store.get(stage_ref).findOne(`#state_${id}`);
+  const clickedNode = store.get(stage_ref).findOne(`#state_${id}`);
 
-	if (store.get(editor_state) === "Remove") {
-		clickedNode.destroy(); // Remove it from the editor
+  if (store.get(editor_state) === "Remove") {
+    clickedNode.destroy(); // Remove it from the editor
 
-		// Add the deleted Node to list of delete nodes
-		store.set(deleted_nodes, (prev) => {
-			prev.push(id);
-			prev.sort();
-			return prev;
-		});
+    // Add the deleted Node to list of delete nodes
+    store.set(deleted_nodes, (prev) => {
+      prev.push(id);
+      prev.sort();
+      return prev;
+    });
 
-		// If the node was a initial node set the initial_node to null
-		if (store.get(initial_state) === id) {
-			store.set(initial_state, (_) => null);
-		}
+    // If the node was a initial node set the initial_node to null
+    if (store.get(initial_state) === id) {
+      store.set(initial_state, (_) => null);
+    }
 
-		// Remove all transitions this state has
-		store.get(node_list)[id].transitions.forEach((tr) => {
-			const transition = store.get(stage_ref).findOne(`#tr_${tr.tr_name}`);
-			transition.destroy();
+    // Remove all transitions this state has
+    store.get(node_list)[id].transitions.forEach((tr) => {
+      const transition = store.get(stage_ref).findOne(`#tr_${tr.tr_name}`);
+      transition.destroy();
 
-			// Update the transition List store
-			store.set(transition_list, (prev) => {
-				prev[tr.tr_name] = undefined;
-				return prev;
-			});
+      // Update the transition List store
+      store.set(transition_list, (prev) => {
+        prev[tr.tr_name] = undefined;
+        return prev;
+      });
 
-			// Also delete the entry of this transition in in the second node involved
-			if (tr.from === id && tr.from !== tr.to) {
-				const end_node_transitions = store.get(node_list)[tr.to].transitions;
-				const filtered_transitions = end_node_transitions.filter(
-					(val, _) => val.tr_name !== tr.tr_name,
-				);
-				// Update the store
-				store.set(node_list, (prev) => {
-					prev[tr.to].transitions = filtered_transitions;
-					return prev;
-				});
-			}
+      // Also delete the entry of this transition in in the second node involved
+      if (tr.from === id && tr.from !== tr.to) {
+        const end_node_transitions = store.get(node_list)[tr.to].transitions;
+        const filtered_transitions = end_node_transitions.filter(
+          (val, _) => val.tr_name !== tr.tr_name,
+        );
+        // Update the store
+        store.set(node_list, (prev) => {
+          prev[tr.to].transitions = filtered_transitions;
+          return prev;
+        });
+      }
 
-			// Other Case
-			if (tr.to === id && tr.from !== tr.to) {
-				const end_node_transitions = store.get(node_list)[tr.from].transitions;
-				const filtered_transitions = end_node_transitions.filter(
-					(val, _) => val.tr_name !== tr.tr_name,
-				);
-				// Update the store
-				store.set(node_list, (prev) => {
-					prev[tr.from].transitions = filtered_transitions;
-					return prev;
-				});
-			}
-		});
+      // Other Case
+      if (tr.to === id && tr.from !== tr.to) {
+        const end_node_transitions = store.get(node_list)[tr.from].transitions;
+        const filtered_transitions = end_node_transitions.filter(
+          (val, _) => val.tr_name !== tr.tr_name,
+        );
+        // Update the store
+        store.set(node_list, (prev) => {
+          prev[tr.from].transitions = filtered_transitions;
+          return prev;
+        });
+      }
+    });
 
-		// Remove State from the node_list store
-		store.set(node_list, (prev) => {
-			prev[id] = undefined;
-			return prev;
-		});
+    // Remove State from the node_list store
+    store.set(node_list, (prev) => {
+      prev[id] = undefined;
+      return prev;
+    });
 
-		return;
-	}
+    return;
+  }
 
-	if (store.get(editor_state) === "Connect") {
-		if (store.get(transition_pairs) == null) {
-			// If this is the first state that is clicked, then remember it
-			store.set(transition_pairs, (_) => id);
-			return;
-		} else {
-			// Get the two states for drawing a transitions
-			const start_node = store.get(transition_pairs);
-			const end_node = id;
+  if (store.get(editor_state) === "Connect") {
+    if (store.get(transition_pairs) == null) {
+      // If this is the first state that is clicked, then remember it
+      store.set(transition_pairs, (_) => id);
+      return;
+    } else {
+      // Get the two states for drawing a transitions
+      const start_node = store.get(transition_pairs);
+      const end_node = id;
 
-			// Check if this transition already exists
-			for (let i = 0; i < store.get(transition_list).length; i++) {
-				if (!store.get(transition_list)[i]) continue; // Skip if transition List had any undefined elements
+      // Check if this transition already exists
+      for (let i = 0; i < store.get(transition_list).length; i++) {
+        if (!store.get(transition_list)[i]) continue; // Skip if transition List had any undefined elements
 
-				if (
-					store.get(transition_list)[i].from === start_node &&
-					store.get(transition_list)[i].to === id
-				) {
-					store.set(alert, "This Transition Already Exists!");
-					setTimeout(() => {
-						store.set(alert, "");
-					}, 3000);
-					store.set(transition_pairs, () => null);
-					return;
-				}
-			}
+        if (
+          store.get(transition_list)[i].from === start_node &&
+          store.get(transition_list)[i].to === id
+        ) {
+          store.set(alert, "This Transition Already Exists!");
+          setTimeout(() => {
+            store.set(alert, "");
+          }, 3000);
+          store.set(transition_pairs, () => null);
+          return;
+        }
+      }
 
-			const tr_id = store.get(transition_list).length;
+      const tr_id = store.get(transition_list).length;
 
-			// Define a new Transition
-			const newTransition = makeTransition(tr_id, start_node, end_node);
+      // Define a new Transition
+      const newTransition = makeTransition(tr_id, start_node, end_node);
 
-			// Update the transition_list store
-			store.set(transition_list, (prev) => [...prev, newTransition]);
+      // Update the transition_list store
+      store.set(transition_list, (prev) => [...prev, newTransition]);
 
-			// Reset the transition_pairs store
-			store.set(transition_pairs, (_) => null);
+      // Reset the transition_pairs store
+      store.set(transition_pairs, (_) => null);
 
-			// Also update the corresponding state's transition array
-			store.set(node_list, (prev) => {
-				const tr = {
-					from: start_node,
-					to: end_node,
-					tr_name: tr_id,
-				};
-				// Update for start node
-				prev[start_node].transitions.push(tr);
+      // Also update the corresponding state's transition array
+      store.set(node_list, (prev) => {
+        const tr = {
+          from: start_node,
+          to: end_node,
+          tr_name: tr_id,
+        };
+        // Update for start node
+        prev[start_node].transitions.push(tr);
 
-				if (start_node !== end_node) {
-					// Update for end node
-					prev[end_node].transitions.push(tr);
-				}
+        if (start_node !== end_node) {
+          // Update for end node
+          prev[end_node].transitions.push(tr);
+        }
 
-				return prev;
-			});
-		}
-	}
+        return prev;
+      });
+    }
+  }
 }
 
 // Handler function for when the editor is scrolled
 export function HandleScrollWheel(e) {
-	// Zoom in or zoom out
+  // Zoom in or zoom out
 
-	const stage = store.get(stage_ref);
+  const stage = store.get(stage_ref);
 
-	// Got this part of the code from Konva Documentation
-	const oldScale = stage.scaleX();
-	const pointer = stage.getPointerPosition();
+  // Got this part of the code from Konva Documentation
+  const oldScale = stage.scaleX();
+  const pointer = stage.getPointerPosition();
 
-	const mousePointTo = {
-		x: (pointer.x - stage.x()) / oldScale,
-		y: (pointer.y - stage.y()) / oldScale,
-	};
+  const mousePointTo = {
+    x: (pointer.x - stage.x()) / oldScale,
+    y: (pointer.y - stage.y()) / oldScale,
+  };
 
-	// how to scale? Zoom in? Or zoom out?
-	let direction = e.evt.deltaY > 0 ? 1 : -1;
+  // how to scale? Zoom in? Or zoom out?
+  let direction = e.evt.deltaY > 0 ? 1 : -1;
 
-	// when we zoom on trackpad, e.evt.ctrlKey is true
-	// in that case lets revert direction
-	if (e.evt.ctrlKey) {
-		direction = -direction;
-	}
+  // when we zoom on trackpad, e.evt.ctrlKey is true
+  // in that case lets revert direction
+  if (e.evt.ctrlKey) {
+    direction = -direction;
+  }
 
-	const scaleBy = 1.01;
-	const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+  const scaleBy = 1.01;
+  const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-	stage.scale({ x: newScale, y: newScale });
+  stage.scale({ x: newScale, y: newScale });
 
-	const newPos = {
-		x: pointer.x - mousePointTo.x * newScale,
-		y: pointer.y - mousePointTo.y * newScale,
-	};
+  const newPos = {
+    x: pointer.x - mousePointTo.x * newScale,
+    y: pointer.y - mousePointTo.y * newScale,
+  };
 
-	stage.position(newPos);
+  stage.position(newPos);
 }
 
 // Function to update the positions of transition arrows when a node is dragged around
@@ -275,16 +275,16 @@ export function HandleStateDrag(e, id) {
 }
 
 export function handleShortCuts(key) {
-	const keyBindings = [
-		"Pan",
-		"Add",
-		"Remove",
-		"Connect",
-		"Save FSM",
-		"Guide",
-	];
+  const keyBindings = [
+    "New Project",
+    "Add",
+    "Remove",
+    "Connect",
+    "Save FSM",
+    "Guide",
+  ];
 
-	/* 
+  /* 
     Key Bindings as follows:
     1 -> Pan,
     2 -> Add,
@@ -292,12 +292,20 @@ export function handleShortCuts(key) {
     ...
   */
 
-	if (
-		!store.get(show_popup) &&
-		!["Controls", "Guide", "Save FSM"].includes(store.get(editor_state)) &&
-		key - 1 < keyBindings.length
-	)
-		store.set(editor_state, (_) => keyBindings[key - 1]);
+  if (
+    !store.get(show_popup) &&
+    !["Controls", "Guide", "Save FSM"].includes(store.get(editor_state)) &&
+    key - 1 < keyBindings.length
+  ) {
+    if (key == 1) {
+      const ans = confirm(
+        "Are you sure you want to start a new project? Any unsaved work will be lost!",
+      );
+      if (ans) newProject();
+      return;
+    }
+    store.set(editor_state, (_) => keyBindings[key - 1]);
+  }
 }
 
 /************** HELPER FUNCTIONS ***************/
@@ -306,24 +314,24 @@ export function handleShortCuts(key) {
  * returns a circle object that can be added to node_list as a state
  */
 function makeCircle(position, id) {
-	const x = position.x;
-	const y = position.y;
+  const x = position.x;
+  const y = position.y;
 
-	const circle = {
-		id: `${id}`,
-		x: x,
-		y: y,
-		name: `q${id}`,
-		fill: "#ffffff80",
-		radius: `q${id}`.length + 35,
-		type: {
-			initial: id === 0,
-			intermediate: id !== 0,
-			final: false,
-		},
-		transitions: [], // This will have the object {from: num,to: num,tr_name: number}
-	};
-	return circle;
+  const circle = {
+    id: `${id}`,
+    x: x,
+    y: y,
+    name: `q${id}`,
+    fill: "#ffffff80",
+    radius: `q${id}`.length + 35,
+    type: {
+      initial: id === 0,
+      intermediate: id !== 0,
+      final: false,
+    },
+    transitions: [], // This will have the object {from: num,to: num,tr_name: number}
+  };
+  return circle;
 }
 
 // This function returns the points for the
@@ -623,7 +631,7 @@ export function HandleAutoLayout() {
 
         if (trLabel) {
           trLabel.x(points[2] - 2 * tr.name.toString().length);
-          trLabel.y(points[3] - 30);
+          trLabel.y(points[3] - 10);
         }
       }
     });
@@ -638,13 +646,13 @@ export function HandleAutoLayout() {
 }
 
 export function newProject() {
-	// Clear all stores and start a new project
-	store.set(node_list, () => []);
-	store.set(transition_list, () => []);
-	store.set(deleted_nodes, () => []);
-	store.set(current_selected, () => null);
-	store.set(initial_state, () => null);
-	store.set(transition_pairs, () => null);
-	store.set(show_popup, () => false);
-	store.set(active_transition, () => null);
+  // Clear all stores and start a new project
+  store.set(node_list, () => []);
+  store.set(transition_list, () => []);
+  store.set(deleted_nodes, () => []);
+  store.set(current_selected, () => null);
+  store.set(initial_state, () => null);
+  store.set(transition_pairs, () => null);
+  store.set(show_popup, () => false);
+  store.set(active_transition, () => null);
 }

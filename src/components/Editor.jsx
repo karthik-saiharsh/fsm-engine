@@ -31,7 +31,7 @@ const Editor = () => {
       width={window.innerWidth}
       height={window.innerHeight}
       onClick={HandleEditorClick}
-      draggable={editorState === "Pan"}
+      draggable
       ref={(el) => setStageRef(el)}
       onWheel={HandleScrollWheel}
     >

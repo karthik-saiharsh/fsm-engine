@@ -26,7 +26,7 @@ const Popup = () => {
 	return (
 		<div
 			className={`absolute left-0 w-screen h-fit flex justify-center transition-all ease-in-out duration-550 ${
-				showPopup ? "top-8" : "-top-20 opacity-0"
+				showPopup ? "top-12" : "-top-20 opacity-0"
 			}`}
 		>
 			<div className="h-full w-fit py-5 px-5 flex flex-col justify-center items-center bg-primary-bg rounded-xl border-1 border-border-bg shadow-[0px_0px_50px_0px_#00000080]">

@@ -20,7 +20,7 @@ const SaveDialog = () => {
 
 	return (
 		<div
-			className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${EditorState == "Save FSM" ? "top-8" : "-top-20 opacity-0"
+			className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${EditorState == "Save FSM" ? "top-12" : "-top-20 opacity-0"
 				}`}
 		>
 			<div className="h-full w-fit px-2 bg-primary-bg rounded-xl border-1 border-border-bg shadow-[0px_0px_50px_0px_#00000080] flex justify-center items-center gap-3">
