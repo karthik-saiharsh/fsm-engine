@@ -37,8 +37,8 @@ export const transition_pairs = atom(null);
 
 // Store to keep track of current FSM Mode
 export const engine_mode = atom({
-  type: "Free Style",
-  alphabets: [],
+	type: "Free Style",
+	alphabets: [],
 });
 
 // Alert Message
@@ -47,6 +47,9 @@ export const alert = atom("");
 // Show Popup
 export const show_popup = atom(false);
 export const active_transition = atom(null);
+
+// Store to cache contributors
+export const contributors_data = atom(null);
 
 // Export store provider
 export const store = createStore();

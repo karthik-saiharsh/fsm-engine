@@ -43,8 +43,8 @@ Contributions are welcome!
 
 ## Roadmap
 - [ ] Undo/Redo
-- [ ] Export Project to JSON
-- [ ] Import Project from JSON
+- [ x ] Export Project to JSON
+- [ x ] Import Project from JSON
 - [ ] Generate the transition table for a given NFA/DFA
 - [ ] NFA → DFA conversion
 - [ ] DFA minimization

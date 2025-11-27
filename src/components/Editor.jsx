@@ -1,4 +1,4 @@
-import { Stage, Layer, Group, Circle, Text, Arrow } from "react-konva";
+import { Stage, Layer, Group, Circle, Text, Arrow, Label, Tag } from "react-konva";
 import {
   node_list,
   editor_state,
@@ -6,26 +6,24 @@ import {
   transition_list,
   layer_ref,
 } from "../lib/stores";
+import { useAtom, useAtomValue } from "jotai";
 
 import {
-  HandleEditorClick,
   HandleDragEnd,
-  HandleStateClick,
+  HandleEditorClick,
   HandleScrollWheel,
+  HandleStateClick,
   HandleStateDrag,
 } from "../lib/editor";
-
 import { handleTransitionClick } from "../lib/transitions";
-
-import { useAtom, useAtomValue } from "jotai";
 
 const Editor = () => {
   // Jotai Atoms
   const nodeList = useAtomValue(node_list);
   const editorState = useAtomValue(editor_state);
-  const [stageRef, setStageRef] = useAtom(stage_ref);
-  const [transitionList, setTransitionList] = useAtom(transition_list);
-  const [layerRef, setLayerRef] = useAtom(layer_ref);
+  const [_stageRef, setStageRef] = useAtom(stage_ref);
+  const [transitionList, _setTransitionList] = useAtom(transition_list);
+  const [_layerRef, setLayerRef] = useAtom(layer_ref);
   // Jotai Atoms
 
   return (
@@ -33,7 +31,7 @@ const Editor = () => {
       width={window.innerWidth}
       height={window.innerHeight}
       onClick={HandleEditorClick}
-      draggable={editorState == "Pan"}
+      draggable
       ref={(el) => setStageRef(el)}
       onWheel={HandleScrollWheel}
     >
@@ -123,24 +121,38 @@ const Editor = () => {
                         onClick={() => handleTransitionClick(transition.id)}
                       />
                       {/* Add a Label to the middle of the arrow */}
-                      <Text
-                        id={`trtext_${transition.id}`}
+                      <Label
+                        id={`tr_label${transition.id}`}
                         x={
                           transition.points[2] -
                           2 * transition.name.toString().length
                         }
-                        y={transition.points[3] - 30}
-                        text={
-                          transition.name.length == 0
-                            ? "tr"
-                            : transition.name.toString()
-                        }
-                        fontSize={transition.fontSize}
-                        fontStyle={transition.fontStyle}
-                        fill={transition.name_fill}
-                        align={transition.name_align}
+                        y={transition.points[3] - 10}
                         onClick={() => handleTransitionClick(transition.id)}
-                      />
+                      >
+                        <Tag
+                          fill="#ffffff50"
+                          opacity={0.8}
+                          cornerRadius={5}
+                          pointerDirection="down"
+                          pointerWidth={10}
+                          pointerHeight={10}
+                          lineJoin="round"
+                        />
+                        <Text
+                          id={`trtext_${transition.id}`}
+                          text={
+                            transition.name.length == 0
+                              ? "tr"
+                              : transition.name.toString()
+                          }
+                          fontSize={transition.fontSize}
+                          fontStyle={transition.fontStyle}
+                          fill={transition.name_fill}
+                          align={transition.name_align}
+                          padding={5}
+                        />
+                      </Label>
                     </Group>
                   )
               )
