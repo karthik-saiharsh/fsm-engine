@@ -62,7 +62,7 @@ export function App() {
 
 			<SaveDialog />
 
-			{EditorState == "Transition Table" && < TransitionTable />}
+			<TransitionTable />
 		</div>
 	);
 }

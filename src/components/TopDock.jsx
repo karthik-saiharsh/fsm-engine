@@ -8,7 +8,7 @@ import {
     Sparkles
 } from "lucide-react";
 import { useState } from "react";
-import { engine_mode, editor_state } from "../lib/stores";
+import { engine_mode, editor_state, show_transition_table, store } from "../lib/stores";
 import { useAtomValue, useAtom } from "jotai";
 import { HandleAutoLayout } from "../lib/editor";
 import { HandleLoadFSM } from "../lib/special_functions";
@@ -46,13 +46,11 @@ const TopDock = () => {
             name: "Transition Table",
             icon: <Table stroke={iconFillColor} size={iconSize} />,
             condition: ['NFA', 'DFA'].includes(EngineMode.type),
-            onclick: () => { setEditorState("Transition Table"); setIsVisible(false) }
-        },
-        {
-            name: "String Validator",
-            icon: <CaseSensitive stroke={iconFillColor} size={iconSize} />,
-            condition: ['NFA', 'DFA'].includes(EngineMode.type),
-            onclick: () => { alert("Feature Not Available yet. We're Working on it. Check back soon!") }
+            onclick: () => {
+                const current = store.get(show_transition_table);
+                store.set(show_transition_table, !current);
+                setIsVisible(false);
+            }
         },
         {
             name: "NFA from RE",
