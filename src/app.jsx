@@ -9,6 +9,9 @@ import SaveDialog from "./components/SaveDialog";
 import Settings from "./components/Settings";
 import { handleShortCuts } from "./lib/editor";
 import TopDock from "./components/TopDock";
+import TransitionTable from "./components/TransitionTable";
+import { useAtomValue } from "jotai";
+import { editor_state } from "./lib/stores";
 
 export function App() {
 	// Disable right click context menu
@@ -36,6 +39,9 @@ export function App() {
 		};
 	}, [handleKeyPress]);
 
+
+	const EditorState = useAtomValue(editor_state);
+
 	return (
 		<div id="body" className="w-screen h-screen bg-primary-bg overflow-hidden">
 			<Editor />
@@ -55,6 +61,8 @@ export function App() {
 			<TopDock />
 
 			<SaveDialog />
+
+			{EditorState == "Transition Table" && < TransitionTable />}
 		</div>
 	);
 }

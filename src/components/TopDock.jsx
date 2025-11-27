@@ -28,55 +28,55 @@ const TopDock = () => {
             name: "Load FSM",
             icon: <FolderOpen stroke={iconFillColor} size={iconSize} />,
             condition: true,
-            onclick: () => HandleLoadFSM()
+            onclick: () => { HandleLoadFSM(); setIsVisible(false) }
         },
         {
             name: "Controls",
             icon: <Settings stroke={iconFillColor} size={iconSize} />,
             condition: true,
-            onclick: () => setEditorState("Controls")
+            onclick: () => { setEditorState("Controls"); setIsVisible(false) }
         },
         {
             name: "Auto Layout",
             icon: <Sparkles stroke={iconFillColor} size={iconSize} />,
             condition: true,
-            onclick: () => HandleAutoLayout()
+            onclick: () => { HandleAutoLayout(); setIsVisible(false) }
         },
         {
             name: "Transition Table",
             icon: <Table stroke={iconFillColor} size={iconSize} />,
-            condition: true,
-            onclick: () => { }
+            condition: ['NFA', 'DFA'].includes(EngineMode.type),
+            onclick: () => { setEditorState("Transition Table"); setIsVisible(false) }
         },
         {
             name: "String Validator",
             icon: <CaseSensitive stroke={iconFillColor} size={iconSize} />,
             condition: ['NFA', 'DFA'].includes(EngineMode.type),
-            onclick: () => { }
+            onclick: () => { alert("Feature Not Available yet. We're Working on it. Check back soon!") }
         },
         {
             name: "NFA from RE",
             icon: <Shapes stroke={iconFillColor} size={iconSize} />,
             condition: EngineMode.type == "NFA",
-            onclick: () => { }
+            onclick: () => { alert("Feature Not Available yet. We're Working on it. Check back soon!") }
         },
         {
             name: "DFA from RE",
             icon: <Shapes stroke={iconFillColor} size={iconSize} />,
             condition: EngineMode.type == "DFA",
-            onclick: () => { }
+            onclick: () => { alert("Feature Not Available yet. We're Working on it. Check back soon!") }
         },
         {
             name: "Convert to DFA",
             icon: <Shapes stroke={iconFillColor} size={iconSize} />,
             condition: EngineMode.type == "NFA",
-            onclick: () => { }
+            onclick: () => { alert("Feature Not Available yet. We're Working on it. Check back soon!") }
         },
         {
             name: "Minimize DFA",
             icon: <Shapes stroke={iconFillColor} size={iconSize} />,
             condition: EngineMode.type == "DFA",
-            onclick: () => { }
+            onclick: () => { alert("Feature Not Available yet. We're Working on it. Check back soon!") }
         },
     ];
 
