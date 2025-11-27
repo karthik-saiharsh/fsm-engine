@@ -48,5 +48,8 @@ export const alert = atom("");
 export const show_popup = atom(false);
 export const active_transition = atom(null);
 
+// Store to cache contributors
+export const contributors_data = atom(null);
+
 // Export store provider
 export const store = createStore();
