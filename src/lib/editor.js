@@ -25,6 +25,11 @@ export function HandleEditorClick(e) {
   const group = e.target.getStage().findOne("Layer");
   if (!group) return;
 
+  // Deselect if clicking on background
+  if (e.target === e.target.getStage()) {
+    store.set(current_selected, null);
+  }
+
   if (store.get(editor_state) === "Add") {
     // Add a new State to the editor if it is in Add Mode
     const clickPos = group.getRelativePointerPosition();
@@ -72,6 +77,7 @@ export function HandleDragEnd(e, id) {
 
 // Handler Function for when a State is clicked
 export function HandleStateClick(e, id) {
+  e.cancelBubble = true;
   const clickType =
     e.evt.button === 0 ? "left" : e.evt.button === 2 ? "right" : "middle";
 
@@ -161,6 +167,7 @@ export function HandleStateClick(e, id) {
     if (store.get(transition_pairs) == null) {
       // If this is the first state that is clicked, then remember it
       store.set(transition_pairs, (_) => id);
+      store.set(current_selected, (_) => id); // Highlight the source node
       return;
     } else {
       // Get the two states for drawing a transitions
@@ -180,6 +187,7 @@ export function HandleStateClick(e, id) {
             store.set(alert, "");
           }, 3000);
           store.set(transition_pairs, () => null);
+          store.set(current_selected, null); // Clear highlight if failed
           return;
         }
       }
@@ -194,6 +202,7 @@ export function HandleStateClick(e, id) {
 
       // Reset the transition_pairs store
       store.set(transition_pairs, (_) => null);
+      store.set(current_selected, null); // Clear highlight after connection
 
       // Also update the corresponding state's transition array
       store.set(node_list, (prev) => {
@@ -221,9 +230,16 @@ export function HandleStateClick(e, id) {
       });
 
       // Open Popup for labeling
-      store.set(active_transition, () => tr_id);
-      store.set(show_popup, true);
+      if (store.get(engine_mode).type !== "Free Style") {
+        store.set(active_transition, () => tr_id);
+        store.set(show_popup, true);
+      }
     }
+  }
+
+  // If not in special modes, select the node
+  if (!["Remove", "Connect"].includes(store.get(editor_state))) {
+    store.set(current_selected, (_prev) => id);
   }
 }
 

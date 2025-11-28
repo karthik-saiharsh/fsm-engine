@@ -28,19 +28,19 @@ const TopDock = () => {
             name: "Load FSM",
             icon: <FolderOpen stroke={iconFillColor} size={iconSize} />,
             condition: true,
-            onclick: () => { HandleLoadFSM(); setIsVisible(false) }
+            onclick: () => { HandleLoadFSM(); }
         },
         {
             name: "Controls",
             icon: <Settings stroke={iconFillColor} size={iconSize} />,
             condition: true,
-            onclick: () => { setEditorState("Controls"); setIsVisible(false) }
+            onclick: () => { setEditorState("Controls"); }
         },
         {
             name: "Auto Layout",
             icon: <Sparkles stroke={iconFillColor} size={iconSize} />,
             condition: true,
-            onclick: () => { HandleAutoLayout(); setIsVisible(false) }
+            onclick: () => { HandleAutoLayout(); }
         },
         {
             name: "Transition Table",
@@ -49,7 +49,6 @@ const TopDock = () => {
             onclick: () => {
                 const current = store.get(show_transition_table);
                 store.set(show_transition_table, !current);
-                setIsVisible(false);
             }
         },
         {

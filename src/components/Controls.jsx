@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { newProject } from "../lib/editor";
-import { alert, editor_state, engine_mode } from "../lib/stores";
+import { alert, editor_state, engine_mode, confirm_dialog_atom, show_transition_table } from "../lib/stores";
 
 const FSMTypes = [
 	{
@@ -34,6 +34,8 @@ const Controls = () => {
 	const [editorState, setEditorState] = useAtom(editor_state);
 	const [EngineMode, setEngineMode] = useAtom(engine_mode);
 	const setAlert = useSetAtom(alert);
+	const setConfirmDialog = useSetAtom(confirm_dialog_atom);
+	const setShowTable = useSetAtom(show_transition_table);
 	// Jotai Stores
 
 	const [alphabets, setAlphabets] = useState(EngineMode.alphabets.toString());
@@ -64,25 +66,45 @@ const Controls = () => {
 		}
 
 		if (FSMType !== EngineMode.type) {
-			const ans = confirm(
-				"Changing Engine Mode will open a new editor meaning, any unsaved work will be lost. Are you sure you want to continue?",
-			);
+			setConfirmDialog({
+				isOpen: true,
+				message: "Changing Engine Mode will open a new editor meaning, any unsaved work will be lost. Are you sure you want to continue?",
+				onConfirm: () => {
+					// Start a New Project
+					newProject();
+					let finalAlphabets = [...alph_trimmed];
+					if (type === "NFA" && !finalAlphabets.includes("λ"))
+						finalAlphabets.push("λ");
+					if (type !== "NFA" && finalAlphabets.includes("λ"))
+						finalAlphabets = finalAlphabets.filter((x) => x !== "λ");
 
-			if (!ans) return;
-			else {
-				// Start a New Project
-				newProject();
-				if (type === "NFA" && !alph_trimmed.includes("λ"))
-					alph_trimmed.push("λ");
-				if (type !== "NFA" && alph_trimmed.includes("λ"))
-					alph_trimmed = alph_trimmed.filter((x) => x !== "λ");
-			}
+					// Write Values to Store
+					const new_controls = { type: type, alphabets: finalAlphabets };
+					setEngineMode(new_controls);
+					setEditorState(null);
+
+					// Hide table if Free Style
+					if (type === "Free Style") {
+						setShowTable(false);
+					}
+
+					setAlert(`State Machine Type set to ${type}`);
+					setTimeout(() => setAlert(""), 3000);
+				}
+			});
+			return;
 		}
 
 		// Write Values to Store
 		const new_controls = { type: type, alphabets: alph_trimmed };
 		setEngineMode(new_controls);
 		setEditorState(null);
+
+		// Hide table if Free Style
+		if (type === "Free Style") {
+			setShowTable(false);
+		}
+
 		setAlert(`State Machine Type set to ${type}`);
 		setTimeout(() => setAlert(""), 3000);
 	}
