@@ -5,6 +5,7 @@ import {
   stage_ref,
   transition_list,
   layer_ref,
+  current_selected,
 } from "../lib/stores";
 import { useAtom, useAtomValue } from "jotai";
 
@@ -24,6 +25,7 @@ const Editor = () => {
   const [_stageRef, setStageRef] = useAtom(stage_ref);
   const [transitionList, _setTransitionList] = useAtom(transition_list);
   const [_layerRef, setLayerRef] = useAtom(layer_ref);
+  const currentSelected = useAtomValue(current_selected);
   // Jotai Atoms
 
   return (
@@ -60,6 +62,8 @@ const Editor = () => {
                       y={0}
                       radius={2 * circle.name.length + circle.radius}
                       fill={circle.fill}
+                      stroke={currentSelected === circle.id ? "#3b82f6" : null}
+                      strokeWidth={currentSelected === circle.id ? 4 : 0}
                     />
                     <Text
                       x={-circle.radius - circle.name.length / 2}
@@ -143,7 +147,7 @@ const Editor = () => {
                           id={`trtext_${transition.id}`}
                           text={
                             transition.name.length == 0
-                              ? "tr"
+                              ? ""
                               : transition.name.toString()
                           }
                           fontSize={transition.fontSize}
