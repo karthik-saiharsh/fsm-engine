@@ -143,7 +143,7 @@ const Editor = () => {
                           id={`trtext_${transition.id}`}
                           text={
                             transition.name.length == 0
-                              ? "tr"
+                              ? ""
                               : transition.name.toString()
                           }
                           fontSize={transition.fontSize}

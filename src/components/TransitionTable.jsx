@@ -3,6 +3,7 @@ import { editor_state, engine_mode, node_list, transition_list, stage_ref, show_
 import { X, Download, Minus, Maximize2, GripHorizontal } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { getTransitionPoints } from "../lib/editor";
+import { getTransitionDetails } from "../lib/special_functions";
 
 const TransitionTable = () => {
     const [EditorState, setEditorState] = useAtom(editor_state);
@@ -301,34 +302,37 @@ const TransitionTable = () => {
                                                 {node.name}
                                             </div>
                                         </td>
-                                        {EngineMode.alphabets.map((alpha, alphaIdx) => {
-                                            let targetId = -1;
-                                            for (let tr of node.transitions) {
-                                                const trObj = TransitionList[tr.tr_name];
-                                                if (trObj && trObj.from === nodeIdx && trObj.name.includes(alpha)) {
-                                                    targetId = trObj.to;
-                                                    break;
+                                        {(() => {
+                                            const rowDetails = getTransitionDetails(node.transitions, nodeIdx);
+                                            return EngineMode.alphabets.map((alpha, alphaIdx) => {
+                                                const targetNames = rowDetails[alphaIdx];
+                                                let targetId = -1;
+                                                if (targetNames && targetNames.length > 0) {
+                                                    // Assuming DFA, take the first one. 
+                                                    // If NFA, this UI only supports selecting one, so we default to the first.
+                                                    const targetName = targetNames[0];
+                                                    targetId = NodeList.findIndex(n => n.name === targetName);
                                                 }
-                                            }
 
-                                            return (
-                                                <td key={alphaIdx} className="p-2 border-r border-[#333]/50">
-                                                    <select
-                                                        value={targetId === -1 ? "trap" : targetId}
-                                                        onChange={(e) => handleCellChange(nodeIdx, alpha, e.target.value)}
-                                                        className="w-full bg-transparent text-gray-300 outline-none cursor-pointer hover:text-white appearance-none py-0.5 text-center"
-                                                        style={{ textAlignLast: 'center' }}
-                                                    >
-                                                        <option value="trap" className="bg-[#252526] text-gray-500">ø</option>
-                                                        {NodeList.map((n, i) => (
-                                                            <option key={i} value={i} className="bg-[#252526]">
-                                                                {n.name}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                            );
-                                        })}
+                                                return (
+                                                    <td key={alphaIdx} className="p-2 border-r border-[#333]/50">
+                                                        <select
+                                                            value={targetId === -1 ? "trap" : targetId}
+                                                            onChange={(e) => handleCellChange(nodeIdx, alpha, e.target.value)}
+                                                            className="w-full bg-transparent text-gray-300 outline-none cursor-pointer hover:text-white appearance-none py-0.5 text-center"
+                                                            style={{ textAlignLast: 'center' }}
+                                                        >
+                                                            <option value="trap" className="bg-[#252526] text-gray-500">ø</option>
+                                                            {NodeList.map((n, i) => (
+                                                                <option key={i} value={i} className="bg-[#252526]">
+                                                                    {n.name}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </td>
+                                                );
+                                            });
+                                        })()}
                                     </tr>
                                 ))}
                             </tbody>

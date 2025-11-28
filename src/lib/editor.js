@@ -107,8 +107,9 @@ export function HandleStateClick(e, id) {
 
       // Update the transition List store
       store.set(transition_list, (prev) => {
-        prev[tr.tr_name] = undefined;
-        return prev;
+        const newTrList = [...prev];
+        newTrList[tr.tr_name] = undefined;
+        return newTrList;
       });
 
       // Also delete the entry of this transition in in the second node involved
@@ -119,8 +120,12 @@ export function HandleStateClick(e, id) {
         );
         // Update the store
         store.set(node_list, (prev) => {
-          prev[tr.to].transitions = filtered_transitions;
-          return prev;
+          const newNodes = [...prev];
+          newNodes[tr.to] = {
+            ...newNodes[tr.to],
+            transitions: filtered_transitions
+          };
+          return newNodes;
         });
       }
 
@@ -132,16 +137,21 @@ export function HandleStateClick(e, id) {
         );
         // Update the store
         store.set(node_list, (prev) => {
-          prev[tr.from].transitions = filtered_transitions;
-          return prev;
+          const newNodes = [...prev];
+          newNodes[tr.from] = {
+            ...newNodes[tr.from],
+            transitions: filtered_transitions
+          };
+          return newNodes;
         });
       }
     });
 
     // Remove State from the node_list store
     store.set(node_list, (prev) => {
-      prev[id] = undefined;
-      return prev;
+      const newNodes = [...prev];
+      newNodes[id] = undefined;
+      return newNodes;
     });
 
     return;
@@ -187,21 +197,32 @@ export function HandleStateClick(e, id) {
 
       // Also update the corresponding state's transition array
       store.set(node_list, (prev) => {
+        const newNodes = [...prev];
         const tr = {
           from: start_node,
           to: end_node,
           tr_name: tr_id,
         };
         // Update for start node
-        prev[start_node].transitions.push(tr);
+        newNodes[start_node] = {
+          ...newNodes[start_node],
+          transitions: [...newNodes[start_node].transitions, tr]
+        };
 
         if (start_node !== end_node) {
           // Update for end node
-          prev[end_node].transitions.push(tr);
+          newNodes[end_node] = {
+            ...newNodes[end_node],
+            transitions: [...newNodes[end_node].transitions, tr]
+          };
         }
 
-        return prev;
+        return newNodes;
       });
+
+      // Open Popup for labeling
+      store.set(active_transition, () => tr_id);
+      store.set(show_popup, true);
     }
   }
 }
@@ -259,8 +280,11 @@ export function HandleStateDrag(e, id) {
 
     // Update it in store
     store.set(transition_list, (prev) => {
-      prev[tr.tr_name].points = points;
-      return prev;
+      const newTrList = [...prev];
+      if (newTrList[tr.tr_name]) {
+        newTrList[tr.tr_name] = { ...newTrList[tr.tr_name], points: points };
+      }
+      return newTrList;
     });
 
     transition.points(points); // Update it on display
