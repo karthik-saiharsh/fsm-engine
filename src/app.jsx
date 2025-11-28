@@ -1,3 +1,4 @@
+import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import Alert from "./components/Alert";
 import Controls from "./components/Controls";
@@ -7,10 +8,9 @@ import Guide from "./components/Guide";
 import Popup from "./components/Popup";
 import SaveDialog from "./components/SaveDialog";
 import Settings from "./components/Settings";
-import { handleShortCuts } from "./lib/editor";
 import TopDock from "./components/TopDock";
 import TransitionTable from "./components/TransitionTable";
-import { useAtomValue } from "jotai";
+import { handleShortCuts } from "./lib/editor";
 import { editor_state } from "./lib/stores";
 
 export function App() {
@@ -39,7 +39,6 @@ export function App() {
 		};
 	}, [handleKeyPress]);
 
-
 	const EditorState = useAtomValue(editor_state);
 
 	return (
@@ -62,7 +61,7 @@ export function App() {
 
 			<SaveDialog />
 
-			{EditorState == "Transition Table" && < TransitionTable />}
+			{EditorState === "Transition Table" && <TransitionTable />}
 		</div>
 	);
 }
