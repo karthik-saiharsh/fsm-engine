@@ -16,6 +16,7 @@ import {
   store,
   transition_list,
   transition_pairs,
+  confirm_dialog_atom
 } from "./stores";
 import dagre from "dagre";
 import Konva from "konva";
@@ -338,10 +339,13 @@ export function handleShortCuts(key) {
     key - 1 < keyBindings.length
   ) {
     if (key == 1) {
-      const ans = confirm(
-        "Are you sure you want to start a new project? Any unsaved work will be lost!",
-      );
-      if (ans) newProject();
+      store.set(confirm_dialog_atom, {
+        isOpen: true,
+        message: "Are you sure you want to start a new project? Any unsaved work will be lost!",
+        onConfirm: () => {
+          newProject();
+        }
+      });
       return;
     }
     store.set(editor_state, (_) => keyBindings[key - 1]);
