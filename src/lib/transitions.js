@@ -1,7 +1,6 @@
 import {
 	active_transition,
 	editor_state,
-	layer_ref,
 	node_list,
 	show_popup,
 	stage_ref,

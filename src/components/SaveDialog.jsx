@@ -1,7 +1,14 @@
-import { X, HardDriveDownload } from "lucide-react";
-import { editor_state, layer_ref, node_list, transition_list, deleted_nodes, engine_mode } from "../lib/stores";
 import { useAtom, useAtomValue } from "jotai";
+import { HardDriveDownload, X } from "lucide-react";
 import { useState } from "react";
+import {
+	deleted_nodes,
+	editor_state,
+	engine_mode,
+	layer_ref,
+	node_list,
+	transition_list,
+} from "../lib/stores";
 
 const SaveDialog = () => {
 	const [EditorState, setEditorState] = useAtom(editor_state);
@@ -20,11 +27,11 @@ const SaveDialog = () => {
 
 	return (
 		<div
-			className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${EditorState == "Save FSM" ? "top-12" : "-top-20 opacity-0"
-				}`}
+			className={`absolute left-0 w-screen h-15 flex justify-center transition-all ease-in-out duration-550 ${
+				EditorState === "Save FSM" ? "top-12" : "-top-20 opacity-0"
+			}`}
 		>
 			<div className="h-full w-fit px-2 bg-primary-bg rounded-xl border-1 border-border-bg shadow-[0px_0px_50px_0px_#00000080] flex justify-center items-center gap-3">
-
 				<select
 					value={saveDetails.type}
 					onChange={(e) =>
@@ -46,7 +53,7 @@ const SaveDialog = () => {
 					}
 				/>
 
-				{saveDetails.type === "png" &&
+				{saveDetails.type === "png" && (
 					<select
 						value={saveDetails.resolution}
 						onChange={(e) =>
@@ -59,9 +66,11 @@ const SaveDialog = () => {
 						<option value={3}>3x</option>
 						<option value={4}>4x</option>
 						<option value={5}>5x</option>
-					</select>}
+					</select>
+				)}
 
 				<button
+					type="button"
 					onClick={() => setEditorState(null)}
 					className="flex items-center justify-center gap-2 bg-secondary-fg w-fit px-2 py-2 rounded-lg cursor-pointer hover:scale-105 active:scale-95 transition-all ease-in-out"
 				>
@@ -70,19 +79,22 @@ const SaveDialog = () => {
 				</button>
 
 				<button
+					type="button"
 					onClick={() => {
 						// Save the FSM to disk
 
-						if (saveDetails.name.trim() == "") {
+						if (saveDetails.name.trim() === "") {
 							alert("Enter a valid file name");
 							return;
 						}
 
 						const link = document.createElement("a");
-						link.download = saveDetails.type === "json" ? saveDetails.name + ".fsm" : saveDetails.name; // Set File Name
+						link.download =
+							saveDetails.type === "json"
+								? `${saveDetails.name}.fsm`
+								: saveDetails.name; // Set File Name
 
-						if (saveDetails.type == "png") {
-
+						if (saveDetails.type === "png") {
 							const group = LayerRef.findOne("Group");
 							const dataUrl = group.toDataURL({
 								pixelRatio: saveDetails.resolution, // Resolution
@@ -91,13 +103,13 @@ const SaveDialog = () => {
 							link.href = dataUrl; // Set href attr
 						}
 
-						if (saveDetails.type == "json") {
+						if (saveDetails.type === "json") {
 							const data = {
 								nodes: NodeList,
 								transitions: TransitionList,
 								deleted_nodes: DeletedNodes,
-								engine_mode: EngineMode
-							}
+								engine_mode: EngineMode,
+							};
 
 							const jsonString = JSON.stringify(data, null, 2); // pretty formatted
 

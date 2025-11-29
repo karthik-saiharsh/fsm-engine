@@ -162,7 +162,7 @@ function Page4() {
 			}
 		}
 		getContributors();
-	}, []);
+	}, [contributors, setContributors]);
 	return (
 		<>
 			<h1 className="font-github text-white font-bold text-3xl text-center">
