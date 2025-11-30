@@ -1,21 +1,29 @@
-import { Stage, Layer, Group, Circle, Text, Arrow, Label, Tag } from "react-konva";
+import { useAtom, useAtomValue } from "jotai";
 import {
-  node_list,
-  editor_state,
-  stage_ref,
-  transition_list,
-  layer_ref,
+	Arrow,
+	Circle,
+	Group,
+	Label,
+	Layer,
+	Stage,
+	Tag,
+	Text,
+} from "react-konva";
+import {
+	HandleDragEnd,
+	HandleEditorClick,
+	HandleScrollWheel,
+	HandleStateClick,
+	HandleStateDrag,
+} from "../lib/editor";
+import {
+	editor_state,
+	layer_ref,
+	node_list,
+	stage_ref,
+	transition_list,
   current_selected,
 } from "../lib/stores";
-import { useAtom, useAtomValue } from "jotai";
-
-import {
-  HandleDragEnd,
-  HandleEditorClick,
-  HandleScrollWheel,
-  HandleStateClick,
-  HandleStateDrag,
-} from "../lib/editor";
 import { handleTransitionClick } from "../lib/transitions";
 
 const Editor = () => {
@@ -77,20 +85,20 @@ const Editor = () => {
                       align="center"
                     />
 
-                    {/* If state is initial, draw an incoming arrow */}
-                    {circle.type.initial && (
-                      <Arrow
-                        id="start_arrow"
-                        x={-1 * (2 * circle.radius + 2.5 * circle.name.length)}
-                        y={0}
-                        points={[-circle.radius / 1.5, 0, circle.radius - 5, 0]}
-                        pointerLength={10}
-                        pointerWidth={10}
-                        fill={"#ffffffdd"}
-                        stroke={"#ffffffdd"}
-                        strokeWidth={3}
-                      />
-                    )}
+										{/* If state is initial, draw an incoming arrow */}
+										{circle.type.initial && (
+											<Arrow
+												id="start_arrow"
+												x={-1 * (2 * circle.radius + 2.5 * circle.name.length)}
+												y={0}
+												points={[-circle.radius / 1.5, 0, circle.radius - 5, 0]}
+												pointerLength={10}
+												pointerWidth={10}
+												fill={"#ffffffdd"}
+												stroke={"#ffffffdd"}
+												strokeWidth={3}
+											/>
+										)}
 
                     {/* If state is final, draw an extra outer circle */}
                     {circle.type.final && (

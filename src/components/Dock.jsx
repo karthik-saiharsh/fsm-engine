@@ -1,11 +1,11 @@
 import { useAtom } from "jotai";
 import {
-  BookHeart,
-  Cable,
-  MinusCircleIcon,
-  PlusCircleIcon,
-  ImageDown,
-  FilePlus
+	BookHeart,
+	Cable,
+	FilePlus,
+	ImageDown,
+	MinusCircleIcon,
+	PlusCircleIcon,
 } from "lucide-react";
 import { editor_state, transition_pairs, confirm_dialog_atom } from "../lib/stores";
 import { newProject } from "../lib/editor";
@@ -67,23 +67,25 @@ const Dock = () => {
       : setEditorState(item.name);
   }
 
-  return (
-    <div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
-      <div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-2xl shadow-[0px_0px_50px_0px_#00000080] select-none">
-        {dockItems.map((item, idx) => (
-          <button
-            key={idx}
-            onClick={item.onclick ? item.onclick : () => default_onclick(item)}
-            className={`flex gap-2 justify-center items-center font-github whitespace-nowrap ${item.name == editorState ? "bg-blue-500" : "bg-secondary-bg"
-              } text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
-          >
-            {item.icon}
-            {item.name}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
+			<div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-2xl shadow-[0px_0px_50px_0px_#00000080] select-none">
+				{dockItems.map((item, idx) => (
+					<button
+						type="button"
+						key={idx}
+						onClick={item.onclick ? item.onclick : () => default_onclick(item)}
+						className={`flex gap-2 justify-center items-center font-github whitespace-nowrap ${
+							item.name === editorState ? "bg-blue-500" : "bg-secondary-bg"
+						} text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
+					>
+						{item.icon}
+						{item.name}
+					</button>
+				))}
+			</div>
+		</div>
+	);
 };
 
 export default Dock;
