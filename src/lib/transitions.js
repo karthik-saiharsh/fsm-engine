@@ -33,7 +33,7 @@ export function handleTransitionClick(id) {
 				...newNodes[from_state],
 				transitions: newNodes[from_state].transitions.filter(
 					(tr) => tr.from !== from_state || tr.to !== to_state,
-				)
+				),
 			};
 
 			if (from_state !== to_state) {
@@ -41,7 +41,7 @@ export function handleTransitionClick(id) {
 					...newNodes[to_state],
 					transitions: newNodes[to_state].transitions.filter(
 						(tr) => tr.from !== from_state || tr.to !== to_state,
-					)
+					),
 				};
 			}
 			return newNodes;
@@ -61,7 +61,7 @@ export function handleTransitionSave(labels) {
 		if (newTrList[store.get(active_transition)]) {
 			newTrList[store.get(active_transition)] = {
 				...newTrList[store.get(active_transition)],
-				name: labels
+				name: labels,
 			};
 		}
 		return newTrList;

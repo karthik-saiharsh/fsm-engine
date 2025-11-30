@@ -7,7 +7,11 @@ import {
 	MinusCircleIcon,
 	PlusCircleIcon,
 } from "lucide-react";
-import { editor_state, transition_pairs, confirm_dialog_atom } from "../lib/stores";
+import {
+	editor_state,
+	transition_pairs,
+	confirm_dialog_atom,
+} from "../lib/stores";
 import { newProject } from "../lib/editor";
 import { useSetAtom } from "jotai";
 
@@ -18,54 +22,53 @@ const iconSize = 18;
 
 // Define the Components of the Dock
 const Dock = () => {
-  // Jotai Atoms
-  const [editorState, setEditorState] = useAtom(editor_state);
-  const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
-  const setConfirmDialog = useSetAtom(confirm_dialog_atom);
-  // Jotai Atoms
+	// Jotai Atoms
+	const [editorState, setEditorState] = useAtom(editor_state);
+	const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
+	const setConfirmDialog = useSetAtom(confirm_dialog_atom);
+	// Jotai Atoms
 
-  const dockItems = [
-    {
-      name: "New Project",
-      icon: <FilePlus stroke={iconFillColor} size={iconSize} />,
-      onclick: () => {
-        setConfirmDialog({
-          isOpen: true,
-          message: "Are you sure you want to start a new project? Any unsaved work will be lost!",
-          onConfirm: () => {
-            newProject();
-          }
-        });
-      }
-    },
-    {
-      name: "Add",
-      icon: <PlusCircleIcon stroke={iconFillColor} size={iconSize} />,
-    },
-    {
-      name: "Remove",
-      icon: <MinusCircleIcon stroke={iconFillColor} size={iconSize} />,
-    },
-    {
-      name: "Connect",
-      icon: <Cable stroke={iconFillColor} size={iconSize} />,
-    },
-    {
-      name: "Save FSM",
-      icon: <ImageDown stroke={iconFillColor} size={iconSize} />,
-    },
-    {
-      name: "Guide",
-      icon: <BookHeart stroke={iconFillColor} size={iconSize} />,
-    },
-  ];
+	const dockItems = [
+		{
+			name: "New Project",
+			icon: <FilePlus stroke={iconFillColor} size={iconSize} />,
+			onclick: () => {
+				setConfirmDialog({
+					isOpen: true,
+					message:
+						"Are you sure you want to start a new project? Any unsaved work will be lost!",
+					onConfirm: () => {
+						newProject();
+					},
+				});
+			},
+		},
+		{
+			name: "Add",
+			icon: <PlusCircleIcon stroke={iconFillColor} size={iconSize} />,
+		},
+		{
+			name: "Remove",
+			icon: <MinusCircleIcon stroke={iconFillColor} size={iconSize} />,
+		},
+		{
+			name: "Connect",
+			icon: <Cable stroke={iconFillColor} size={iconSize} />,
+		},
+		{
+			name: "Save FSM",
+			icon: <ImageDown stroke={iconFillColor} size={iconSize} />,
+		},
+		{
+			name: "Guide",
+			icon: <BookHeart stroke={iconFillColor} size={iconSize} />,
+		},
+	];
 
-  function default_onclick(item) {
-    if (item.name == "Connect") setTransitionPairs(null);
-    item.name == editorState
-      ? setEditorState(null)
-      : setEditorState(item.name);
-  }
+	function default_onclick(item) {
+		if (item.name == "Connect") setTransitionPairs(null);
+		item.name == editorState ? setEditorState(null) : setEditorState(item.name);
+	}
 
 	return (
 		<div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">

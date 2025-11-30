@@ -59,7 +59,7 @@ export const confirm_dialog_atom = atom({
 	isOpen: false,
 	message: "",
 	onConfirm: null,
-	onCancel: null
+	onCancel: null,
 });
 
 // Export store provider
