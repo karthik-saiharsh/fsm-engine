@@ -51,5 +51,16 @@ export const active_transition = atom(null);
 // Store to cache contributors
 export const contributors_data = atom(null);
 
+// Store to toggle Transition Table visibility
+export const show_transition_table = atom(false);
+
+// Store for Confirm Dialog
+export const confirm_dialog_atom = atom({
+	isOpen: false,
+	message: "",
+	onConfirm: null,
+	onCancel: null
+});
+
 // Export store provider
 export const store = createStore();

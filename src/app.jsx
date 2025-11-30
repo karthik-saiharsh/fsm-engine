@@ -10,6 +10,8 @@ import SaveDialog from "./components/SaveDialog";
 import Settings from "./components/Settings";
 import TopDock from "./components/TopDock";
 import TransitionTable from "./components/TransitionTable";
+import ConfirmDialog from "./components/ConfirmDialog";
+import { useAtomValue } from "jotai";
 import { handleShortCuts } from "./lib/editor";
 import { editor_state } from "./lib/stores";
 
@@ -61,7 +63,11 @@ export function App() {
 
 			<SaveDialog />
 
-			{EditorState === "Transition Table" && <TransitionTable />}
+			<SaveDialog />
+
+			<TransitionTable />
+
+			<ConfirmDialog />
 		</div>
 	);
 }

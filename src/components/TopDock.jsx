@@ -1,4 +1,3 @@
-import { useAtom, useAtomValue } from "jotai";
 import {
 	CaseSensitive,
 	ChevronDown,
@@ -9,9 +8,10 @@ import {
 	Table,
 } from "lucide-react";
 import { useState } from "react";
+import { engine_mode, editor_state, show_transition_table, store } from "../lib/stores";
+import { useAtomValue, useAtom } from "jotai";
 import { HandleAutoLayout } from "../lib/editor";
 import { HandleLoadFSM } from "../lib/special_functions";
-import { editor_state, engine_mode } from "../lib/stores";
 
 const TopDock = () => {
 	const [isVisible, setIsVisible] = useState(false);
@@ -111,19 +111,15 @@ const TopDock = () => {
 		},
 	];
 
-	return (
-		<div
-			className={`absolute w-screen h-15 ${isVisible ? "top-2" : "-top-15"} flex justify-center items-center transition-all ease-in-out duration-500`}
-		>
-			<div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-xl shadow-[0px_0px_50px_0px_#00000080] select-none">
-				{dockItems.map(
-					(item, idx) =>
-						item.condition && (
-							<button
-								type="button"
-								key={idx}
-								onClick={item.onclick}
-								className={`flex gap-2 justify-center items-center font-github whitespace-nowrap bg-secondary-bg
+    return (
+        <div className={`absolute w-screen h-15 ${isVisible ? 'top-2' : '-top-15'} flex justify-center items-center transition-all ease-in-out duration-500`}>
+            <div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-xl shadow-[0px_0px_50px_0px_#00000080] select-none">
+                {dockItems.map((item, idx) => (
+                    item.condition &&
+                    <button
+                        key={idx}
+                        onClick={item.onclick}
+                        className={`flex gap-2 justify-center items-center font-github whitespace-nowrap bg-secondary-bg
                             } text-base text-text-primary px-4 py-2 border border-border-bg rounded-lg cursor-pointer hover:-translate-y-1 hover:scale-102 active:scale-90 transition-all ease-in-out`}
 							>
 								{item.icon}

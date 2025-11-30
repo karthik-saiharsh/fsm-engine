@@ -40,20 +40,17 @@ export async function HandleLoadFSM() {
 }
 
 export function getTransitionDetails(transitions, id) {
-	const end_nodes = [];
-	// Create arrays for each of the alphabets
-	const alphabets = store.get(engine_mode).alphabets;
+    let end_nodes = []
+    // Create arrays for each of the alphabets
+    const alphabets = store.get(engine_mode).alphabets;
 
-	alphabets.forEach((alpha) => {
-		const valid_trs = transitions.filter(
-			(tr) =>
-				tr.from === id &&
-				store.get(transition_list)[tr.tr_name].name.includes(alpha),
-		);
-		const valid_states = valid_trs.map(
-			(tr) => store.get(node_list)[tr.to].name,
-		);
-		end_nodes.push(valid_states);
-	});
-	return end_nodes;
+    alphabets.forEach(alpha => {
+        const valid_trs = transitions.filter(tr => {
+            const transitionObj = store.get(transition_list)[tr.tr_name];
+            return transitionObj && tr.from == id && transitionObj.name.includes(alpha);
+        });
+        const valid_states = valid_trs.map(tr => store.get(node_list)[tr.to].name);
+        end_nodes.push(valid_states);
+    });
+    return end_nodes;
 }
