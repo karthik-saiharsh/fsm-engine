@@ -7,6 +7,7 @@ import {
 	store,
 	transition_list,
 } from "./stores";
+import { addToHistory } from "./history";
 
 // Handle a click event on a transition
 export function handleTransitionClick(id) {
@@ -46,6 +47,7 @@ export function handleTransitionClick(id) {
 			}
 			return newNodes;
 		});
+		addToHistory();
 		return;
 	}
 	store.set(show_popup, true);
@@ -54,6 +56,7 @@ export function handleTransitionClick(id) {
 
 // Handle Save on Changing a Transition's Label
 export function handleTransitionSave(labels) {
+	addToHistory();
 	// Update the New Labels in store
 	store.set(show_popup, false);
 	store.set(transition_list, (old) => {

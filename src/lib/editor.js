@@ -18,6 +18,7 @@ import {
 	transition_pairs,
 	confirm_dialog_atom,
 } from "./stores";
+import { addToHistory, undo, redo, clearHistory } from "./history";
 import dagre from "dagre";
 import Konva from "konva";
 
@@ -61,6 +62,7 @@ export function HandleEditorClick(e) {
 		}
 
 		store.set(node_list, (_prev) => nodes_copy); // Update Node List
+		addToHistory();
 	}
 }
 
@@ -74,6 +76,7 @@ export function HandleDragEnd(e, id) {
 		newNodes[id] = { ...newNodes[id], x: position[0], y: position[1] };
 		return newNodes;
 	});
+	addToHistory();
 }
 
 // Handler Function for when a State is clicked
@@ -161,6 +164,7 @@ export function HandleStateClick(e, id) {
 			return newNodes;
 		});
 
+		addToHistory();
 		return;
 	}
 
@@ -229,6 +233,8 @@ export function HandleStateClick(e, id) {
 
 				return newNodes;
 			});
+
+			addToHistory();
 
 			// Open Popup for labeling
 			if (store.get(engine_mode).type !== "Free Style") {
@@ -309,7 +315,7 @@ export function HandleStateDrag(e, id) {
 		// Update transition Label display
 		transition_label.x(
 			points[2] -
-				2 * store.get(transition_list)[tr.tr_name].name.toString().length,
+			2 * store.get(transition_list)[tr.tr_name].name.toString().length,
 		);
 		transition_label.y(points[3] - 10);
 	});
@@ -326,12 +332,22 @@ export function handleShortCuts(key) {
 	];
 
 	/* 
-    Key Bindings as follows:
-    1 -> Pan,
-    2 -> Add,
-    3 -> Remove,
-    ...
+	Key Bindings as follows:
+	1 -> Pan,
+	2 -> Add,
+	3 -> Remove,
+	...
   */
+
+	if ((key === "z" || key === "Z") && store.get(editor_state) !== "Controls") {
+		undo(getTransitionPoints);
+		return;
+	}
+
+	if ((key === "y" || key === "Y") && store.get(editor_state) !== "Controls") {
+		redo(getTransitionPoints);
+		return;
+	}
 
 	if (
 		!store.get(show_popup) &&
@@ -690,6 +706,7 @@ export function HandleAutoLayout() {
 	// Stop animation after tween duration
 	setTimeout(() => {
 		anim.stop();
+		addToHistory();
 	}, 550);
 }
 
@@ -703,4 +720,5 @@ export function newProject() {
 	store.set(transition_pairs, () => null);
 	store.set(show_popup, () => false);
 	store.set(active_transition, () => null);
+	clearHistory();
 }
