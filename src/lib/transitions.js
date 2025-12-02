@@ -7,6 +7,7 @@ import {
 	store,
 	transition_list,
 } from "./stores";
+import { addToHistory } from "./history";
 
 // Handle a click event on a transition
 export function handleTransitionClick(id) {
@@ -20,21 +21,33 @@ export function handleTransitionClick(id) {
 
 		// Remove this transition in store
 		store.set(transition_list, (old) => {
-			old[id] = undefined;
-			return old;
+			const newTrList = [...old];
+			newTrList[id] = undefined;
+			return newTrList;
 		});
 
 		// Remove this transition from Node
 		store.set(node_list, (old) => {
-			old[from_state].transitions = old[from_state].transitions.filter(
-				(tr) => tr.from !== from_state || tr.to !== to_state,
-			);
+			const newNodes = [...old];
 
-			old[to_state].transitions = old[to_state].transitions.filter(
-				(tr) => tr.from !== from_state || tr.to !== to_state,
-			);
-			return old;
+			newNodes[from_state] = {
+				...newNodes[from_state],
+				transitions: newNodes[from_state].transitions.filter(
+					(tr) => tr.from !== from_state || tr.to !== to_state,
+				),
+			};
+
+			if (from_state !== to_state) {
+				newNodes[to_state] = {
+					...newNodes[to_state],
+					transitions: newNodes[to_state].transitions.filter(
+						(tr) => tr.from !== from_state || tr.to !== to_state,
+					),
+				};
+			}
+			return newNodes;
 		});
+		addToHistory();
 		return;
 	}
 	store.set(show_popup, true);
@@ -43,11 +56,18 @@ export function handleTransitionClick(id) {
 
 // Handle Save on Changing a Transition's Label
 export function handleTransitionSave(labels) {
+	addToHistory();
 	// Update the New Labels in store
 	store.set(show_popup, false);
 	store.set(transition_list, (old) => {
-		old[store.get(active_transition)].name = labels;
-		return old;
+		const newTrList = [...old];
+		if (newTrList[store.get(active_transition)]) {
+			newTrList[store.get(active_transition)] = {
+				...newTrList[store.get(active_transition)],
+				name: labels,
+			};
+		}
+		return newTrList;
 	});
 
 	// Update the new Labels in UI

@@ -1,4 +1,3 @@
-import { useAtom, useAtomValue } from "jotai";
 import {
 	CaseSensitive,
 	ChevronDown,
@@ -9,14 +8,20 @@ import {
 	Table,
 } from "lucide-react";
 import { useState } from "react";
+import {
+	engine_mode,
+	editor_state,
+	show_transition_table,
+} from "../lib/stores";
+import { useAtomValue, useAtom } from "jotai";
 import { HandleAutoLayout } from "../lib/editor";
 import { HandleLoadFSM } from "../lib/special_functions";
-import { editor_state, engine_mode } from "../lib/stores";
 
 const TopDock = () => {
 	const [isVisible, setIsVisible] = useState(false);
 	const EngineMode = useAtomValue(engine_mode);
 	const [_EditorState, setEditorState] = useAtom(editor_state);
+	const [showTransitionTable, setShowTransitionTable] = useAtom(show_transition_table);
 
 	// Constants
 	const iconFillColor = "#ffffff";
@@ -55,7 +60,7 @@ const TopDock = () => {
 			icon: <Table stroke={iconFillColor} size={iconSize} />,
 			condition: ["NFA", "DFA"].includes(EngineMode.type),
 			onclick: () => {
-				setEditorState("Transition Table");
+				setShowTransitionTable((val) => !val);
 				setIsVisible(false);
 			},
 		},
@@ -120,7 +125,6 @@ const TopDock = () => {
 					(item, idx) =>
 						item.condition && (
 							<button
-								type="button"
 								key={idx}
 								onClick={item.onclick}
 								className={`flex gap-2 justify-center items-center font-github whitespace-nowrap bg-secondary-bg
