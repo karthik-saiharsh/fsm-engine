@@ -6,8 +6,11 @@ import {
   stage_ref,
   store,
   transition_list,
+  engine_mode,
+  alert,
 } from "./stores";
 import { addToHistory } from "./history";
+import { getGraph } from "./special_functions";
 
 // Handle a click event on a transition
 export function handleTransitionClick(id) {
@@ -56,6 +59,40 @@ export function handleTransitionClick(id) {
 
 // Handle Save on Changing a Transition's Label
 export function handleTransitionSave(labels) {
+  const automata_type = store.get(engine_mode).type;
+  const active_tr = store.get(active_transition);
+  const src_node = store.get(transition_list)[active_tr].from;
+
+  if (automata_type === "DFA") {
+    // If Automata is a DFA, don't allow multiple
+    // transitions on the same alphabet from a state
+    const graph = getGraph();
+    let consumed_letters = [];
+
+    graph[src_node].transitions.forEach((tr) => {
+      consumed_letters = consumed_letters.concat(tr.on);
+    }); // Get alphabets that have already been consumed
+
+    let tr_exists = false;
+
+    labels.forEach((alphabet) => {
+      if (consumed_letters.includes(alphabet)) {
+        store.set(
+          alert,
+          () =>
+            `A transition on '${alphabet}' already exists for ${graph[src_node].name}`
+        );
+
+        setTimeout(() => store.set(alert, () => ""), 3000);
+        tr_exists = true;
+      }
+    });
+
+    if (tr_exists) {
+      store.set(show_popup, () => false);
+      return;
+    } // dont' add the transition
+  }
   addToHistory();
   // Update the New Labels in store
   store.set(show_popup, false);
