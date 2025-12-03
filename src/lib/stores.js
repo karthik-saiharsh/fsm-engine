@@ -55,8 +55,8 @@ export const transition_pairs = atom(null);
 
 // Store to keep track of current FSM Mode
 export const engine_mode = atom({
-  type: "Free Style",
-  alphabets: [],
+	type: "Free Style",
+	alphabets: [],
 });
 
 // Alert Message
@@ -74,10 +74,10 @@ export const show_transition_table = atom(false);
 
 // Store for Confirm Dialog
 export const confirm_dialog_atom = atom({
-  isOpen: false,
-  message: "",
-  onConfirm: null,
-  onCancel: null,
+	isOpen: false,
+	message: "",
+	onConfirm: null,
+	onCancel: null,
 });
 
 // Export store provider

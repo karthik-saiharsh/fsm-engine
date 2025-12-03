@@ -96,6 +96,10 @@ export function HandleStateClick(e, id) {
 	const clickedNode = store.get(stage_ref).findOne(`#state_${id}`);
 
 	if (store.get(editor_state) === "Remove") {
+		// BugFix #49 - If the state is selected, deselect it before deleting
+		if (id === store.get(current_selected))
+			store.set(current_selected, () => null);
+
 		clickedNode.destroy(); // Remove it from the editor
 
 		// Add the deleted Node to list of delete nodes
@@ -315,7 +319,7 @@ export function HandleStateDrag(e, id) {
 		// Update transition Label display
 		transition_label.x(
 			points[2] -
-			2 * store.get(transition_list)[tr.tr_name].name.toString().length,
+				2 * store.get(transition_list)[tr.tr_name].name.toString().length,
 		);
 		transition_label.y(points[3] - 10);
 	});
