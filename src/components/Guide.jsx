@@ -12,11 +12,11 @@ const Guide = () => {
 
 	return (
 		<div
-			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-secondary-bg/30 overflow-hidden ${
+			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-[#1e1e1e]/30 backdrop-blur-sm overflow-hidden ${
 				editorState !== "Guide" && "hidden"
 			}`}
 		>
-			<div className="flex flex-col gap-5 justify-center items-center px-5 py-5 w-[60%] h-[80%] bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
+			<div className="flex flex-col gap-5 justify-center items-center px-5 py-10 w-1/2 h-fit bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
 				{slides[i]}
 				<span className="flex gap-5">
 					<button
@@ -45,7 +45,7 @@ const Guide = () => {
 						setEditorState(null);
 						setI(0);
 					}}
-					className="flex items-center gap-2 bg-secondary-fg border border-border-bg font-github text-black px-4 py-2 rounded-lg font-semibold cursor-pointer"
+					className="flex items-center gap-2 bg-secondary-fg border border-border-bg font-github text-black px-4 py-2 rounded-lg font-semibold cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out"
 				>
 					<Target size={20} color="#000000" />
 					Go to the Editor

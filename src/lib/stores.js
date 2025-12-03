@@ -13,6 +13,24 @@ export const layer_ref = atom(null);
 
 // Global Store to keep track of States
 export const node_list = atom([]);
+// A single item of NodeList has the following type
+/*
+{
+id: number,
+stroke: string (color),
+strokeWidth: number,
+fill: string,
+points: points,
+tension: start_node == end_node ? 1 : 0.5,
+name: name,
+fontSize: number,
+fontStyle: "bold",
+name_fill: string (hex color),
+name_align: "center",
+from: start_node,
+to: end_node,
+}
+*/
 
 // Global Store to keep track of Transitions
 export const transition_list = atom([]);
@@ -37,8 +55,8 @@ export const transition_pairs = atom(null);
 
 // Store to keep track of current FSM Mode
 export const engine_mode = atom({
-	type: "Free Style",
-	alphabets: [],
+  type: "Free Style",
+  alphabets: [],
 });
 
 // Alert Message
@@ -56,10 +74,10 @@ export const show_transition_table = atom(false);
 
 // Store for Confirm Dialog
 export const confirm_dialog_atom = atom({
-	isOpen: false,
-	message: "",
-	onConfirm: null,
-	onCancel: null,
+  isOpen: false,
+  message: "",
+  onConfirm: null,
+  onCancel: null,
 });
 
 // Export store provider
