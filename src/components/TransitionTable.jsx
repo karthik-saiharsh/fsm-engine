@@ -7,7 +7,7 @@ import {
 	stage_ref,
 	show_transition_table,
 } from "../lib/stores";
-import { X, Download, Minus, Maximize2, GripHorizontal } from "lucide-react";
+import { X, Download, Minus, Maximize2, GripHorizontal, Plus } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { getTransitionPoints } from "../lib/editor";
 import { getTransitionDetails } from "../lib/special_functions";
@@ -145,104 +145,113 @@ const TransitionTable = () => {
 		};
 	}, [isDragging, isResizing]);
 
-	const handleCellChange = (fromId, alphabet, newToId) => {
-		const fromNode = NodeList[fromId];
-		let existingTr = null;
-		let existingTrIndex = -1;
+	const handleAddTransition = (fromId, alphabet, newToId) => {
+		const newToIdInt = parseInt(newToId);
+		if (isNaN(newToIdInt)) return;
 
+		const fromNode = NodeList[fromId];
+		const newTransitionList = [...TransitionList];
+		const newNodeList = [...NodeList];
+
+		// Check if transition already exists
+		let targetTrIndex = -1;
 		for (let tr of fromNode.transitions) {
-			const trObj = TransitionList[tr.tr_name];
-			if (trObj && trObj.name.includes(alphabet)) {
-				existingTr = trObj;
-				existingTrIndex = tr.tr_name;
+			const trObj = newTransitionList[tr.tr_name];
+			if (trObj && trObj.to === newToIdInt) {
+				targetTrIndex = tr.tr_name;
 				break;
 			}
 		}
 
-		const newToIdInt = parseInt(newToId);
-		const isTrap = isNaN(newToIdInt);
+		if (targetTrIndex !== -1) {
+			// Transition exists, add alphabet to it
+			const targetTr = newTransitionList[targetTrIndex];
+			if (!targetTr.name.includes(alphabet)) {
+				const newName = [...targetTr.name, alphabet].sort();
+				newTransitionList[targetTrIndex] = { ...targetTr, name: newName };
+				const trLabel = StageRef.findOne(`#tr_label${targetTrIndex}`);
+				if (trLabel) trLabel.text(newName.toString());
+			}
+		} else {
+			// Create new transition
+			const newTrId = newTransitionList.length;
+			const points = getTransitionPoints(fromId, newToIdInt, newTrId);
 
-		if (existingTr && existingTr.to === newToIdInt) return;
-		if (!existingTr && isTrap) return;
+			const newTransition = {
+				id: newTrId,
+				stroke: "#ffffffdd",
+				strokeWidth: 2,
+				fill: "#ffffffdd",
+				points: points,
+				tension: fromId === newToIdInt ? 1 : 0.5,
+				name: [alphabet],
+				fontSize: 20,
+				fontStyle: "bold",
+				name_fill: "#ffffff",
+				name_align: "center",
+				from: fromId,
+				to: newToIdInt,
+			};
+
+			newTransitionList[newTrId] = newTransition;
+
+			const trRef = {
+				from: fromId,
+				to: newToIdInt,
+				tr_name: newTrId,
+			};
+
+			newNodeList[fromId].transitions.push(trRef);
+			if (fromId !== newToIdInt) {
+				newNodeList[newToIdInt].transitions.push(trRef);
+			}
+		}
+
+		setTransitionList(newTransitionList);
+		setNodeList(newNodeList);
+	};
+
+	const handleRemoveTransition = (fromId, alphabet, toId) => {
+		const fromNode = NodeList[fromId];
+		let targetTrIndex = -1;
+		let targetTr = null;
+
+		for (let tr of fromNode.transitions) {
+			const trObj = TransitionList[tr.tr_name];
+			if (trObj && trObj.to === toId && trObj.name.includes(alphabet)) {
+				targetTrIndex = tr.tr_name;
+				targetTr = trObj;
+				break;
+			}
+		}
+
+		if (!targetTr) return;
 
 		const newTransitionList = [...TransitionList];
 		const newNodeList = [...NodeList];
 
-		if (existingTr) {
-			const newName = existingTr.name.filter((a) => a !== alphabet);
+		const newName = targetTr.name.filter((a) => a !== alphabet);
 
-			if (newName.length === 0) {
-				newTransitionList[existingTrIndex] = undefined;
-				newNodeList[existingTr.from].transitions = newNodeList[
-					existingTr.from
-				].transitions.filter((t) => t.tr_name !== existingTrIndex);
-				if (existingTr.from !== existingTr.to) {
-					newNodeList[existingTr.to].transitions = newNodeList[
-						existingTr.to
-					].transitions.filter((t) => t.tr_name !== existingTrIndex);
-				}
-				const trShape = StageRef.findOne(`#transition_${existingTrIndex}`);
-				if (trShape) trShape.destroy();
-				const trLabel = StageRef.findOne(`#tr_label${existingTrIndex}`);
-				if (trLabel) trLabel.destroy();
-			} else {
-				newTransitionList[existingTrIndex] = { ...existingTr, name: newName };
-				const trLabel = StageRef.findOne(`#tr_label${existingTrIndex}`);
-				if (trLabel) trLabel.text(newName.toString());
+		if (newName.length === 0) {
+			// Remove transition entirely
+			newTransitionList[targetTrIndex] = undefined;
+			newNodeList[fromId].transitions = newNodeList[fromId].transitions.filter(
+				(t) => t.tr_name !== targetTrIndex,
+			);
+			if (fromId !== toId) {
+				newNodeList[toId].transitions = newNodeList[toId].transitions.filter(
+					(t) => t.tr_name !== targetTrIndex,
+				);
 			}
-		}
-
-		if (!isTrap) {
-			let targetTrIndex = -1;
-			for (let tr of newNodeList[fromId].transitions) {
-				const trObj = newTransitionList[tr.tr_name];
-				if (trObj && trObj.to === newToIdInt) {
-					targetTrIndex = tr.tr_name;
-					break;
-				}
-			}
-
-			if (targetTrIndex !== -1) {
-				const targetTr = newTransitionList[targetTrIndex];
-				if (!targetTr.name.includes(alphabet)) {
-					const newName = [...targetTr.name, alphabet].sort();
-					newTransitionList[targetTrIndex] = { ...targetTr, name: newName };
-					const trLabel = StageRef.findOne(`#tr_label${targetTrIndex}`);
-					if (trLabel) trLabel.text(newName.toString());
-				}
-			} else {
-				const newTrId = newTransitionList.length;
-				const points = getTransitionPoints(fromId, newToIdInt, newTrId);
-
-				const newTransition = {
-					id: newTrId,
-					stroke: "#ffffffdd",
-					strokeWidth: 2,
-					fill: "#ffffffdd",
-					points: points,
-					tension: fromId === newToIdInt ? 1 : 0.5,
-					name: [alphabet],
-					fontSize: 20,
-					fontStyle: "bold",
-					name_fill: "#ffffff",
-					name_align: "center",
-					from: fromId,
-					to: newToIdInt,
-				};
-
-				newTransitionList[newTrId] = newTransition;
-
-				const trRef = {
-					from: fromId,
-					to: newToIdInt,
-					tr_name: newTrId,
-				};
-
-				newNodeList[fromId].transitions.push(trRef);
-				if (fromId !== newToIdInt) {
-					newNodeList[newToIdInt].transitions.push(trRef);
-				}
-			}
+			const trShape = StageRef.findOne(`#transition_${targetTrIndex}`);
+			if (trShape) trShape.destroy();
+			const trLabel = StageRef.findOne(`#tr_label${targetTrIndex}`);
+			if (trLabel) trLabel.destroy();
+		} else {
+			// Update transition name
+			newTransitionList[targetTrIndex] = { ...targetTr, name: newName };
+			const trLabel = StageRef.findOne(`#tr_label${targetTrIndex}`);
+			if (trLabel) trLabel.text(newName.toString());
 		}
 
 		setTransitionList(newTransitionList);
@@ -335,46 +344,61 @@ const TransitionTable = () => {
 												nodeIdx,
 											);
 											return EngineMode.alphabets.map((alpha, alphaIdx) => {
-												const targetNames = rowDetails[alphaIdx];
-												let targetId = -1;
-												if (targetNames && targetNames.length > 0) {
-													// Assuming DFA, take the first one.
-													// If NFA, this UI only supports selecting one, so we default to the first.
-													const targetName = targetNames[0];
-													targetId = NodeList.findIndex(
-														(n) => n.name === targetName,
-													);
-												}
+												const targetStates = rowDetails[alphaIdx] || [];
 
 												return (
 													<td
 														key={alphaIdx}
-														className="p-2 border-r border-[#333]/50"
+														className="p-2 border-r border-[#333]/50 min-w-[120px]"
 													>
-														<select
-															value={targetId === -1 ? "trap" : targetId}
-															onChange={(e) =>
-																handleCellChange(nodeIdx, alpha, e.target.value)
-															}
-															className="w-full bg-transparent text-gray-300 outline-none cursor-pointer hover:text-white appearance-none py-0.5 text-center"
-															style={{ textAlignLast: "center" }}
-														>
-															<option
-																value="trap"
-																className="bg-[#252526] text-gray-500"
-															>
-																ø
-															</option>
-															{NodeList.map((n, i) => (
-																<option
-																	key={i}
-																	value={i}
-																	className="bg-[#252526]"
+														<div className="flex flex-wrap gap-1 items-center">
+															{targetStates.map((target, tIdx) => (
+																<div
+																	key={tIdx}
+																	className="flex items-center gap-1 bg-[#252526] px-1.5 py-0.5 rounded text-xs text-gray-300 border border-[#333] group"
 																>
-																	{n.name}
-																</option>
+																	<span>{target.name}</span>
+																	<button
+																		onClick={() =>
+																			handleRemoveTransition(
+																				nodeIdx,
+																				alpha,
+																				target.id,
+																			)
+																		}
+																		className="hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+																	>
+																		<X size={10} />
+																	</button>
+																</div>
 															))}
-														</select>
+															<div className="relative group/add">
+																<button className="p-0.5 hover:bg-[#333] rounded text-gray-500 hover:text-white transition-colors">
+																	<Plus size={12} />
+																</button>
+																<select
+																	onChange={(e) => {
+																		handleAddTransition(
+																			nodeIdx,
+																			alpha,
+																			e.target.value,
+																		);
+																		e.target.value = ""; // Reset
+																	}}
+																	className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+																	value=""
+																>
+																	<option value="" disabled>
+																		Add
+																	</option>
+																	{NodeList.map((n, i) => (
+																		<option key={i} value={i}>
+																			{n.name}
+																		</option>
+																	))}
+																</select>
+															</div>
+														</div>
 													</td>
 												);
 											});

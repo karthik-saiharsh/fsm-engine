@@ -68,6 +68,9 @@ export function handleTransitionSave(labels) {
 		// transitions on the same alphabet from a state
 		const consumed_letters = getAlphabetsFor(src_node);
 
+		// Check for duplicate transitions on same letter or
+		// Check for state having consumed all input alphabets when
+		// adding a new alphabet to the label
 		let err_msg = null;
 
 		const new_letters = labels.filter(

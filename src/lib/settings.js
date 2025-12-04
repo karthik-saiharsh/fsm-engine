@@ -56,6 +56,9 @@ export function HandleSaveSettings(newName, newColor, newType) {
 				// Update initial_state to point to this state
 				store.set(initial_state, (_) => id);
 			}
+		} else {
+			// If this state was an initial state, then update the store to point to null
+			if (store.get(initial_state) == id) store.set(initial_state, () => null);
 		}
 
 		store.set(node_list, (prev) => {
@@ -65,6 +68,7 @@ export function HandleSaveSettings(newName, newColor, newType) {
 		});
 	}
 
+	console.log(`Settings update! Current initial: ${store.get(initial_state)}`);
 	store.set(editor_state, (_prev) => null);
 	return;
 }

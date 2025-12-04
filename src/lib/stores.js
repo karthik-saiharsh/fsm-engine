@@ -18,6 +18,11 @@ export const node_list = atom([]);
 {
 id: number,
 stroke: string (color),
+type: {
+  initial: boolean,
+  intermediate: boolean,
+  final: boolean,
+}
 strokeWidth: number,
 fill: string,
 points: points,
@@ -79,6 +84,9 @@ export const confirm_dialog_atom = atom({
 	onConfirm: null,
 	onCancel: null,
 });
+
+// Store to show string validator
+export const show_string_validator = atom(false);
 
 // Export store provider
 export const store = createStore();
