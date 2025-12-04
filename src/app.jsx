@@ -12,8 +12,9 @@ import TopDock from "./components/TopDock";
 import TransitionTable from "./components/TransitionTable";
 import ConfirmDialog from "./components/ConfirmDialog";
 import { handleShortCuts } from "./lib/editor";
-import { editor_state } from "./lib/stores";
+import { show_string_validator } from "./lib/stores";
 import { useState } from "react";
+import StringValidator from "./components/StringValidator";
 
 export function App() {
 	// Disable right click context menu
@@ -52,7 +53,8 @@ export function App() {
 		};
 	}, [handleKeyPress]);
 
-	const EditorState = useAtomValue(editor_state);
+	// Jotai Stores
+	const showStringValidator = useAtomValue(show_string_validator);
 
 	if (isMobile) {
 		return (
@@ -91,6 +93,8 @@ export function App() {
 			<TransitionTable />
 
 			<ConfirmDialog />
+
+			{showStringValidator && <StringValidator />}
 		</div>
 	);
 }

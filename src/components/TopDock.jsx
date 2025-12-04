@@ -12,10 +12,11 @@ import {
 	engine_mode,
 	editor_state,
 	show_transition_table,
+	show_string_validator,
 } from "../lib/stores";
-import { useAtomValue, useAtom } from "jotai";
+import { useAtomValue, useAtom, useSetAtom } from "jotai";
 import { HandleAutoLayout } from "../lib/editor";
-import { HandleLoadFSM, validateDFA } from "../lib/special_functions";
+import { HandleLoadFSM } from "../lib/special_functions";
 
 const TopDock = () => {
 	const [isVisible, setIsVisible] = useState(false);
@@ -24,6 +25,7 @@ const TopDock = () => {
 	const [showTransitionTable, setShowTransitionTable] = useAtom(
 		show_transition_table,
 	);
+	const showStringValidator = useSetAtom(show_string_validator);
 
 	// Constants
 	const iconFillColor = "#ffffff";
@@ -69,11 +71,10 @@ const TopDock = () => {
 		{
 			name: "String Validator",
 			icon: <CaseSensitive stroke={iconFillColor} size={iconSize} />,
-			condition: ["NFA", "DFA"].includes(EngineMode.type),
+			condition: ["DFA"].includes(EngineMode.type),
 			onclick: () => {
-				alert(
-					"Feature Not Available yet. We're Working on it. Check back soon!",
-				);
+				showStringValidator(true);
+				setIsVisible(false);
 			},
 		},
 		{

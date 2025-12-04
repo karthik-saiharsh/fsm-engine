@@ -10,6 +10,7 @@ import {
 	store,
 	transition_list,
 	alert,
+	initial_state,
 } from "./stores";
 
 export async function HandleLoadFSM() {
@@ -75,15 +76,17 @@ export function getGraph() {
 		if (node) {
 			// Make sure node ain't null
 			const id = node.id;
-			const transitions = node.transitions.map((tr) =>
-				tr.from == id
-					? {
-							to: tr.to,
-							id: tr.tr_name,
-							on: TransitionList[tr.tr_name].name,
-						}
-					: {},
-			);
+			const transitions = [];
+
+			node.transitions.forEach((tr) => {
+				if (tr.from == id) {
+					transitions.push({
+						to: tr.to,
+						id: tr.tr_name,
+						on: TransitionList[tr.tr_name].name,
+					});
+				}
+			});
 
 			Graph[id] = {
 				name: node.name,
@@ -110,6 +113,13 @@ export function validateDFA() {
 	const alphabets_per_node = nodes.map((n) => getAlphabetsFor(n));
 	const alphabets = store.get(engine_mode).alphabets;
 
+	// If there is no initial state, alert the user
+	if (store.get(initial_state) === null) {
+		store.set(alert, () => "The DFA Does not have a Initial State!"); // Display the error
+		setTimeout(() => store.set(alert, () => ""), 3500);
+		return false;
+	}
+
 	for (let i = 0; i < alphabets_per_node.length; i++) {
 		// If there exists a state that has not consumed all the alphabets of the language, alert the user
 		if (alphabets_per_node[i].filter(Boolean).length != alphabets.length) {
@@ -121,6 +131,73 @@ export function validateDFA() {
 					}' does not consume all input alphabets!`,
 			); // Display the error
 			setTimeout(() => store.set(alert, () => ""), 3500);
+			return false;
 		}
+	}
+
+	return true;
+}
+
+export function getDFAGraph() {
+	// This functions returns an adjacency list representation of the Automata that is easy to process for a DFA
+	// Here the transitions of each node are represented in the POV of the alphabet
+	const NodeList = store.get(node_list);
+	const TransitionList = store.get(transition_list);
+	const nodes = Object.keys(NodeList);
+	let graph = {};
+
+	for (let i = 0; i < nodes.length; i++) {
+		const node = NodeList[nodes[i]];
+		const id = node.id;
+		const name = node.name;
+		let transitions = {};
+
+		node.transitions.forEach((tr) => {
+			if (tr.from === id) {
+				// For Each transition going out from this node
+				const transition = TransitionList[tr.tr_name];
+				const to = transition.to;
+				const to_name = NodeList[to].name;
+				const tr_alph = transition.name.filter(Boolean);
+
+				tr_alph.forEach((alph) => {
+					transitions[alph] = {
+						to: to,
+						tname: to_name,
+					};
+				});
+			}
+		});
+
+		graph[id] = {
+			name: name,
+			transitions: transitions,
+		};
+	}
+	return graph;
+}
+
+export function validateString(str) {
+	const engine_type = store.get(engine_mode).type;
+
+	if (str.trim().length == 0) return;
+
+	if (engine_type === "DFA") {
+		const isValid = validateDFA();
+		if (!isValid) return; // Only proceed if DFA Is Valid
+
+		const graph = getDFAGraph();
+		let curr_state = store.get(initial_state);
+		let instantaneous_desc = [[graph[curr_state].name, str]];
+
+		while (str.length > 0) {
+			const letter = str[0];
+			curr_state = graph[curr_state].transitions[letter].to;
+			str = str.substr(1);
+			instantaneous_desc.push([graph[curr_state].name, str]);
+		}
+
+		instantaneous_desc.push(store.get(node_list)[curr_state].type.final); // The last value is a boolean whether the string is accepted or otherwise
+		return instantaneous_desc;
 	}
 }
