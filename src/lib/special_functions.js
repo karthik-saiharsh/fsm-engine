@@ -56,9 +56,10 @@ export function getTransitionDetails(transitions, id) {
 				transitionObj && tr.from == id && transitionObj.name.includes(alpha)
 			);
 		});
-		const valid_states = valid_trs.map(
-			(tr) => store.get(node_list)[tr.to].name,
-		);
+		const valid_states = valid_trs.map((tr) => ({
+			id: tr.to,
+			name: store.get(node_list)[tr.to].name,
+		}));
 		end_nodes.push(valid_states);
 	});
 	return end_nodes;
@@ -78,10 +79,10 @@ export function getGraph() {
 			const transitions = node.transitions.map((tr) =>
 				tr.from == id
 					? {
-							to: tr.to,
-							id: tr.tr_name,
-							on: TransitionList[tr.tr_name].name,
-						}
+						to: tr.to,
+						id: tr.tr_name,
+						on: TransitionList[tr.tr_name].name,
+					}
 					: {},
 			);
 
@@ -116,8 +117,7 @@ export function validateDFA() {
 			store.set(
 				alert,
 				() =>
-					`State '${
-						graph[nodes[i]].name
+					`State '${graph[nodes[i]].name
 					}' does not consume all input alphabets!`,
 			); // Display the error
 			setTimeout(() => store.set(alert, () => ""), 3500);
