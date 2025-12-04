@@ -95,7 +95,7 @@ const Dock = () => {
 						onClick={item.onclick ? item.onclick : () => default_onclick(item)}
 						className={`flex gap-2 justify-center items-center font-github whitespace-nowrap ${
 							item.name === editorState ? "bg-blue-500" : "bg-secondary-bg"
-						} text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-2 hover:scale-110 active:scale-90 transition-all ease-in-out`}
+						} text-base text-text-primary px-4 py-2 border border-border-bg rounded-xl cursor-pointer hover:-translate-y-1 hover:scale-110 active:scale-90 transition-all ease-in-out`}
 					>
 						{item.icon}
 						{item.name}
