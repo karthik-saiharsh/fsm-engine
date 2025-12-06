@@ -86,7 +86,7 @@ const Dock = () => {
 	}
 
 	return (
-		<div className="absolute bottom-5 w-screen h-15 flex justify-center items-center">
+		<div className="absolute bottom-6 w-screen h-15 flex justify-center items-center">
 			<div className="flex justify-center items-center gap-3 w-fit px-2 h-full bg-primary-bg border border-border-bg rounded-2xl shadow-[0px_0px_50px_0px_#00000080] select-none">
 				{dockItems.map((item, idx) => (
 					<button
