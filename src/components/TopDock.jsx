@@ -71,7 +71,7 @@ const TopDock = () => {
 		{
 			name: "String Validator",
 			icon: <CaseSensitive stroke={iconFillColor} size={iconSize} />,
-			condition: ["DFA"].includes(EngineMode.type),
+			condition: ["DFA", "NFA"].includes(EngineMode.type),
 			onclick: () => {
 				showStringValidator(true);
 				setIsVisible(false);
