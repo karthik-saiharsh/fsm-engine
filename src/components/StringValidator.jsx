@@ -5,7 +5,7 @@ import { useState } from "react";
 const StringValidator = () => {
 	return (
 		<PopupWindow
-			classNames="w-80 h-fit"
+			classNames="w-90 h-fit"
 			title="String Validator"
 			is_visible="string_validator"
 		>
@@ -20,11 +20,10 @@ function Body() {
 
 	function HandleValidate() {
 		setInstDesc(validateString(str));
-		console.log(instDesc);
 	}
 
 	return (
-		<div className="w-full h-fit flex flex-col items-center py-3 mb-5 gap-3 select-none">
+		<div className="w-full h-fit flex flex-col items-center py-3 px-5 mb-5 gap-3 select-none">
 			<p className="font-github text-center text-white">Enter a String</p>
 			<span className="flex justify-center items-center gap-3">
 				<input
