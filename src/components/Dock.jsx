@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
 	BookHeart,
 	Cable,
@@ -6,18 +6,17 @@ import {
 	ImageDown,
 	MinusCircleIcon,
 	PlusCircleIcon,
-	Undo2,
 	Redo2,
+	Undo2,
 } from "lucide-react";
+import { getTransitionPoints, newProject } from "../lib/editor";
+import { redo, undo } from "../lib/history";
 import {
-	editor_state,
-	transition_pairs,
 	confirm_dialog_atom,
+	editor_state,
 	engine_mode,
+	transition_pairs,
 } from "../lib/stores";
-import { newProject, getTransitionPoints } from "../lib/editor";
-import { undo, redo } from "../lib/history";
-import { useSetAtom } from "jotai";
 
 // Define the Components of the Dock
 // Icon Look Constants
@@ -30,7 +29,7 @@ const Dock = () => {
 	const [editorState, setEditorState] = useAtom(editor_state);
 	const [_transitionPairs, setTransitionPairs] = useAtom(transition_pairs);
 	const setConfirmDialog = useSetAtom(confirm_dialog_atom);
-	const [engineMode, setEngineMode] = useAtom(engine_mode);
+	const [_engineMode, _setEngineMode] = useAtom(engine_mode);
 	// Jotai Atoms
 
 	const dockItems = [
@@ -81,8 +80,10 @@ const Dock = () => {
 	];
 
 	function default_onclick(item) {
-		if (item.name == "Connect") setTransitionPairs(null);
-		item.name == editorState ? setEditorState(null) : setEditorState(item.name);
+		if (item.name === "Connect") setTransitionPairs(null);
+		item.name === editorState
+			? setEditorState(null)
+			: setEditorState(item.name);
 	}
 
 	return (

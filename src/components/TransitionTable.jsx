@@ -1,20 +1,20 @@
 import { useAtom, useAtomValue } from "jotai";
-import {
-	editor_state,
-	engine_mode,
-	node_list,
-	transition_list,
-	stage_ref,
-	show_transition_table,
-} from "../lib/stores";
 import { Download, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getTransitionPoints } from "../lib/editor";
 import { getTransitionDetails } from "../lib/special_functions";
+import {
+	editor_state,
+	engine_mode,
+	node_list,
+	show_transition_table,
+	stage_ref,
+	transition_list,
+} from "../lib/stores";
 import PopupWindow from "./PopupWindow";
 
 const TransitionTable = () => {
-	const [EditorState, setEditorState] = useAtom(editor_state);
+	const [_EditorState, _setEditorState] = useAtom(editor_state);
 	const EngineMode = useAtomValue(engine_mode);
 	const [NodeList, setNodeList] = useAtom(node_list);
 	const [TransitionList, setTransitionList] = useAtom(transition_list);
@@ -32,8 +32,8 @@ const TransitionTable = () => {
 	};
 
 	const handleAddTransition = (fromId, alphabet, newToId) => {
-		const newToIdInt = parseInt(newToId);
-		if (isNaN(newToIdInt)) return;
+		const newToIdInt = parseInt(newToId, 10);
+		if (Number.isNaN(newToIdInt)) return;
 
 		const fromNode = NodeList[fromId];
 		const newTransitionList = [...TransitionList];
@@ -41,7 +41,7 @@ const TransitionTable = () => {
 
 		// Check if transition already exists
 		let targetTrIndex = -1;
-		for (let tr of fromNode.transitions) {
+		for (const tr of fromNode.transitions) {
 			const trObj = newTransitionList[tr.tr_name];
 			if (trObj && trObj.to === newToIdInt) {
 				targetTrIndex = tr.tr_name;
@@ -102,7 +102,7 @@ const TransitionTable = () => {
 		let targetTrIndex = -1;
 		let targetTr = null;
 
-		for (let tr of fromNode.transitions) {
+		for (const tr of fromNode.transitions) {
 			const trObj = TransitionList[tr.tr_name];
 			if (trObj && trObj.to === toId && trObj.name.includes(alphabet)) {
 				targetTrIndex = tr.tr_name;

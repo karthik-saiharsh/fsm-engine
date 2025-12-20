@@ -1,12 +1,22 @@
 // This is a general template for a PopUp Window
 
-import { useState, useRef, useEffect } from "react";
-import { X, Maximize, Minimize, Target } from "lucide-react";
-import { show_string_validator } from "../lib/stores";
 import { useSetAtom } from "jotai";
+import { Maximize, Minimize, Target, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { show_string_validator } from "../lib/stores";
 
 const PopupWindow = (props) => {
-	const { title, children, classNames, is_visible, onClose, initialPosition = { x: 50, y: 50 }, resizable = false, minWidth = 300, minHeight = 200, } = props;
+	const {
+		title,
+		children,
+		classNames,
+		is_visible,
+		onClose,
+		initialPosition = { x: 50, y: 50 },
+		resizable = false,
+		minWidth = 300,
+		minHeight = 200,
+	} = props;
 
 	// Jotai Atoms
 	const setIsVisibleStringVal = useSetAtom(show_string_validator);
@@ -66,8 +76,8 @@ const PopupWindow = (props) => {
 		const rect = containerRef.current.getBoundingClientRect();
 
 		// Lock size if auto
-		let currentWidth = size.width === "auto" ? rect.width : size.width;
-		let currentHeight = size.height === "auto" ? rect.height : size.height;
+		const currentWidth = size.width === "auto" ? rect.width : size.width;
+		const currentHeight = size.height === "auto" ? rect.height : size.height;
 		if (size.width === "auto" || size.height === "auto") {
 			setSize({ width: currentWidth, height: currentHeight });
 		}
@@ -141,20 +151,26 @@ const PopupWindow = (props) => {
 		// use custom onClose callback. note : if provided !!!
 		if (onClose) {
 			onClose();
-		} else if (is_visible == "string_validator") {
+		} else if (is_visible === "string_validator") {
 			setIsVisibleStringVal(false);
 		}
 	}
 
 	return (
-		<div
+		<button
+			type="button"
 			ref={containerRef}
 			onMouseDown={handleMouseDown}
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
 			onPointerLeave={handleMouseUp}
 			className={`absolute border border-border-bg bg-primary-bg rounded-lg shadow-[0px_0px_50px_0px_#000000]/50 overflow-hidden ${classNames}`}
-			style={{ left: windowState.left, top: windowState.top, width: windowState.minimized ? "auto" : size.width, height: windowState.minimized ? "auto" : size.height, }}
+			style={{
+				left: windowState.left,
+				top: windowState.top,
+				width: windowState.minimized ? "auto" : size.width,
+				height: windowState.minimized ? "auto" : size.height,
+			}}
 		>
 			{/* TitleBar */}
 			<div className="h-9 flex items-center justify-between px-5 bg-secondary-bg border-b border-border-bg cursor-move select-none">
@@ -169,6 +185,7 @@ const PopupWindow = (props) => {
 				{/* Close and Minimise Buttons */}
 				<span className="flex gap-3 items-center justify-center">
 					<button
+						type="button"
 						onClick={() =>
 							setWindowState((old) => ({ ...old, minimized: !old.minimized }))
 						}
@@ -182,6 +199,7 @@ const PopupWindow = (props) => {
 					</button>
 
 					<button
+						type="button"
 						onClick={HandleClose}
 						className="hover:bg-red-500/55 p-1 rounded-sm"
 					>
@@ -201,48 +219,64 @@ const PopupWindow = (props) => {
 			{resizable && !windowState.minimized && (
 				<>
 					{/* SE */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "se")}
 						className="resize-handle absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50"
+						aria-label="Resize southeast"
 					/>
 					{/* SW */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "sw")}
 						className="resize-handle absolute bottom-0 left-0 w-4 h-4 cursor-sw-resize z-50"
+						aria-label="Resize southwest"
 					/>
 					{/* NE */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "ne")}
 						className="resize-handle absolute top-0 right-0 w-4 h-4 cursor-ne-resize z-50"
+						aria-label="Resize northeast"
 					/>
 					{/* NW */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "nw")}
 						className="resize-handle absolute top-0 left-0 w-4 h-4 cursor-nw-resize z-50"
+						aria-label="Resize northwest"
 					/>
 					{/* E */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "e")}
 						className="resize-handle absolute top-4 bottom-4 right-0 w-2 cursor-e-resize z-50"
+						aria-label="Resize east"
 					/>
 					{/* W */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "w")}
 						className="resize-handle absolute top-4 bottom-4 left-0 w-2 cursor-w-resize z-50"
+						aria-label="Resize west"
 					/>
 					{/* N */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "n")}
 						className="resize-handle absolute top-0 left-4 right-4 h-2 cursor-n-resize z-50"
+						aria-label="Resize north"
 					/>
 					{/* S */}
-					<div
+					<button
+						type="button"
 						onMouseDown={(e) => handleResizeMouseDown(e, "s")}
 						className="resize-handle absolute bottom-0 left-4 right-4 h-2 cursor-s-resize z-50"
+						aria-label="Resize south"
 					/>
 				</>
 			)}
-		</div>
+		</button>
 	);
 };
 

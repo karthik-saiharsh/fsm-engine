@@ -1,3 +1,4 @@
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
 	CaseSensitive,
 	ChevronDown,
@@ -8,21 +9,20 @@ import {
 	Table,
 } from "lucide-react";
 import { useState } from "react";
-import {
-	engine_mode,
-	editor_state,
-	show_transition_table,
-	show_string_validator,
-} from "../lib/stores";
-import { useAtomValue, useAtom, useSetAtom } from "jotai";
 import { HandleAutoLayout } from "../lib/editor";
 import { HandleLoadFSM } from "../lib/special_functions";
+import {
+	editor_state,
+	engine_mode,
+	show_string_validator,
+	show_transition_table,
+} from "../lib/stores";
 
 const TopDock = () => {
 	const [isVisible, setIsVisible] = useState(false);
 	const EngineMode = useAtomValue(engine_mode);
 	const [_EditorState, setEditorState] = useAtom(editor_state);
-	const [showTransitionTable, setShowTransitionTable] = useAtom(
+	const [_showTransitionTable, setShowTransitionTable] = useAtom(
 		show_transition_table,
 	);
 	const showStringValidator = useSetAtom(show_string_validator);

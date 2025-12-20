@@ -2,9 +2,13 @@
  * This file has all the functions that are used in the Editor Component
  */
 
+import dagre from "dagre";
+import Konva from "konva";
+import { addToHistory, clearHistory, redo, undo } from "./history";
 import {
 	active_transition,
 	alert,
+	confirm_dialog_atom,
 	current_selected,
 	deleted_nodes,
 	editor_state,
@@ -16,11 +20,7 @@ import {
 	store,
 	transition_list,
 	transition_pairs,
-	confirm_dialog_atom,
 } from "./stores";
-import { addToHistory, undo, redo, clearHistory } from "./history";
-import dagre from "dagre";
-import Konva from "konva";
 
 // Handler function that is called when the editor is clicked
 export function HandleEditorClick(e) {
@@ -67,7 +67,7 @@ export function HandleEditorClick(e) {
 }
 
 // Handler function to update Position of nodes when they are dragged around
-export function HandleDragEnd(e, id) {
+export function HandleDragEnd(_e, id) {
 	const draggedState = store.get(stage_ref).findOne(`#state_${id}`); // Get the Circle
 	const position = [draggedState.x(), draggedState.y()]; // Get it's positions
 	// Update the State's Position in store
@@ -292,7 +292,7 @@ export function HandleScrollWheel(e) {
 }
 
 // Function to update the positions of transition arrows when a node is dragged around
-export function HandleStateDrag(e, id) {
+export function HandleStateDrag(_e, id) {
 	const state = store.get(node_list)[id]; // Get the state
 
 	const group = store.get(stage_ref).findOne("Group");
@@ -358,7 +358,7 @@ export function handleShortCuts(key) {
 		!["Controls", "Guide", "Save FSM"].includes(store.get(editor_state)) &&
 		key - 1 < keyBindings.length
 	) {
-		if (key == 1) {
+		if (key === 1) {
 			store.set(confirm_dialog_atom, {
 				isOpen: true,
 				message:
@@ -422,7 +422,7 @@ export function getTransitionPoints(id1, id2, tr_id, nodesMap = null) {
 	const startNode = nodes[id1];
 	const clickedGroup = nodes[id2]; // endNode
 
-	if (id1 == id2) {
+	if (id1 === id2) {
 		// Self-loop
 		const node = startNode;
 		const x = node.x;
@@ -517,7 +517,7 @@ function makeTransition(id, start_node, end_node) {
 		strokeWidth: 2,
 		fill: "#ffffffdd",
 		points: points,
-		tension: start_node == end_node ? 1 : 0.5,
+		tension: start_node === end_node ? 1 : 0.5,
 		name: name,
 		fontSize: 20,
 		fontStyle: "bold",
@@ -583,7 +583,7 @@ export function HandleAutoLayout() {
 
 	g.nodes().forEach((v) => {
 		const nodeData = g.node(v);
-		const id = parseInt(v);
+		const id = parseInt(v, 10);
 		// dagre gives center coordinates
 		finalPositions[id] = { x: nodeData.x, y: nodeData.y };
 

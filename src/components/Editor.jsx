@@ -17,12 +17,12 @@ import {
 	HandleStateDrag,
 } from "../lib/editor";
 import {
+	current_selected,
 	editor_state,
 	layer_ref,
 	node_list,
 	stage_ref,
 	transition_list,
-	current_selected,
 } from "../lib/stores";
 import { handleTransitionClick } from "../lib/transitions";
 
@@ -154,7 +154,7 @@ const Editor = () => {
 												<Text
 													id={`trtext_${transition.id}`}
 													text={
-														transition.name.length == 0
+														transition.name.length === 0
 															? ""
 															: transition.name.toString()
 													}
