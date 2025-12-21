@@ -8,14 +8,14 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { newProject } from "../lib/editor";
+import { clearHistory } from "../lib/history";
 import {
 	alert,
+	confirm_dialog_atom,
 	editor_state,
 	engine_mode,
-	confirm_dialog_atom,
 	show_transition_table,
 } from "../lib/stores";
-import { clearHistory } from "../lib/history";
 
 const FSMTypes = [
 	{
@@ -65,7 +65,7 @@ const Controls = () => {
 		const alp = alphabets;
 
 		const alph_seperated = alp.split(",");
-		let alph_trimmed = alph_seperated.map((item) => item.trim());
+		const alph_trimmed = alph_seperated.map((item) => item.trim());
 
 		if (alp.trim().length === 0) {
 			setAlert("Alphabets cannot be empty");
@@ -122,8 +122,9 @@ const Controls = () => {
 
 	return (
 		<div
-			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-[#1e1e1e]/20 backdrop-blur-[3px] ${editorState !== "Controls" && "hidden"
-				}`}
+			className={`absolute top-0 left-0 w-screen h-screen z-20 flex justify-center items-center bg-[#1e1e1e]/20 backdrop-blur-[3px] ${
+				editorState !== "Controls" && "hidden"
+			}`}
 		>
 			<div className="flex flex-col gap-5 justify-center px-5 py-5 w-110 h-fit bg-primary-bg border border-border-bg rounded-3xl shadow-[0px_0px_50px_0px_#000000]/70 select-none">
 				<h2 className="font-github text-2xl text-white font-medium text-center">
@@ -132,8 +133,9 @@ const Controls = () => {
 
 				<span>
 					<p
-						className={`font-github text-white text-base pb-2 ${FSMType === "Free Style" && "hidden"
-							}`}
+						className={`font-github text-white text-base pb-2 ${
+							FSMType === "Free Style" && "hidden"
+						}`}
 					>
 						Enter Alphabets in the Language
 					</p>
@@ -141,13 +143,15 @@ const Controls = () => {
 						value={alphabets}
 						onChange={(e) => setAlphabets(e.target.value)}
 						placeholder="Enter comma seperated values..."
-						className={`px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out ${FSMType === "Free Style" && "hidden"
-							}`}
+						className={`px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out ${
+							FSMType === "Free Style" && "hidden"
+						}`}
 						type="text"
 					/>
 					<p
-						className={`font-github text-white text-base py-1 ${FSMType !== "NFA" && "hidden"
-							}`}
+						className={`font-github text-white text-base py-1 ${
+							FSMType !== "NFA" && "hidden"
+						}`}
 					>
 						Empty transition is automatically added
 					</p>
@@ -155,16 +159,18 @@ const Controls = () => {
 
 				<span>
 					<p
-						className={`font-github text-white text-base pb-2 font-semibold ${FSMType !== "PDA" && "hidden"
-							}`}
+						className={`font-github text-white text-base pb-2 font-semibold ${
+							FSMType !== "PDA" && "hidden"
+						}`}
 					>
 						Enter Initial Stack Alphabet
 					</p>
 					<input
 						placeholder="Enter Initial Stack Alphabet..."
 						maxLength={1}
-						className={`px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out ${FSMType !== "PDA" && "hidden"
-							}`}
+						className={`px-1 py-2 text-sm h-9 w-full font-medium text-white font-github rounded-lg border border-border-bg outline-none hover:border-white/30 focus:border-blue-500 transition-all ease-in-out ${
+							FSMType !== "PDA" && "hidden"
+						}`}
 						type="text"
 					/>
 				</span>
@@ -179,8 +185,9 @@ const Controls = () => {
 							<span
 								key={i}
 								onClick={(_e) => handleStateChange(fsm.type)}
-								className={`flex items-center justify-center gap-2  w-fit px-2 py-2 ${fsm.type === FSMType ? "bg-blue-500" : "bg-secondary-bg"
-									} border border-border-bg rounded-lg cursor-pointer hover:scale-105 active:scale-95 transition-all ease-in-out`}
+								className={`flex items-center justify-center gap-2  w-fit px-2 py-2 ${
+									fsm.type === FSMType ? "bg-blue-500" : "bg-secondary-bg"
+								} border border-border-bg rounded-lg cursor-pointer hover:scale-105 active:scale-95 transition-all ease-in-out`}
 							>
 								{fsm.icon}
 								<p className="text-white font-github text-sm">{fsm.type}</p>

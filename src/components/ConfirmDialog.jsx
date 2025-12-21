@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
+import { AlertTriangle, CircleCheck, CircleX } from "lucide-react";
 import { confirm_dialog_atom } from "../lib/stores";
-import { CircleCheck, CircleX, AlertTriangle } from "lucide-react";
 
 const ConfirmDialog = () => {
 	const [dialogState, setDialogState] = useAtom(confirm_dialog_atom);

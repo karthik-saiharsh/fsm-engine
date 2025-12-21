@@ -1,6 +1,6 @@
-import PopupWindow from "./PopupWindow";
-import { validateString } from "../lib/special_functions";
 import { useState } from "react";
+import { validateString } from "../lib/special_functions";
+import PopupWindow from "./PopupWindow";
 
 const StringValidator = () => {
 	return (
@@ -43,7 +43,7 @@ function Body() {
 				</button>
 			</span>
 
-			{instDesc && instDesc.at(-1) ? (
+			{instDesc?.at(-1) ? (
 				<p className="text-balance font-github font-bold text-green-300">
 					String Is Accepted
 				</p>
@@ -53,18 +53,17 @@ function Body() {
 				</p>
 			)}
 
-			{instDesc &&
-				instDesc.map(
-					(item, idx) =>
-						idx != instDesc.length - 1 && (
-							<p
-								className="font-github text-white font-bold text-balance text-center tracking-widest"
-								key={idx}
-							>
-								= ({item[0]}, {item[1].length ? item[1] : "λ"})
-							</p>
-						),
-				)}
+			{instDesc?.map(
+				(item, idx) =>
+					idx !== instDesc.length - 1 && (
+						<p
+							className="font-github text-white font-bold text-balance text-center tracking-widest"
+							key={idx}
+						>
+							= ({item[0]}, {item[1].length ? item[1] : "λ"})
+						</p>
+					),
+			)}
 		</div>
 	);
 }

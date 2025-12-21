@@ -58,7 +58,7 @@ export function HandleSaveSettings(newName, newColor, newType) {
 			}
 		} else {
 			// If this state was an initial state, then update the store to point to null
-			if (store.get(initial_state) == id) store.set(initial_state, () => null);
+			if (store.get(initial_state) === id) store.set(initial_state, () => null);
 		}
 
 		store.set(node_list, (prev) => {

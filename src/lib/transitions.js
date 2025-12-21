@@ -1,16 +1,16 @@
+import { addToHistory } from "./history";
+import { getAlphabetsFor } from "./special_functions";
 import {
 	active_transition,
+	alert,
 	editor_state,
+	engine_mode,
 	node_list,
 	show_popup,
 	stage_ref,
 	store,
 	transition_list,
-	engine_mode,
-	alert,
 } from "./stores";
-import { addToHistory } from "./history";
-import { getGraph, getAlphabetsFor } from "./special_functions";
 
 // Handle a click event on a transition
 export function handleTransitionClick(id) {
@@ -77,7 +77,7 @@ export function handleTransitionSave(labels) {
 			(alph) => !consumed_letters.includes(alph),
 		);
 
-		if (new_letters.length == 0) {
+		if (new_letters.length === 0) {
 			err_msg = `State '${
 				store.get(node_list)[src_node].name
 			}' already has a transition on the alphabets you picked!`;

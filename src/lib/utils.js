@@ -23,7 +23,7 @@ export function getTransitionPoints(id1, id2, tr_id, nodesMap = null) {
 	const startNode = nodes[id1];
 	const clickedGroup = nodes[id2]; // endNode
 
-	if (id1 == id2) {
+	if (id1 === id2) {
 		// Self-loop
 		const node = startNode;
 		const x = node.x;

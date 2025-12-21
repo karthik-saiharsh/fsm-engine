@@ -1,12 +1,12 @@
 import { atom } from "jotai";
-import {
-	node_list,
-	transition_list,
-	store,
-	deleted_nodes,
-	stage_ref,
-} from "./stores";
 import Konva from "konva";
+import {
+	deleted_nodes,
+	node_list,
+	stage_ref,
+	store,
+	transition_list,
+} from "./stores";
 
 // Atoms to hold the history of states
 export const past = atom([]);
