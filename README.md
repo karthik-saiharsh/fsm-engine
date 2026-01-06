@@ -4,6 +4,8 @@ A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Bu
 
 <img width="2775" height="1527" alt="Screenshot_20251119_190809" src="https://github.com/user-attachments/assets/4e85ac97-f47b-46ad-88b5-0760492dc26b" />
 
+> This Development Branch aims to port fsm-engine to svelte
+
 ## Features
 
 - Interactive Canvas Editor
