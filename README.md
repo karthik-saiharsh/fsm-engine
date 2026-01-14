@@ -4,7 +4,9 @@ A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Bu
 
 <img width="2775" height="1527" alt="Screenshot_20251119_190809" src="https://github.com/user-attachments/assets/4e85ac97-f47b-46ad-88b5-0760492dc26b" />
 
-> This Development Branch aims to port fsm-engine to svelte
+⚠️ **A Note on the Future of FSM-Engine**
+
+Development on this branch is currently frozen. We are in the process of a fundamental architectural overhaul and potential stack migration to improve scalability. New features are currently on hold until the new core structure is finalized.
 
 ## Features
 
