@@ -28,7 +28,7 @@ export enum EngineTypes {
 export interface State {
     id: number;
     value: string;
-    transitions: { incoming: number[], outgoing: number[] };
+    transitions: { incoming: Set<number>, outgoing: Set<number> };
 }
 
 /**

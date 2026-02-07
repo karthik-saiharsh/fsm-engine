@@ -5,72 +5,130 @@
  */
 
 import { type State, EngineTypes, type Transition } from "./utils/types";
-
-
+import { MinHeap } from "min-heap-typed";
 
 /**
  * Finite State Machine Engine
- * 
+ *
  * A configurable state machine implementation that supports multiple engine types
  * (Free Style, DFA, NFA). This class manages the creation and organization of states
- * and transitions within a state machine. 
- * 
- * 
+ * and transitions within a state machine.
+ *
+ *
  * @see {@link EngineTypes} for available state machine types
  * @see {@link State} for state structure
  * @see {@link Transition} for transition structure
  */
 export class FSMEngine {
-  /** The type of state machine. Defaults to Free Style. */
-  type: EngineTypes;
-  /** HashMap of states (nodes) in the state machine. */
-  nodes: Map<number, State> = new Map<number, State>();
-  /** HashMap of transitions between states. */
-  transitions: Map<number, Transition> = new Map<number, Transition>();
+    /** The type of state machine. Defaults to Free Style. */
+    private type: EngineTypes;
+    /** HashMap of states (nodes) in the state machine. */
+    private nodes: Map<number, State>;
+    /** HashMap of transitions between states. */
+    private transitions: Map<number, Transition>;
 
-  constructor(type: EngineTypes) {
-    this.type = type;
-  }
+    /** Keep Track of Deleted/free-to-use ID values */
+    private freeIds = new MinHeap<number>();
 
-  /**
-   * Adds a New State To the Machine
-   * @param state - Pass in the state you wish to add
-   * @throws {Error} If a state with the same ID already exists
-   * @returns The id of the new state added
-   */
-  public addState(state: State): number {
-    if (this.nodes.has(state.id)) {
-      throw new Error(`A State with ID ${state.id} already exists.`);
+    constructor(type: EngineTypes) {
+        this.type = type;
+        this.nodes = new Map<number, State>();
+        this.transitions = new Map<number, Transition>();
     }
 
-    // Add this state to state store
-    this.nodes.set(state.id, state);
+    /**
+     * Takes a Hash map as references and uses that as store for nodes
+     * @param nodes A Hash Map of type (key, value) = (number, State)
+     */
+    setNodes(nodes: Map<number, State>) {
+        this.nodes = nodes;
+    }
 
-    return state.id;
-  }
+    /**
+     * Takes a Hash map as references and uses that as store for nodes
+     * @param nodes A Hash Map of type (key, value) = (number, State)
+     */
+    setTransitions(transitions: Map<number, Transition>) {
+        this.transitions = transitions;
+    }
 
+    /**
+     * @returns The nodes Map
+     */
+    getNodes(): Map<number, State> {
+        if (this.nodes) return this.nodes;
+        else throw new Error("Nodes is undefined");
+    }
 
-  /**
-   * Adds a New  To the Machine
-   * @param transition - Pass in the transition you wish to add
-   * @throws {Error} If the source or destination state does not exist
-   * @returns The id of the new transition added
-   */
-  public addTransition(transition: Transition): number {
+    /**
+     * @returns The transitions Map
+     */
+    getTransitions(): Map<number, Transition> {
+        if (this.transitions) return this.transitions;
+        else throw new Error("Transitions is undefined");
+    }
 
-    // Verify existance of states
-    if (!this.nodes.has(transition.from))
-      throw new Error(`State with ID ${transition.from} does not exist.`);
-    if (!this.nodes.has(transition.to))
-      throw new Error(`State with ID ${transition.to} does not exist.`);
+    /**
+     * Adds a new Stateb
+     * @param value Value of the State
+     * @returns The id of the state (reference value to access this state).
+     */
+    addState(value: string): number {
+        let id: number = this.nodes.size;
 
-    // Add transition to engine
-    this.transitions.set(transition.id, transition);
+        // If there is a free-to-use id, use that instead
+        if (this.freeIds.size > 0) {
+            id = this.freeIds.poll()!;
+        }
 
-    // Add this transition to relevant states
-    this.nodes.get(transition.from)?.transitions.outgoing.push(transition.id);
-    this.nodes.get(transition.to)?.transitions.incoming.push(transition.id);
+        const state: State = {
+            id: id,
+            value: value,
+            transitions: {
+                incoming: new Set<number>(),
+                outgoing: new Set<number>(),
+            },
+        };
+        this.nodes.set(id, state);
+        return id;
+    }
 
-    return transition.id;
-  }
+    /**
+     * Adds a new Transition.
+     * In Case you are wondering, a reference number of the state
+     * is returned when a new state is added @see addState method
+     * @param from From State's reference number
+     * @param to To State's reference number
+     * @param on Upon what must the transition occur ?
+     * @returns a reference id of the transition
+     */
+    addTransition(from: number, to: number, on: string): number {
+        // Verify if from and to states exist in the Engine
+        if (!this.nodes.has(from)) {
+            throw new Error(`State ${from} doesn't exist.`);
+            return -1;
+        }
+
+        if (!this.nodes.has(to)) {
+            throw new Error(`State ${to} doesn't exist.`);
+            return -1;
+        }
+
+        // Add this new transition to store
+        const id: number = this.transitions.size;
+        const transition: Transition = {
+            id: id,
+            from: from,
+            to: to,
+            on: on,
+        };
+
+        this.transitions.set(id, transition);
+
+        // Update this transition in the store for the nodes as well
+        this.nodes.get(from)?.transitions.outgoing.add(id);
+        this.nodes.get(to)?.transitions.incoming.add(id);
+
+        return id;
+    }
 }
