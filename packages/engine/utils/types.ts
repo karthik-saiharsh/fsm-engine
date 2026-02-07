@@ -4,11 +4,9 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
-
 /**
  * @fileoverview This file houses all the type declarations for the FSM Engine.
  */
-
 
 /**
  * Types of State Machines Supported.
@@ -19,7 +17,7 @@ export enum EngineTypes {
     /** Deterministic Finite Automaton. */
     DFA,
     /** Non-deterministic Finite Automaton. */
-    NFA
+    NFA,
 }
 
 /**
@@ -28,7 +26,11 @@ export enum EngineTypes {
 export interface State {
     id: number;
     value: string;
-    transitions: { incoming: Set<number>, outgoing: Set<number> };
+    transitions: {
+        incoming: Set<number>;
+        outgoing: Set<number>;
+        self: Set<number>;
+    };
 }
 
 /**
