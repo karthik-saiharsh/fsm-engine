@@ -4,7 +4,8 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
-import { type State, EngineTypes, type Transition } from "./utils/types";
+import type { State, Transition } from "./utils/types";
+import { EngineTypes } from "./utils/types";
 import { MinHeap } from "min-heap-typed";
 
 /**
@@ -22,6 +23,10 @@ import { MinHeap } from "min-heap-typed";
 export class FSMEngine {
     /** The type of state machine. Defaults to Free Style. */
     private type: EngineTypes;
+
+    /** Name of the project */
+    name: string;
+
     /** HashMap of states (nodes) in the state machine. */
     private nodes: Map<number, State>;
     /** HashMap of transitions between states. */
@@ -30,8 +35,15 @@ export class FSMEngine {
     /** Keep Track of Deleted/free-to-use ID values */
     private freeIds = new MinHeap<number>();
 
-    constructor(type: EngineTypes) {
+    constructor(type: EngineTypes, name: string) {
+        if (name.length < 5) {
+            throw new Error(
+                "The Project name must atleast be 5 characters long"
+            );
+        }
+
         this.type = type;
+        this.name = name;
         this.nodes = new Map<number, State>();
         this.transitions = new Map<number, Transition>();
     }
@@ -69,7 +81,7 @@ export class FSMEngine {
     }
 
     /**
-     * Adds a new Stateb
+     * Adds a new State
      * @param value Value of the State
      * @returns The id of the state (reference value to access this state).
      */
