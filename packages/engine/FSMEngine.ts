@@ -22,21 +22,21 @@ import { MinHeap } from "min-heap-typed";
  */
 export class FSMEngine {
     /** The type of state machine. Defaults to Free Style. */
-    private type: EngineTypes;
+    protected type: EngineTypes;
 
     /** Name of the project */
     name: string;
 
     /** HashMap of states (nodes) in the state machine. */
-    private nodes: Map<number, State>;
+    protected nodes: Map<number, State>;
     /** HashMap of transitions between states. */
-    private transitions: Map<number, Transition>;
+    protected transitions: Map<number, Transition>;
 
     /** Keep Track of Deleted/free-to-use ID values */
-    private freeIds = new MinHeap<number>();
+    protected freeIds = new MinHeap<number>();
 
     /** Keep Track of Deleted/free-to-use Transition ID values */
-    private freeTrIds = new MinHeap<number>();
+    protected freeTrIds = new MinHeap<number>();
 
     constructor(name: string) {
         if (name.length < 5) {
@@ -49,6 +49,13 @@ export class FSMEngine {
         this.name = name;
         this.nodes = new Map<number, State>();
         this.transitions = new Map<number, Transition>();
+    }
+
+    /**
+     * @returns Current type of the Engine
+     */
+    getType(): EngineTypes {
+        return this.type;
     }
 
     /**
@@ -282,12 +289,14 @@ export class FSMEngine {
         this.transitions.delete(transition.id);
     }
 
+    /********* HELPER FUNCTIONS *********/
+
     /**
      * Check the existance of a State
      * @param id Reference ID of a State
      * @returns True if state is present in store
      */
-    private verifyStateExistance(id: number) {
+    protected verifyStateExistance(id: number) {
         if (!this.nodes.has(id)) {
             throw new Error(`State with id ${id} does not exist.`);
         }
@@ -298,7 +307,7 @@ export class FSMEngine {
      * @param id Reference ID of a Transitions
      * @returns True if Transitions is present in store
      */
-    private verifyTransitionExistance(id: number) {
+    protected verifyTransitionExistance(id: number) {
         if (!this.transitions.has(id)) {
             throw new Error(`Transition with id ${id} does not exist.`);
         }
