@@ -1,7 +1,15 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    "files": [],
+    "references": [
+        { "path": "./tsconfig.app.json" },
+        { "path": "./tsconfig.node.json" }
+    ],
+
+    "compilerOptions": {
+        // ... other options
+        "paths": {
+            "$lib": ["./src/lib"],
+            "$lib/*": ["./src/lib/*"]
+        }
+    }
 }
