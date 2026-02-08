@@ -159,6 +159,24 @@ export class FSMEngine {
     }
 
     /**
+     * Get list of all transition ids that consume a said alphabet
+     * @param on String value that the transition consumes
+     * @returns list of transition id consuming `on`
+     */
+    getTransitionsOn(on: string): number[] {
+        const trs = [];
+
+        for (const [key, tr] of this.transitions) {
+            // If on matches collect it
+            if (tr.on === on) {
+                trs.push(key);
+            }
+        }
+
+        return trs;
+    }
+
+    /**
      * Adds a new State
      * @param value Value of the State
      * @returns The id of the state (reference value to access this state).

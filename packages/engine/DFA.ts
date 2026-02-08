@@ -12,22 +12,61 @@ export class DFA extends FSMEngine {
      * This attribute has key as state id and value as another map
      * with key as language alphabet and value as id of the to state
      */
-    dfaGraph: Map<number, Map<string, number>>;
+    protected dfaGraph: Map<number, Map<string, number>>;
+
+    startState: number | undefined;
+    endState: Set<number>;
 
     constructor(name: string) {
         super(name);
         this.type = EngineTypes.DFA;
         this.languageAlphabet = new Set<string>();
         this.dfaGraph = new Map<number, Map<string, number>>();
+        this.endState = new Set<number>();
+    }
+
+    /**
+     * Set a state as starting state
+     * @param id Reference id of start state
+     */
+    setStartState(id: number) {
+        // Check state exists
+        this.verifyStateExistance(id);
+
+        this.startState = id;
     }
 
     /**
      * Add new alphabets to the language grammar
-     * @param alphs one or more language alphabets belonging to the language grammar
+     * @param alphs one or more language alphabets passed as arguments (not as list)
      */
     addAlphabets(...alphs: string[]) {
         for (const alph of alphs) {
             this.languageAlphabet.add(alph);
+        }
+    }
+
+    /**
+     * Remove said alphabets from language grammar
+     *
+     * Note: This is a slow operation having O(n^2) in the worst case. So use it carefully
+     * @param alphs one or more language alphabets passed as arguments (not as list)
+     */
+    removeAlphabets(...alphs: string[]) {
+        // Remove alphabets
+        for (const alph of alphs) {
+            // Verify existance of alphabet
+            this.verifyAlphExistance(alph);
+            // Remove alphabet
+            this.languageAlphabet.delete(alph);
+
+            // And remove all the transitions happening on this alphabet
+            const badTransitions: number[] = this.getTransitionsOn(alph);
+
+            // Remove them bad transitions
+            for (const trId of badTransitions) {
+                this.deleteTransition(trId);
+            }
         }
     }
 
@@ -108,12 +147,60 @@ export class DFA extends FSMEngine {
         this.dfaGraph.get(from)?.delete(on);
     }
 
+    /**
+     * Check if a String is accepted by the DFA
+     * @param str String to parse
+     * @returns an object consisting path of states taken to reach the end and a boolean
+     * indicating whether string is accepted or not
+     */
+    validateString(str: string): { path: number[]; accepted: boolean } {
+        // Verify start state exists
+        this.verifyStartState();
+
+        // Keep track of all states visited
+        const path: number[] = [];
+
+        let current: number = this.startState!;
+
+        for (const ch of [...str]) {
+            // push current state to path
+            path.push(current);
+            // verify the alphabet exists
+            this.verifyAlphExistance(ch);
+
+            // get next state to move to
+            const next = this.dfaGraph.get(current)?.get(ch);
+
+            if (current !== undefined) {
+                current = next!;
+            } else {
+                // Return failure of string acceptance
+                return {
+                    path: path,
+                    accepted: this.endState.has(current),
+                };
+            }
+        }
+
+        // return success
+        return {
+            path: path,
+            accepted: true,
+        };
+    }
+
     /********* HELPER FUNCTIONS *********/
     private verifyAlphExistance(alph: string) {
         if (!this.languageAlphabet.has(alph)) {
             throw new Error(
                 `Alphabet ${alph} doesn't exist in grammar of project ${this.name}.`
             );
+        }
+    }
+
+    private verifyStartState() {
+        if (this.startState === undefined) {
+            throw new Error(`Start State Does not exist`);
         }
     }
 }
