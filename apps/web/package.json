@@ -25,6 +25,8 @@
     "@lucide/svelte": "^0.563.1",
     "@tailwindcss/vite": "^4.1.18",
     "clsx": "^2.1.1",
+    "konva": "^10.2.0",
+    "svelte-konva": "^1.0.1",
     "tailwind-merge": "^3.4.0",
     "tailwind-variants": "^3.2.2",
     "tailwindcss": "^4.1.18",
