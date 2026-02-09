@@ -119,3 +119,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Load Fonts */
+@font-face {
+  font-family: "geist";
+  src: url("assets/geist.ttf");
+}
+
+@theme {
+  --font-geist: geist;
+}
