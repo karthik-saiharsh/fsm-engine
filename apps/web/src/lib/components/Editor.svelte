@@ -24,7 +24,9 @@
 </script>
 
 <!-- Main Editor Window -->
-<main id="body" class="w-screen h-screen overflow-hidden flex max-md:hidden">
+<main
+    id="body"
+    class="w-screen h-screen overflow-hidden flex max-md:hidden transition-all ease-in-out duration-300">
     <!-- Side Bar Editor -->
     <div class="w-1/4 h-screen border-r bg-secondary flex flex-col py-5 px-2">
         <!-- Project Details Container -->
@@ -32,7 +34,7 @@
             <Input
                 type="text"
                 placeholder="Project Name"
-                class="not-hover:border-none not-active:border-none placeholder:text-primary font-geist font-semibold" />
+                class="text-center not-hover:border-none not-active:border-none placeholder:text-primary font-geist font-semibold active:scale-95 transition-all ease-in-out duration-300" />
             <Button
                 class="cursor-pointer active:scale-90"
                 variant="outline"

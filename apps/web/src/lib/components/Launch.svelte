@@ -10,6 +10,8 @@
     import { Plus, MonitorUp } from "@lucide/svelte";
     import { ProjectData } from "../utils/stores.svelte";
     import { ProjectType } from "../utils/types";
+    import { Button } from "./ui/button";
+    import { SunMedium, Moon } from "@lucide/svelte";
 
     /**
      * Sets Project Type
@@ -19,13 +21,35 @@
         ProjectData.show_proj_selector = false;
         ProjectData.proj_type = type;
     }
+
+    let currentTheme = $state(0); // 1=light, 0=dark (kinda like turning a light on and off)
+
+    /** Toggle between light and dark themes */
+    function toggleColorTheme() {
+        const body = document.querySelector("body");
+        body?.classList.toggle("dark");
+        currentTheme = Math.abs(currentTheme - 1);
+    }
 </script>
 
 <main
-    class="w-screen h-screen select-none flex flex-col justify-center items-center gap-20 text-center">
+    class="w-screen h-screen select-none flex flex-col justify-center items-center gap-20 text-center max-md:hidden">
+    <!-- Theme Switcher -->
+    <Button
+        class="absolute right-5 top-5 cursor-pointer active:scale-90 rounded-full"
+        variant="outline"
+        size="icon"
+        onclick={toggleColorTheme}>
+        {#if currentTheme}
+            <Moon size={18} />
+        {:else}
+            <SunMedium size={18} />
+        {/if}
+    </Button>
+
     <span>
         <h1 class="text-4xl font-bold font-geist">FSM Engine</h1>
-        <p class="font-geist text-balance">One tool to rule them All</p>
+        <p class="font-geist text-balance">One Tool To Tule Them All</p>
     </span>
 
     <span class="flex justify-center items-center gap-5">
@@ -47,5 +71,15 @@
         Looking for Documentation and Example Tutorials ? <a
             href="/"
             class="underline hover:text-blue-200">Click here</a>
+    </p>
+</main>
+
+
+<!-- FallBack in case screen size is too small -->
+<main
+    id="body"
+    class="w-screen h-screen overflow-hidden flex justify-center items-center md:hidden">
+    <p class="text-3xl font-bold text-center font-geist">
+        Screen Size too Small
     </p>
 </main>
