@@ -13,8 +13,8 @@
 </script>
 
 <!-- Show Project details if not already chosen -->
-{#if ProjectData.show_proj_selector}
+<!-- {#if ProjectData.show_proj_selector}
     <Launch />
-{/if}
+{/if} -->
 
-<!-- <Editor /> -->
+<Editor />

@@ -1,63 +1,51 @@
 <script lang="ts">
     /******** COMPONENT IMPORTS ********/
-    import { Input } from "./ui/input";
-    import { Button } from "./ui/button";
+    import SideBar from "./editor/SideBar.svelte";
+    import ScreenSizeFallback from "./generic/ScreenSizeFallback.svelte";
+    import { Stage, Rect, Layer } from "svelte-konva";
     /******** COMPONENT IMPORTS ********/
 
     /******** LUCIDE ICON IMPORTS ********/
-    import { SunMedium, Moon } from "@lucide/svelte";
     /******** LUCIDE ICON IMPORTS ********/
 
     /******** REACTIVE VARIABLES ********/
-    let width = $state();
-    let height = $state();
+    let width: number = $state(0); // Width of Konav Stage
+    let height: number = $state(0); // Width of Konav Stage
 
-    let currentTheme = $state(0); // 1=light, 0=dark (kinda like turning a light on and off)
     /******** REACTIVE VARIABLES ********/
-
-    /** Toggle between light and dark themes */
-    function toggleColorTheme() {
-        const body = document.querySelector("body");
-        body?.classList.toggle("dark");
-        currentTheme = Math.abs(currentTheme - 1);
-    }
 </script>
 
 <!-- Main Editor Window -->
 <main
-    id="body"
     class="w-screen h-screen overflow-hidden flex max-md:hidden transition-all ease-in-out duration-300">
     <!-- Side Bar Editor -->
-    <div class="w-1/4 h-screen border-r bg-secondary flex flex-col py-5 px-2">
-        <!-- Project Details Container -->
-        <div class="flex items-center justify-center gap-3">
-            <Input
-                type="text"
-                placeholder="Project Name"
-                class="text-center not-hover:border-none not-active:border-none placeholder:text-primary font-geist font-semibold active:scale-95 transition-all ease-in-out duration-300" />
-            <Button
-                class="cursor-pointer active:scale-90"
-                variant="outline"
-                size="icon"
-                onclick={toggleColorTheme}>
-                {#if currentTheme}
-                    <Moon size={18} />
-                {:else}
-                    <SunMedium size={18} />
-                {/if}
-            </Button>
-        </div>
-    </div>
-
+    <SideBar />
     <!-- Actual Editor -->
-    <div class="w-3/4 flex-1 h-screen bg-card"></div>
+    <div
+        id="body"
+        bind:clientWidth={width}
+        bind:clientHeight={height}
+        class="w-3/4 flex-1 h-screen bg-card">
+        <Stage {width} {height}>
+            <Layer>
+                <Rect
+                    draggable
+                    x={100}
+                    y={100}
+                    width={100}
+                    height={100}
+                    fill="blue" />
+            </Layer>
+        </Stage>
+    </div>
 </main>
 
-<!-- FallBack in case screen size is too small -->
-<main
-    id="body"
-    class="w-screen h-screen overflow-hidden flex justify-center items-center md:hidden">
-    <p class="text-3xl font-bold text-center font-geist">
-        Screen Size too Small
-    </p>
-</main>
+<!-- Displayed if screen size is too small -->
+<ScreenSizeFallback />
+
+<style>
+    #body {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%23404040' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
+        background-size: 30px 30px;
+    }
+</style>
