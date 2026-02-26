@@ -1,8 +1,16 @@
+<!--
+    /* Copyright (C) 2026 Illindala Karthik Saiharsh - All Rights Reserved
+     * You may use, distribute and modify this code under the
+     * terms of the GPL V3 license.
+     * I would prefer it if you provide credits, in case you use my code for your projects :)
+     */ 
+-->
+
 <script lang="ts">
     /******** COMPONENT IMPORTS ********/
-    import SideBar from "./editor/SideBar.svelte";
     import ScreenSizeFallback from "./generic/ScreenSizeFallback.svelte";
     import { Stage, Rect, Layer } from "svelte-konva";
+    import TopBar from "./editor/TopBar.svelte";
     /******** COMPONENT IMPORTS ********/
 
     /******** LUCIDE ICON IMPORTS ********/
@@ -17,15 +25,13 @@
 
 <!-- Main Editor Window -->
 <main
-    class="w-screen h-screen overflow-hidden flex max-md:hidden transition-all ease-in-out duration-300">
-    <!-- Side Bar Editor -->
-    <SideBar />
-    <!-- Actual Editor -->
+    class="w-screen h-screen overflow-hidden flex flex-col max-md:hidden transition-all ease-in-out duration-300">
+    <TopBar />
     <div
         id="body"
         bind:clientWidth={width}
         bind:clientHeight={height}
-        class="w-3/4 flex-1 h-screen bg-card">
+        class="w-full flex-1 h-screen bg-card">
         <Stage {width} {height}>
             <Layer>
                 <Rect
@@ -43,9 +49,9 @@
 <!-- Displayed if screen size is too small -->
 <ScreenSizeFallback />
 
-<style>
+<!-- <style>
     #body {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%23404040' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%23ffffff20' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
         background-size: 30px 30px;
     }
-</style>
+</style> -->

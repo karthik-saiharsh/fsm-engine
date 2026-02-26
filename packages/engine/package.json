@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "version": "0.0.1",
+  "main": "index.ts",
   "devDependencies": {
     "@types/bun": "latest"
   },

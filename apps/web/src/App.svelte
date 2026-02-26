@@ -8,7 +8,6 @@
 
 <script>
     import Launch from "./lib/components/Launch.svelte";
-    import { ProjectData } from "./lib/utils/stores.svelte";
     import Editor from "./lib/components/Editor.svelte";
 </script>
 

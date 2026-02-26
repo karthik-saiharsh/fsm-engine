@@ -1,4 +1,4 @@
-<!-- 
+<!--
     /* Copyright (C) 2026 Illindala Karthik Saiharsh - All Rights Reserved
      * You may use, distribute and modify this code under the
      * terms of the GPL V3 license.
@@ -8,20 +8,9 @@
 
 <script lang="ts">
     import { Plus, MonitorUp } from "@lucide/svelte";
-    import { ProjectData } from "../utils/stores.svelte";
-    import { ProjectType } from "../utils/types";
     import { Button } from "./ui/button";
     import { SunMedium, Moon } from "@lucide/svelte";
     import ScreenSizeFallback from "./generic/ScreenSizeFallback.svelte";
-
-    /**
-     * Sets Project Type
-     * @param type @see ProjectType
-     */
-    function setProjectType(type: ProjectType) {
-        ProjectData.show_proj_selector = false;
-        ProjectData.proj_type = type;
-    }
 
     let currentTheme = $state(0); // 1=light, 0=dark (kinda like turning a light on and off)
 
@@ -55,13 +44,13 @@
 
     <span class="flex justify-center items-center gap-5">
         <button
-            onclick={() => setProjectType(ProjectType.NEW)}
+            onclick={() => {}}
             class="border-2 border-dashed rounded-lg w-40 h-40 flex flex-col gap-3 justify-center items-center not-dark:shadow-lg cursor-pointer hover:-translate-y-3 transition-all ease-in-out duration-300 active:scale-90">
             <Plus size={30} />
             <p class="text-sm font-geist">New Project</p>
         </button>
         <button
-            onclick={() => setProjectType(ProjectType.EXISTING)}
+            onclick={() => {}}
             class="border-2 border-dashed rounded-lg w-40 h-40 flex flex-col gap-3 justify-center items-center not-dark:shadow-lg cursor-pointer hover:-translate-y-3 transition-all ease-in-out duration-300 active:scale-90">
             <MonitorUp size={30} />
             <p class="text-sm font-geist">Open Project</p>
