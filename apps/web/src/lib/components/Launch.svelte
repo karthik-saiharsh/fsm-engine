@@ -10,7 +10,6 @@
     import { Plus, MonitorUp } from "@lucide/svelte";
     import { Button } from "./ui/button";
     import { SunMedium, Moon } from "@lucide/svelte";
-    import ScreenSizeFallback from "./generic/ScreenSizeFallback.svelte";
 
     let currentTheme = $state(0); // 1=light, 0=dark (kinda like turning a light on and off)
 
@@ -63,7 +62,3 @@
             class="underline hover:text-blue-200">Click here</a>
     </p>
 </main>
-
-
-<!-- Displayed if screen size is too small -->
-<ScreenSizeFallback />

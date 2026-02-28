@@ -11,6 +11,7 @@
     import ScreenSizeFallback from "./generic/ScreenSizeFallback.svelte";
     import { Stage, Rect, Layer } from "svelte-konva";
     import TopBar from "./editor/TopBar.svelte";
+    import ProjectDetailsPopup from "./popus/ProjectDetailsPopup.svelte";
     /******** COMPONENT IMPORTS ********/
 
     /******** LUCIDE ICON IMPORTS ********/
@@ -34,20 +35,21 @@
         class="w-full flex-1 h-screen bg-card">
         <Stage {width} {height}>
             <Layer>
-                <Rect
+                <!-- <Rect
                     draggable
                     x={100}
                     y={100}
                     width={100}
                     height={100}
-                    fill="blue" />
+                    fill="blue" /> -->
             </Layer>
         </Stage>
     </div>
 </main>
 
-<!-- Displayed if screen size is too small -->
-<ScreenSizeFallback />
+<!-- Additional Overlays and Popup Windows -->
+<ProjectDetailsPopup />
+<!-- Additional Overlays and Popup Windows -->
 
 <!-- <style>
     #body {

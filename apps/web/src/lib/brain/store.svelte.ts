@@ -4,18 +4,41 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
+import { EngineTypes } from "@fsm/engine";
+
+/** Stuff */
+const date = new Date();
+/** Stuff */
+
 /**
  * This monolithic beast of a class has every detail of the current project.
  */
-
-const date = new Date();
-
 class Project {
-    project_name: string = $state("");
-    theme: "dark" | "light" = "dark";
+    project_details = $state({
+        name: "", // Project name
+        author: "", // Project Author
+        created: "", // Project Created At Date
+        type: EngineTypes.FREE, // Type of the State Machine
+    });
 
+    theme: "dark" | "light" = "dark"; // UI Theme
+
+    /****** TOGGLER VARIABLES ******/
+    togglers = $state({
+        show_proj_details: false,
+    });
+    /****** TOGGLER VARIABLES ******/
+
+    /**
+     * Create a new project
+     */
     constructor() {
-        this.project_name = `FSM_Project_${date.toDateString()}`;
+        this.project_details = {
+            ...this.project_details,
+            name: `FSM_Project_${date.toDateString()}`,
+            author: "Unnamed Author",
+            created: date.toDateString(),
+        };
     }
 
     /**

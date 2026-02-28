@@ -10,33 +10,90 @@
     import Button from "../ui/button/button.svelte";
     import Input from "../ui/input/input.svelte";
     import Separator from "../ui/separator/separator.svelte";
-    import { NotepadText, Save, Sun, Moon } from "@lucide/svelte";
+    import {
+        NotepadText,
+        Save,
+        Settings2,
+        Sparkle,
+        Table,
+        CirclePlus,
+    } from "@lucide/svelte";
     import ProjectClass from "../../brain/store.svelte";
+    import MachinePicker from "./MachinePicker.svelte";
+    import { EngineTypes } from "@fsm/engine";
+
+    /**
+     * Meta-data about the Project.
+     * @see ProjectClass.project_details
+     */
+    const projectData = ProjectClass.project_details;
+
+    /**
+     * Show additional Project Settings Data
+     */
+    function openProjSettings() {
+        ProjectClass.togglers.show_proj_details = true;
+    }
 </script>
 
 <div class="w-full h-15 flex items-center px-3 gap-2 bg-secondary border-b">
+    <!-- Project Meta Data Settings and Details -->
+
+    <!-- New Project  -->
+    <Button variant="outline">
+        <CirclePlus />
+        <p class="font-geist">New</p>
+    </Button>
+
+    <!-- Project Save  -->
     <Button variant="outline">
         <Save />
         <p class="font-geist">Save</p>
     </Button>
 
+    <!-- Open Saved Project -->
     <Button variant="outline">
         <NotepadText />
         <p class="font-geist">Open</p>
     </Button>
 
+    <!-- Bind this input directly to the project name -->
     <Input
         class="w-1/6 text-center font-geist"
         placeholder="Project Name..."
-        bind:value={ProjectClass.project_name} />
+        bind:value={projectData.name} />
 
-    <Button variant="outline" size="icon" onclick={ProjectClass.toggleTheme}>
-        {#if ProjectClass.theme === "dark"}
-            <Sun />
-        {:else}
-            <Moon />
-        {/if}
+    <!-- Open Additional Project Configuration Options -->
+    <Button onclick={openProjSettings} variant="outline" size="icon">
+        <Settings2 />
     </Button>
 
+    <!-- Project Meta Data Settings and Details -->
+
     <Separator orientation="vertical" />
+
+    <!-- Project State Machine Type Selection and Additional Settings -->
+    <MachinePicker />
+
+    <Button
+        disabled={projectData.type === EngineTypes.FREE}
+        variant="outline"
+        size="icon">
+        <Settings2 />
+    </Button>
+    <!-- Project State Machine Type Selection and Additional Settings -->
+
+    <Separator orientation="vertical" />
+
+    <!-- Special Functions and Features -->
+    <Button variant="outline" class="font-geist">
+        <Sparkle />
+        Auto Layout
+    </Button>
+
+    <Button variant="outline" class="font-geist">
+        <Table />
+        Transition Table
+    </Button>
+    <!-- Special Functions and Features -->
 </div>

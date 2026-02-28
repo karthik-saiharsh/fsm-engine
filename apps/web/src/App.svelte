@@ -9,6 +9,7 @@
 <script>
     import Launch from "./lib/components/Launch.svelte";
     import Editor from "./lib/components/Editor.svelte";
+    import ScreenSizeFallback from "./lib/components/generic/ScreenSizeFallback.svelte";
 </script>
 
 <!-- Show Project details if not already chosen -->
@@ -17,3 +18,6 @@
 {/if} -->
 
 <Editor />
+
+<!-- Displayed if screen size is too small -->
+<ScreenSizeFallback />
