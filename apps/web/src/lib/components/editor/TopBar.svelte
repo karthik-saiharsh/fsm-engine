@@ -17,10 +17,12 @@
         Sparkle,
         Table,
         CirclePlus,
+        Grid3X3,
     } from "@lucide/svelte";
     import ProjectClass from "../../brain/store.svelte";
     import MachinePicker from "./MachinePicker.svelte";
     import { EngineTypes } from "@fsm/engine";
+    import secondary_stores from "../../brain/extras.svelte";
 
     /**
      * Meta-data about the Project.
@@ -33,6 +35,15 @@
      */
     function openProjSettings() {
         ProjectClass.togglers.show_proj_details = true;
+    }
+
+    /**
+     * Toggle Grid Display
+     */
+    function toggleGrid() {
+        secondary_stores.grid_shown = secondary_stores.grid_shown
+            ? false
+            : true;
     }
 </script>
 
@@ -80,6 +91,13 @@
         variant="outline"
         size="icon">
         <Settings2 />
+    </Button>
+
+    <Button
+        onclick={toggleGrid}
+        variant={secondary_stores.grid_shown ? "default" : "outline"}>
+        <Grid3X3 />
+        <p>Grid {secondary_stores.grid_shown ? "On" : "Off"}</p>
     </Button>
     <!-- Project State Machine Type Selection and Additional Settings -->
 

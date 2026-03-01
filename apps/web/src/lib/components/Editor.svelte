@@ -8,10 +8,11 @@
 
 <script lang="ts">
     /******** COMPONENT IMPORTS ********/
-    import ScreenSizeFallback from "./generic/ScreenSizeFallback.svelte";
     import { Stage, Rect, Layer } from "svelte-konva";
     import TopBar from "./editor/TopBar.svelte";
     import ProjectDetailsPopup from "./popus/ProjectDetailsPopup.svelte";
+    import Dock from "./Dock.svelte";
+    import secondary_stores from "../brain/extras.svelte";
     /******** COMPONENT IMPORTS ********/
 
     /******** LUCIDE ICON IMPORTS ********/
@@ -51,9 +52,15 @@
 <ProjectDetailsPopup />
 <!-- Additional Overlays and Popup Windows -->
 
-<!-- <style>
-    #body {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%23ffffff20' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
-        background-size: 30px 30px;
-    }
-</style> -->
+<!-- Options Dock -->
+<Dock />
+<!-- Options Dock -->
+
+{#if secondary_stores.grid_shown}
+    <style>
+        #body {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%23ffffff25' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
+            background-size: 30px 30px;
+        }
+    </style>
+{/if}

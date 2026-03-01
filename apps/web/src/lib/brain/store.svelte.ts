@@ -4,7 +4,13 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
+/********* Library Imports *********/
 import { EngineTypes } from "@fsm/engine";
+/********* Library Imports *********/
+
+/********* Type Imports *********/
+import { DockModes } from "./types";
+/********* Type Imports *********/
 
 /** Stuff */
 const date = new Date();
@@ -22,6 +28,8 @@ class Project {
     });
 
     theme: "dark" | "light" = "dark"; // UI Theme
+
+    current_mode: DockModes = $state(DockModes.NIL); // Current chosen Dock Mode
 
     /****** TOGGLER VARIABLES ******/
     togglers = $state({

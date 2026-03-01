@@ -12,3 +12,10 @@ export interface ProjectDetailsType {
     created: string; // Project Created At Date
     type: EngineTypes; // Type of the State Machine
 }
+
+export enum DockModes {
+    NIL,
+    ADD,
+    REMOVE,
+    CONNECT,
+}
