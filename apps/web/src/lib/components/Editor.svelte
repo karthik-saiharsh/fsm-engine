@@ -8,12 +8,16 @@
 
 <script lang="ts">
     /******** COMPONENT IMPORTS ********/
-    import { Stage, Rect, Layer } from "svelte-konva";
+    import { Stage, Rect, Layer, Circle } from "svelte-konva";
     import TopBar from "./editor/TopBar.svelte";
     import ProjectDetailsPopup from "./popus/ProjectDetailsPopup.svelte";
     import Dock from "./Dock.svelte";
-    import secondary_stores from "../brain/extras.svelte";
     /******** COMPONENT IMPORTS ********/
+
+    /****** BACKEND IMPORTS ******/
+    import secondary_stores from "../brain/extras.svelte";
+    import ProjectClass from "../brain/store.svelte";
+    /****** BACKEND IMPORTS ******/
 
     /******** LUCIDE ICON IMPORTS ********/
     /******** LUCIDE ICON IMPORTS ********/
@@ -21,7 +25,6 @@
     /******** REACTIVE VARIABLES ********/
     let width: number = $state(0); // Width of Konav Stage
     let height: number = $state(0); // Width of Konav Stage
-
     /******** REACTIVE VARIABLES ********/
 </script>
 
@@ -34,15 +37,21 @@
         bind:clientWidth={width}
         bind:clientHeight={height}
         class="w-full flex-1 h-screen bg-card">
-        <Stage {width} {height}>
+        <Stage
+            draggable
+            {width}
+            {height}
+            onclick={(e) => ProjectClass.onStageClick(e)}>
             <Layer>
-                <!-- <Rect
-                    draggable
-                    x={100}
-                    y={100}
-                    width={100}
-                    height={100}
-                    fill="blue" /> -->
+                {#each ProjectClass.node_properties.values() as Node}
+                    <Circle
+                        draggable
+                        x={Node.x}
+                        y={Node.y}
+                        radius={Node.radius}
+                        fill={Node.color}
+                        stroke={Node.stroke} />
+                {/each}
             </Layer>
         </Stage>
     </div>

@@ -19,8 +19,13 @@
     const proj_date = $derived(ProjectClass.project_details.created);
 
     function handleSave() {
-        ProjectClass.project_details.name = proj_name;
-        ProjectClass.project_details.author = proj_author;
+        const new_proj_details: typeof ProjectClass.project_details = {
+            ...ProjectClass.project_details,
+            name: proj_name,
+            author: proj_author,
+        };
+
+        ProjectClass.saveProjectDetails(new_proj_details);
         ProjectClass.togglers.show_proj_details = false;
     }
 

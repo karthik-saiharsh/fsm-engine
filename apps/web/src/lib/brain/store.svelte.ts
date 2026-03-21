@@ -9,7 +9,10 @@ import { EngineTypes } from "@fsm/engine";
 /********* Library Imports *********/
 
 /********* Type Imports *********/
-import { DockModes } from "./types";
+import { DockModes, type NodeProps } from "./types";
+import { FSMEngine, type State } from "@fsm/engine";
+import type { KonvaMouseEvent } from "svelte-konva";
+import { SvelteMap } from "svelte/reactivity";
 /********* Type Imports *********/
 
 /** Stuff */
@@ -37,6 +40,18 @@ class Project {
     });
     /****** TOGGLER VARIABLES ******/
 
+
+    /****** STATE MACHINE VARIABLES ******/
+    nodes = new SvelteMap<number, State>(); // This stores the actual nodes
+
+    // This stores the look and feel of the nodes for the ftonedn
+    node_properties = new SvelteMap<number, NodeProps>();
+    /****** STATE MACHINE VARIABLES ******/
+
+    /****** BACKEND CLASSES ******/
+    engine: FSMEngine; // The backend FSM Engine Class
+    /****** BACKEND CLASSES ******/
+
     /**
      * Create a new project
      */
@@ -47,7 +62,14 @@ class Project {
             author: "Unnamed Author",
             created: date.toDateString(),
         };
+
+        this.engine = new FSMEngine(this.project_details.name);
+
+        // Set nodes Map to be used instead as node store
+        this.engine.setNodes(this.nodes);
     }
+
+    /************** BACKEND AND LOGIC RELATED METHODS  **************/
 
     /**
      * Toggle Theme of the app
@@ -56,6 +78,55 @@ class Project {
         this.theme = this.theme === "dark" ? "light" : "dark";
         document.getElementById("body")?.classList.toggle("dark");
     }
+
+
+    /************** BACKEND AND LOGIC RELATED METHODS  **************/
+
+    /**
+     * Change Project Details
+     */
+    saveProjectDetails(project_details: typeof this.project_details) {
+
+        if (this.project_details.name != project_details.name) {
+            // Update the name of the project if it has changed in the engine
+            this.engine.name = project_details.name
+        }
+
+        // Apply new project metadata values
+        this.project_details = project_details;
+    }
+
+
+    /************** KONVA AND FRONTEND RELATED METHODS  **************/
+
+
+    /** What should be done when the Konva Stage is Clicked ? */
+    onStageClick(e: KonvaMouseEvent) {
+
+        /**
+         * If the editor is in add mode, then add a new state
+         */
+        if (this.current_mode === DockModes.ADD) {
+            // Add New Node to Store
+            const id = this.engine.addState(`${this.nodes.size}`);
+
+            // get the mouse click position
+            const mouse = e.target.getStage()?.getPointerPosition();
+
+            // Add an entry to keep track of the node's look and feel
+            const nodeProps: NodeProps = {
+                color: "#ffffff80",
+                stroke: "#ffffff90",
+                x: mouse?.x!,
+                y: mouse?.y!,
+                radius: 40
+            }
+            this.node_properties.set(id, nodeProps)
+        }
+    }
+
+
+    /************** KONVA AND FRONTEND RELATED METHODS  **************/
 }
 
 // One instance to manage it all

@@ -13,6 +13,20 @@ export interface ProjectDetailsType {
     type: EngineTypes; // Type of the State Machine
 }
 
+enum NodeType {
+    INTERMEDIATE,
+    START,
+    END
+}
+
+export interface NodeProps {
+    color: string,
+    stroke: string,
+    x: number,
+    y: number,
+    radius: number
+}
+
 export enum DockModes {
     NIL,
     ADD,

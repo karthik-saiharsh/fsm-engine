@@ -69,10 +69,11 @@
     </Button>
 
     <!-- Bind this input directly to the project name -->
-    <Input
+    <!-- <Input
         class="w-1/6 text-center font-geist"
         placeholder="Project Name..."
-        bind:value={projectData.name} />
+        bind:value={projectData.name} /> -->
+    <p class="w-[24ch] font-geist font-semi-bold border py-1 px-2 rounded-md truncate">{projectData.name}</p>
 
     <!-- Open Additional Project Configuration Options -->
     <Button onclick={openProjSettings} variant="outline" size="icon">
