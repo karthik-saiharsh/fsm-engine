@@ -4,14 +4,13 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
-import { TextAlignJustifyIcon } from "@lucide/svelte";
-
 /**
  * @fileoverview This class contains global stores that aren't
  * as important and so needn't belong in the ProjectClass */
 
 class SecondaryStores {
-    grid_shown = $state(false);
+    grid_shown = $state<boolean>(true);
+    current_select = $state<number | null>(null)
 }
 
 const secondary_stores = new SecondaryStores();

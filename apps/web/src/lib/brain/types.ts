@@ -13,7 +13,7 @@ export interface ProjectDetailsType {
     type: EngineTypes; // Type of the State Machine
 }
 
-enum NodeType {
+export enum NodeType {
     INTERMEDIATE,
     START,
     END

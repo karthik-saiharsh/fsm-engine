@@ -13,6 +13,7 @@ import { DockModes, type NodeProps } from "./types";
 import { FSMEngine, type State } from "@fsm/engine";
 import type { KonvaMouseEvent } from "svelte-konva";
 import { SvelteMap } from "svelte/reactivity";
+import { Key } from "@lucide/svelte";
 /********* Type Imports *********/
 
 /** Stuff */
@@ -37,6 +38,7 @@ class Project {
     /****** TOGGLER VARIABLES ******/
     togglers = $state({
         show_proj_details: false,
+        show_node_customizer: false,
     });
     /****** TOGGLER VARIABLES ******/
 
@@ -44,8 +46,13 @@ class Project {
     /****** STATE MACHINE VARIABLES ******/
     nodes = new SvelteMap<number, State>(); // This stores the actual nodes
 
-    // This stores the look and feel of the nodes for the ftonedn
-    node_properties = new SvelteMap<number, NodeProps>();
+    // This stores the look and feel of the nodes for the frontend
+    defaultNodeLook: Partial<NodeProps> = {
+        color: "#ffffff80",
+        stroke: "#ffffff90",
+        radius: 40
+    }
+    node_properties = new SvelteMap<number, Partial<NodeProps>>();
     /****** STATE MACHINE VARIABLES ******/
 
     /****** BACKEND CLASSES ******/
@@ -96,6 +103,20 @@ class Project {
         this.project_details = project_details;
     }
 
+    /**
+     * the @see node_properties store keeps track of look and feel properties of a node
+     * However, it is not synchronized with the @see nodes store.
+     * I could use a $effect(), or $derived(), but I, instead prefer to use this function that will
+     * Synchronize both @see node_properties and @see nodes, and call this whenever changes are made to @see nodes
+     */
+    syncNodeLookStore() {
+        for (const key of this.node_properties.keys()) {
+            if (!this.nodes.has(key)) {
+                this.node_properties.delete(key)
+            }
+        }
+    }
+
 
     /************** KONVA AND FRONTEND RELATED METHODS  **************/
 
@@ -114,12 +135,9 @@ class Project {
             const mouse = e.target.getStage()?.getPointerPosition();
 
             // Add an entry to keep track of the node's look and feel
-            const nodeProps: NodeProps = {
-                color: "#ffffff80",
-                stroke: "#ffffff90",
+            const nodeProps: Partial<NodeProps> = {
                 x: mouse?.x!,
                 y: mouse?.y!,
-                radius: 40
             }
             this.node_properties.set(id, nodeProps)
         }

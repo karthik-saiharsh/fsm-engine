@@ -8,15 +8,20 @@
 
 <script lang="ts">
     /******** COMPONENT IMPORTS ********/
-    import { Stage, Rect, Layer, Circle } from "svelte-konva";
+    import { Stage, Text, Layer, Circle, Group } from "svelte-konva";
     import TopBar from "./editor/TopBar.svelte";
     import ProjectDetailsPopup from "./popus/ProjectDetailsPopup.svelte";
     import Dock from "./Dock.svelte";
+    import NodeCustomizer from "./popus/NodeCustomizer.svelte";
+    import type { KonvaMouseEvent } from "svelte-konva";
     /******** COMPONENT IMPORTS ********/
 
     /****** BACKEND IMPORTS ******/
     import secondary_stores from "../brain/extras.svelte";
     import ProjectClass from "../brain/store.svelte";
+    const defaultLook = ProjectClass.defaultNodeLook;
+    const Nodes = ProjectClass.nodes;
+    const NodeProps = ProjectClass.node_properties;
     /****** BACKEND IMPORTS ******/
 
     /******** LUCIDE ICON IMPORTS ********/
@@ -26,6 +31,25 @@
     let width: number = $state(0); // Width of Konav Stage
     let height: number = $state(0); // Width of Konav Stage
     /******** REACTIVE VARIABLES ********/
+
+    /********* FUNCTIONS *********/
+    /**
+     * Open node customization option on right click on a node
+     */
+    function toggleRightClick(e: KonvaMouseEvent, id: number) {
+        // Keep track of current selected State
+        if (secondary_stores.current_select === id) {
+            secondary_stores.current_select = null;
+        } else {
+            secondary_stores.current_select = id;
+        }
+
+        if (e.evt.button === 2) {
+            ProjectClass.togglers.show_node_customizer =
+                !ProjectClass.togglers.show_node_customizer;
+        }
+    }
+    /********* FUNCTIONS *********/
 </script>
 
 <!-- Main Editor Window -->
@@ -41,24 +65,49 @@
             draggable
             {width}
             {height}
-            onclick={(e) => ProjectClass.onStageClick(e)}>
+            onclick={(e) => {
+                // Call only if left click
+                if (e.evt.button === 0) {
+                    ProjectClass.onStageClick(e);
+                }
+            }}>
             <Layer>
-                {#each ProjectClass.node_properties.values() as Node}
-                    <Circle
-                        draggable
-                        x={Node.x}
-                        y={Node.y}
-                        radius={Node.radius}
-                        fill={Node.color}
-                        stroke={Node.stroke} />
+                {#each ProjectClass.node_properties.keys() as id}
+                    <Group
+                        onclick={(e) => {
+                            toggleRightClick(e, id);
+                        }}
+                        x={NodeProps.get(id)?.x}
+                        y={NodeProps.get(id)?.y}
+                        draggable>
+                        <Text
+                            text={Nodes.get(id)?.value}
+                            fill="#ffffff"
+                            fontSize={18}
+                            x={-(Math.exp(Nodes.get(id)?.value.length!) ** 1.5)}
+                            y={-(
+                                Math.exp(Nodes.get(id)?.value.length!) ** 2
+                            )} />
+
+                        <Circle
+                            radius={NodeProps.get(id)?.radius ??
+                                defaultLook.radius}
+                            fill={NodeProps.get(id)?.color ?? defaultLook.color}
+                            stroke={NodeProps.get(id)?.stroke ??
+                                defaultLook.stroke} />
+                    </Group>
                 {/each}
             </Layer>
         </Stage>
     </div>
 </main>
 
+<!-- Disable Right click -->
+<svelte:window oncontextmenu={(e) => e.preventDefault()} />
+
 <!-- Additional Overlays and Popup Windows -->
 <ProjectDetailsPopup />
+<NodeCustomizer />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->
