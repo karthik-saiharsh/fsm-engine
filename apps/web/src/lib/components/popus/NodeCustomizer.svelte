@@ -13,7 +13,7 @@
     import Label from "../ui/label/label.svelte";
     import Input from "../ui/input/input.svelte";
     import { X, CircleCheck, CircleX } from "@lucide/svelte";
-    import type { NodeProps } from "../../brain/types";
+    import type { NodeProps, PartialNodeProps } from "../../brain/types";
     import secondary_stores from "../../brain/extras.svelte";
     import type { State } from "@fsm/engine";
 
@@ -71,7 +71,7 @@
                         ? 50
                         : (currentSelectedProp?.radius ??
                           ProjectClass.defaultNodeLook.radius),
-            } as Partial<NodeProps>);
+            } as PartialNodeProps);
         }
 
         ProjectClass.togglers.show_node_customizer = false;

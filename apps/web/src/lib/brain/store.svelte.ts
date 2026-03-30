@@ -39,6 +39,7 @@ class Project {
     togglers = $state({
         show_proj_details: false,
         show_node_customizer: false,
+        show_tr_customizer: false,
     });
     /****** TOGGLER VARIABLES ******/
 
@@ -244,6 +245,24 @@ class Project {
         } as PartialNodeProps);
 
         // Update any linked Transition Positions
+    }
+
+    onTransitionClick(e: KonvaMouseEvent, id: number) {
+
+        if (ProjectClass.current_mode === DockModes.REMOVE && e.evt.button === 0) {
+            // Delete this transition
+            this.engine.deleteTransition(id);
+
+            // Sync Transition and Properties Stores
+            this.syncTrPropStore();
+
+            return;
+        }
+
+        if (e.evt.button === 0) {
+            secondary_stores.current_tr = id;
+            ProjectClass.togglers.show_tr_customizer = true;
+        }
     }
 
 

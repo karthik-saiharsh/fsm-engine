@@ -27,6 +27,7 @@
     /****** BACKEND IMPORTS ******/
     import secondary_stores from "../brain/extras.svelte";
     import ProjectClass from "../brain/store.svelte";
+    import TransitionCustomizer from "./popus/TransitionCustomizer.svelte";
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
     const NodeProps = ProjectClass.node_properties;
@@ -181,15 +182,17 @@
                         tension={TransitionProps.get(id)?.curvature} />
 
                     <Label
+                        onclick={(e) => ProjectClass.onTransitionClick(e, id)}
                         x={transitionData[1][0] -
-                            (Transitions.get(id)?.on.length ?? 0)}
+                            (Transitions.get(id)?.on.length ?? 0)**1.5}
                         y={transitionData[1][1] - 10}
                         opacity={0.75}>
                         <Tag
-                            fill="#1f1f1f"
+                            fill="#f1f1f170"
                             lineJoin="round"
                             shadowColor="#ffffff20"
-                            shadowBlur={30} />
+                            shadowBlur={30}
+                            cornerRadius={8} />
                         <Text
                             text={Transitions.get(id)?.on}
                             fontFamily="Sans"
@@ -209,6 +212,7 @@
 <!-- Additional Overlays and Popup Windows -->
 <ProjectDetailsPopup />
 <NodeCustomizer />
+<TransitionCustomizer />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->
