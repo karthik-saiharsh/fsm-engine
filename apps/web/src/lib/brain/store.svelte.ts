@@ -109,7 +109,7 @@ class Project {
      * I could use a $effect(), or $derived(), but I, instead prefer to use this function that will
      * Synchronize both @see node_properties and @see nodes, and call this whenever changes are made to @see nodes
      */
-    syncNodeLookStore() {
+    syncNodePropStore() {
         for (const key of this.node_properties.keys()) {
             if (!this.nodes.has(key)) {
                 this.node_properties.delete(key)
@@ -129,7 +129,7 @@ class Project {
          */
         if (this.current_mode === DockModes.ADD) {
             // Add New Node to Store
-            const id = this.engine.addState(`${this.nodes.size}`);
+            const id = this.engine.addState(`q${secondary_stores.deleted_state_names.shift() ?? this.nodes.size}`);
 
             // get the mouse click position
             const mouse = e.target.getStage()?.getPointerPosition();
@@ -146,9 +146,21 @@ class Project {
     /** What should be done when a Node is Clicked ? */
     onNodeClick(e: KonvaMouseEvent, id: number) {
 
-        if(this.current_mode === DockModes.REMOVE && e.evt.button === 0) {
+        if (this.current_mode === DockModes.REMOVE && e.evt.button === 0) {
             // Handle Node Deletion
+            this.engine.deleteState(id);
 
+            // Sync node properties and nodes store
+            this.syncNodePropStore();
+
+            // Make this name available for reuse
+            secondary_stores.deleted_state_names.push(id);
+
+            // sort so that the smaller number is used before a larger one
+            // i could've used a priority que here, but again, 
+            // the array isn't going to be that large anyways, so i'll let sort do the job for now :)
+            secondary_stores.deleted_state_names.sort();
+            return;
         }
 
         // Keep track of current selected State
