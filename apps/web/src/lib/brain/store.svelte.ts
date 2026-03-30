@@ -11,9 +11,9 @@ import { EngineTypes } from "@fsm/engine";
 /********* Type Imports *********/
 import { DockModes, type NodeProps } from "./types";
 import { FSMEngine, type State } from "@fsm/engine";
-import type { KonvaMouseEvent } from "svelte-konva";
+import type { KonvaMouseEvent, KonvaDragTransformEvent } from "svelte-konva";
 import { SvelteMap } from "svelte/reactivity";
-import { Key } from "@lucide/svelte";
+import secondary_stores from "./extras.svelte";
 /********* Type Imports *********/
 
 /** Stuff */
@@ -141,6 +141,44 @@ class Project {
             }
             this.node_properties.set(id, nodeProps)
         }
+    }
+
+    /** What should be done when a Node is Clicked ? */
+    onNodeClick(e: KonvaMouseEvent, id: number) {
+
+        if(this.current_mode === DockModes.REMOVE && e.evt.button === 0) {
+            // Handle Node Deletion
+
+        }
+
+        // Keep track of current selected State
+        if (e.evt.button === 0 /* Left click select */) {
+            if (secondary_stores.current_select === id) {
+                secondary_stores.current_select = null;
+            } else {
+                secondary_stores.current_select = id;
+            }
+        }
+
+        if (e.evt.button === 2 /* Right click option menu */) {
+            // Set current selected to this node
+            secondary_stores.current_select = id;
+
+            ProjectClass.togglers.show_node_customizer =
+                !ProjectClass.togglers.show_node_customizer;
+        }
+    }
+
+    /** What should be done when a Node is Dragged ? */
+    onNodeDrag(e: KonvaDragTransformEvent, id: number) {
+        // Position of the node would have changed, this has to be updated in it's properties
+        const currentProps = this.node_properties.get(id);
+
+        this.node_properties.set(id, {
+            ...currentProps,
+            x: e.currentTarget.attrs.x,
+            y: e.currentTarget.attrs.y,
+        } as Partial<NodeProps>);
     }
 
 

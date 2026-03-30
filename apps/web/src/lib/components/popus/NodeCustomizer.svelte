@@ -13,8 +13,7 @@
     import Label from "../ui/label/label.svelte";
     import Input from "../ui/input/input.svelte";
     import { X, CircleCheck, CircleX } from "@lucide/svelte";
-    import type { NodeProps, NodeType } from "../../brain/types";
-    import { onMount } from "svelte";
+    import type { NodeProps } from "../../brain/types";
     import secondary_stores from "../../brain/extras.svelte";
     import type { State } from "@fsm/engine";
 
@@ -28,15 +27,10 @@
             const currentId = secondary_stores.current_select;
             const defaultLook = ProjectClass.defaultNodeLook;
 
-            console.log(currentId);
-
             if (currentId != null) {
                 const currentSelected = ProjectClass.nodes.get(currentId);
                 const currentSelectedProp =
                     ProjectClass.node_properties.get(currentId);
-
-                console.log(currentSelected);
-                console.log(currentSelectedProp);
 
                 name = currentSelected?.value;
                 color = currentSelectedProp?.color ?? defaultLook.color;
@@ -46,14 +40,38 @@
 
     function handleSave() {
         const currentId = secondary_stores.current_select;
-
+        console.log(`Current selected: ${currentId}`);
         if (currentId != null) {
-            const currentSelected: State = ProjectClass.nodes.get(currentId)!;
-            const currentSelectedProp: Partial<NodeProps> =
-                ProjectClass.node_properties.get(currentId)!;
+            const currentSelected = ProjectClass.nodes.get(currentId);
+            const currentSelectedProp =
+                ProjectClass.node_properties.get(currentId);
 
-            currentSelected.value = name!;
-            currentSelectedProp.color = color!;
+            // Update Node's name
+            if (currentSelected) {
+                ProjectClass.nodes.set(currentId, {
+                    ...currentSelected,
+                    value: name ?? currentSelected.value,
+                } as State);
+            }
+
+            console.log(color);
+            if (color?.length === 7) {
+                color += "80";
+            }
+            console.log(color);
+            // Update color
+            ProjectClass.node_properties.set(currentId, {
+                ...currentSelectedProp,
+                color:
+                    color ??
+                    currentSelectedProp?.color ??
+                    ProjectClass.defaultNodeLook.color,
+                radius:
+                    name && name.length >= 6
+                        ? 50
+                        : (currentSelectedProp?.radius ??
+                          ProjectClass.defaultNodeLook.radius),
+            } as Partial<NodeProps>);
         }
 
         ProjectClass.togglers.show_node_customizer = false;

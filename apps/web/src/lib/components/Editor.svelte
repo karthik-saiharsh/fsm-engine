@@ -33,22 +33,7 @@
     /******** REACTIVE VARIABLES ********/
 
     /********* FUNCTIONS *********/
-    /**
-     * Open node customization option on right click on a node
-     */
-    function toggleRightClick(e: KonvaMouseEvent, id: number) {
-        // Keep track of current selected State
-        if (secondary_stores.current_select === id) {
-            secondary_stores.current_select = null;
-        } else {
-            secondary_stores.current_select = id;
-        }
 
-        if (e.evt.button === 2) {
-            ProjectClass.togglers.show_node_customizer =
-                !ProjectClass.togglers.show_node_customizer;
-        }
-    }
     /********* FUNCTIONS *********/
 </script>
 
@@ -75,26 +60,36 @@
                 {#each ProjectClass.node_properties.keys() as id}
                     <Group
                         onclick={(e) => {
-                            toggleRightClick(e, id);
+                            ProjectClass.onNodeClick(e, id);
                         }}
                         x={NodeProps.get(id)?.x}
                         y={NodeProps.get(id)?.y}
-                        draggable>
-                        <Text
-                            text={Nodes.get(id)?.value}
-                            fill="#ffffff"
-                            fontSize={18}
-                            x={-(Math.exp(Nodes.get(id)?.value.length!) ** 1.5)}
-                            y={-(
-                                Math.exp(Nodes.get(id)?.value.length!) ** 2
-                            )} />
-
+                        draggable
+                        ondragend={(e) => ProjectClass.onNodeDrag(e, id)}>
                         <Circle
                             radius={NodeProps.get(id)?.radius ??
                                 defaultLook.radius}
                             fill={NodeProps.get(id)?.color ?? defaultLook.color}
-                            stroke={NodeProps.get(id)?.stroke ??
-                                defaultLook.stroke} />
+                            stroke={secondary_stores.current_select === id
+                                ? "#0396c7"
+                                : (NodeProps.get(id)?.stroke ??
+                                  defaultLook.stroke)} />
+
+                        <!-- The calculations for attributes x,y were obtained empirically, so don't try to make logical sense of them; these partical calculations just seem to work -->
+                        <Text
+                            fill="#ffffff"
+                            fontSize={18}
+                            text={Nodes.get(id)!.value.length > 10
+                                ? Nodes.get(id)?.value.substring(0, 7) + "..."
+                                : Nodes.get(id)?.value}
+                            x={-(
+                                (Nodes.get(id)!.value.length > 10
+                                    ? 10
+                                    : (Nodes.get(id)?.value.length ?? 0)) * 8
+                            ) / 2}
+                            y={-9}
+                            align="center"
+                            verticalAlign="middle" />
                     </Group>
                 {/each}
             </Layer>
