@@ -6,12 +6,15 @@
 
 /**
  * @fileoverview This class contains global stores that aren't
- * as important and so needn't belong in the ProjectClass */
+ * as important and so needn't belong in ProjectClass */
 
 class SecondaryStores {
     grid_shown = $state<boolean>(true); // should grid be shown ?
     current_select = $state<number | null>(null); // id of current selected state
     deleted_state_names = $state<number[]>([]); // names available for reuse when making a new state
+
+    // When connecting 2 states, this keeps track of the from state 
+    from_node = $state<number | null>(null);
 }
 
 const secondary_stores = new SecondaryStores();

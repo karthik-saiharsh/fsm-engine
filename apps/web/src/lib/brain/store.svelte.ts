@@ -9,8 +9,8 @@ import { EngineTypes } from "@fsm/engine";
 /********* Library Imports *********/
 
 /********* Type Imports *********/
-import { DockModes, type NodeProps } from "./types";
-import { FSMEngine, type State } from "@fsm/engine";
+import { DockModes, type NodeProps, type PartialNodeProps, type TransitionProps } from "./types";
+import { FSMEngine, type State, type Transition } from "@fsm/engine";
 import type { KonvaMouseEvent, KonvaDragTransformEvent } from "svelte-konva";
 import { SvelteMap } from "svelte/reactivity";
 import secondary_stores from "./extras.svelte";
@@ -45,6 +45,7 @@ class Project {
 
     /****** STATE MACHINE VARIABLES ******/
     nodes = new SvelteMap<number, State>(); // This stores the actual nodes
+    transitions = new SvelteMap<number, Transition>(); // This stores the actual nodes
 
     // This stores the look and feel of the nodes for the frontend
     defaultNodeLook: Partial<NodeProps> = {
@@ -52,7 +53,8 @@ class Project {
         stroke: "#ffffff90",
         radius: 40
     }
-    node_properties = new SvelteMap<number, Partial<NodeProps>>();
+    node_properties = new SvelteMap<number, PartialNodeProps>();
+    transition_properties = new SvelteMap<number, TransitionProps>();
     /****** STATE MACHINE VARIABLES ******/
 
     /****** BACKEND CLASSES ******/
@@ -74,6 +76,7 @@ class Project {
 
         // Set nodes Map to be used instead as node store
         this.engine.setNodes(this.nodes);
+        this.engine.setTransitions(this.transitions);
     }
 
     /************** BACKEND AND LOGIC RELATED METHODS  **************/
@@ -117,6 +120,17 @@ class Project {
         }
     }
 
+    /**
+     * To sync transition store to transition properties store
+     */
+    syncTrPropStore() {
+        for (const key of this.transition_properties.keys()) {
+            if (!this.transitions.has(key)) {
+                this.transition_properties.delete(key);
+            }
+        }
+    }
+
 
     /************** KONVA AND FRONTEND RELATED METHODS  **************/
 
@@ -135,7 +149,7 @@ class Project {
             const mouse = e.target.getStage()?.getPointerPosition();
 
             // Add an entry to keep track of the node's look and feel
-            const nodeProps: Partial<NodeProps> = {
+            const nodeProps: PartialNodeProps = {
                 x: mouse?.x!,
                 y: mouse?.y!,
             }
@@ -150,8 +164,9 @@ class Project {
             // Handle Node Deletion
             this.engine.deleteState(id);
 
-            // Sync node properties and nodes store
+            // Sync node, transition properties to nodes and transitions store
             this.syncNodePropStore();
+            this.syncTrPropStore();
 
             // Make this name available for reuse
             secondary_stores.deleted_state_names.push(id);
@@ -160,7 +175,43 @@ class Project {
             // i could've used a priority que here, but again, 
             // the array isn't going to be that large anyways, so i'll let sort do the job for now :)
             secondary_stores.deleted_state_names.sort();
+
+            // Make sure this isn't a selected State
+            if (secondary_stores.current_select === id) {
+                secondary_stores.current_select = null;
+            }
             return;
+        }
+
+        if (this.current_mode === DockModes.CONNECT && e.evt.button === 0) {
+            // Add new transition
+            if (secondary_stores.from_node === null) {
+                secondary_stores.from_node = id;
+                return;
+            } else {
+                // Add a new transition
+                const from = secondary_stores.from_node
+                const to = id;
+                const tr_id = this.engine.addTransition(from, to, "...");
+
+                // Add Details of this pransition to Transition Props
+                const fromNodeProps = this.node_properties.get(from)!;
+                const toNodeProps = this.node_properties.get(to)!;
+
+                const start = [fromNodeProps.x!, fromNodeProps.y!];
+                const end = [toNodeProps.x!, toNodeProps.y!];
+                const control = [(start[0]! + end[0]!) / 2, (start[1]! + end[1]! / 2)];
+
+                this.transition_properties.set(tr_id, {
+                    curvature: 0.5,
+                    strokeWidth: 2,
+                    stroke: "#ffffff80",
+                })
+
+                // Clear memory
+                secondary_stores.from_node = null;
+                return;
+            }
         }
 
         // Keep track of current selected State
@@ -190,7 +241,9 @@ class Project {
             ...currentProps,
             x: e.currentTarget.attrs.x,
             y: e.currentTarget.attrs.y,
-        } as Partial<NodeProps>);
+        } as PartialNodeProps);
+
+        // Update any linked Transition Positions
     }
 
 

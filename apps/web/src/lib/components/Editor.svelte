@@ -8,12 +8,20 @@
 
 <script lang="ts">
     /******** COMPONENT IMPORTS ********/
-    import { Stage, Text, Layer, Circle, Group } from "svelte-konva";
+    import {
+        Stage,
+        Text,
+        Layer,
+        Circle,
+        Group,
+        Arrow,
+        Label,
+        Tag,
+    } from "svelte-konva";
     import TopBar from "./editor/TopBar.svelte";
     import ProjectDetailsPopup from "./popus/ProjectDetailsPopup.svelte";
     import Dock from "./Dock.svelte";
     import NodeCustomizer from "./popus/NodeCustomizer.svelte";
-    import type { KonvaMouseEvent } from "svelte-konva";
     /******** COMPONENT IMPORTS ********/
 
     /****** BACKEND IMPORTS ******/
@@ -22,6 +30,9 @@
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
     const NodeProps = ProjectClass.node_properties;
+
+    const Transitions = ProjectClass.transitions;
+    const TransitionProps = ProjectClass.transition_properties;
     /****** BACKEND IMPORTS ******/
 
     /******** LUCIDE ICON IMPORTS ********/
@@ -33,7 +44,73 @@
     /******** REACTIVE VARIABLES ********/
 
     /********* FUNCTIONS *********/
+    function getTransitionPoints(id: number): [number[], number[]] {
+        const start = NodeProps.get(Transitions.get(id)?.from!)!;
+        const end = NodeProps.get(Transitions.get(id)?.to!)!;
 
+        const StartR = start.radius ?? ProjectClass.defaultNodeLook.radius;
+        const EndR = end.radius ?? ProjectClass.defaultNodeLook.radius;
+
+        const delx = end.x - start.x;
+        const dely = end.y - start.y;
+
+        if (delx === 0 && dely === 0) {
+            const nodeRadius = Math.max(StartR!, EndR!);
+            const loopLift = Math.max(30, nodeRadius * 1.8);
+            const loopWidth = Math.max(36, nodeRadius * 2.2);
+
+            const startPoint = [
+                start.x - nodeRadius * 0.7,
+                start.y - nodeRadius * 0.8,
+            ];
+            const control = [start.x, start.y - loopLift - loopWidth * 0.25];
+            const endPoint = [
+                start.x + nodeRadius * 0.7,
+                start.y - nodeRadius * 0.8,
+            ];
+
+            const xmid =
+                0.25 * startPoint[0] + 0.5 * control[0] + 0.25 * endPoint[0];
+            const ymid =
+                0.25 * startPoint[1] + 0.5 * control[1] + 0.25 * endPoint[1];
+
+            return [
+                [...startPoint, ...control, ...endPoint],
+                [xmid, ymid],
+            ];
+        }
+
+        const theta = Math.atan2(dely, delx);
+
+        const start2 = [
+            start.x + StartR! * Math.cos(theta),
+            start.y + StartR! * Math.sin(theta),
+        ];
+
+        const end2 = [
+            end.x - EndR! * Math.cos(theta),
+            end.y - EndR! * Math.sin(theta),
+        ];
+
+        const perpendicular = [-dely, delx];
+        const vec_len = Math.sqrt(
+            perpendicular[0] ** 2 + perpendicular[1] ** 2
+        );
+
+        const xmid = (start2[0] + end2[0]) / 2;
+        const ymid = (start2[1] + end2[1]) / 2;
+
+        const xControl = xmid + (-dely / vec_len) * 5;
+        const yControl = ymid + (delx / vec_len) * 5;
+
+        const curveMidX = 0.25 * start2[0] + 0.5 * xControl + 0.25 * end2[0];
+        const curveMidY = 0.25 * start2[1] + 0.5 * yControl + 0.25 * end2[1];
+
+        return [
+            [...start2, xControl, yControl, ...end2],
+            [curveMidX, curveMidY],
+        ];
+    }
     /********* FUNCTIONS *********/
 </script>
 
@@ -65,7 +142,7 @@
                         x={NodeProps.get(id)?.x}
                         y={NodeProps.get(id)?.y}
                         draggable
-                        ondragend={(e) => ProjectClass.onNodeDrag(e, id)}>
+                        ondragmove={(e) => ProjectClass.onNodeDrag(e, id)}>
                         <Circle
                             radius={NodeProps.get(id)?.radius ??
                                 defaultLook.radius}
@@ -85,12 +162,41 @@
                             x={-(
                                 (Nodes.get(id)!.value.length > 10
                                     ? 10
-                                    : (Nodes.get(id)?.value.length ?? 0)) * 8
+                                    : (Nodes.get(id)?.value.length ?? 0)) * 9
                             ) / 2}
                             y={-9}
                             align="center"
-                            verticalAlign="middle" />
+                            verticalAlign="middle"
+                            fontFamily="Sans" />
                     </Group>
+                {/each}
+
+                {#each ProjectClass.transition_properties.keys() as id}
+                    {@const transitionData = getTransitionPoints(id)}
+                    <Arrow
+                        stroke={TransitionProps.get(id)?.stroke}
+                        strokewidth={TransitionProps.get(id)?.strokeWidth}
+                        fill={TransitionProps.get(id)?.stroke}
+                        points={transitionData[0]}
+                        tension={TransitionProps.get(id)?.curvature} />
+
+                    <Label
+                        x={transitionData[1][0] -
+                            (Transitions.get(id)?.on.length ?? 0)}
+                        y={transitionData[1][1] - 10}
+                        opacity={0.75}>
+                        <Tag
+                            fill="#1f1f1f"
+                            lineJoin="round"
+                            shadowColor="#ffffff20"
+                            shadowBlur={30} />
+                        <Text
+                            text={Transitions.get(id)?.on}
+                            fontFamily="Sans"
+                            fontSize={16}
+                            padding={5}
+                            fill="white" />
+                    </Label>
                 {/each}
             </Layer>
         </Stage>

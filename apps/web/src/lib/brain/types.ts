@@ -27,9 +27,18 @@ export interface NodeProps {
     radius: number
 }
 
+export interface TransitionProps {
+    curvature: number,
+    strokeWidth: number,
+    stroke: string,
+}
+
 export enum DockModes {
     NIL,
     ADD,
     REMOVE,
     CONNECT,
 }
+
+
+export type PartialNodeProps = Partial<NodeProps> & Pick<NodeProps, 'x' | 'y'>
