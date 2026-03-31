@@ -28,6 +28,7 @@
     import secondary_stores from "../brain/extras.svelte";
     import ProjectClass from "../brain/store.svelte";
     import TransitionCustomizer from "./popus/TransitionCustomizer.svelte";
+    import Window from "./generic/Window.svelte";
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
     const NodeProps = ProjectClass.node_properties;
@@ -210,6 +211,7 @@
 <ProjectDetailsPopup />
 <NodeCustomizer />
 <TransitionCustomizer />
+<Window is_shown={secondary_stores.show_transition_table} />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->

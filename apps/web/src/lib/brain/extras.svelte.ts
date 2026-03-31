@@ -23,6 +23,9 @@ class SecondaryStores {
 
     // Keep track of currently selected Transition
     current_tr = $state<number | null>(null);
+
+    // Show transition table window
+    show_transition_table = $state(true);
 }
 
 const secondary_stores = new SecondaryStores();
