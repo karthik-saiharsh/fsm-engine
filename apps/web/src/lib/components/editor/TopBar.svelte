@@ -73,7 +73,10 @@
         class="w-1/6 text-center font-geist"
         placeholder="Project Name..."
         bind:value={projectData.name} /> -->
-    <p class="w-[24ch] font-geist font-semi-bold border py-1 px-2 rounded-md truncate">{projectData.name}</p>
+    <p
+        class="w-[24ch] font-geist font-semi-bold border py-1 px-2 rounded-md truncate">
+        {projectData.name}
+    </p>
 
     <!-- Open Additional Project Configuration Options -->
     <Button onclick={openProjSettings} variant="outline" size="icon">
@@ -105,7 +108,10 @@
     <Separator orientation="vertical" />
 
     <!-- Special Functions and Features -->
-    <Button variant="outline" class="font-geist">
+    <Button
+        variant="outline"
+        class="font-geist"
+        onclick={() => ProjectClass.autoLayout()}>
         <Sparkle />
         Auto Layout
     </Button>

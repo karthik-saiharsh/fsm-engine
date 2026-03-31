@@ -45,7 +45,12 @@
     /******** REACTIVE VARIABLES ********/
 
     /********* FUNCTIONS *********/
+    /** Get a list of points to draw a transition curve between 2 states */
     function getTransitionPoints(id: number): [number[], number[]] {
+        /** All the math and values you see in this function is purely empirical
+         * I tested it with a couple of values, and settled on whatever looked good.
+         * So all the sum and product constants you see further down are arbitrary choices
+         */
         const start = NodeProps.get(Transitions.get(id)?.from!)!;
         const end = NodeProps.get(Transitions.get(id)?.to!)!;
 
@@ -70,14 +75,9 @@
                 start.y - nodeRadius * 0.8,
             ];
 
-            const xmid =
-                0.25 * startPoint[0] + 0.5 * control[0] + 0.25 * endPoint[0];
-            const ymid =
-                0.25 * startPoint[1] + 0.5 * control[1] + 0.25 * endPoint[1];
-
             return [
                 [...startPoint, ...control, ...endPoint],
-                [xmid, ymid],
+                [control[0] - Transitions.get(id)?.on.length!, control[1] - 10],
             ];
         }
 
@@ -85,12 +85,12 @@
 
         const start2 = [
             start.x + StartR! * Math.cos(theta),
-            start.y + StartR! * Math.sin(theta),
+            start.y + StartR! * Math.sin(theta) - Math.sign(delx) * 10,
         ];
 
         const end2 = [
             end.x - EndR! * Math.cos(theta),
-            end.y - EndR! * Math.sin(theta),
+            end.y - EndR! * Math.sin(theta) - Math.sign(delx) * 10,
         ];
 
         const perpendicular = [-dely, delx];
@@ -102,14 +102,11 @@
         const ymid = (start2[1] + end2[1]) / 2;
 
         const xControl = xmid + (-dely / vec_len) * 5;
-        const yControl = ymid + (delx / vec_len) * 5;
-
-        const curveMidX = 0.25 * start2[0] + 0.5 * xControl + 0.25 * end2[0];
-        const curveMidY = 0.25 * start2[1] + 0.5 * yControl + 0.25 * end2[1];
+        const yControl = ymid + (-delx / vec_len) * 50;
 
         return [
             [...start2, xControl, yControl, ...end2],
-            [curveMidX, curveMidY],
+            [xControl, yControl - 20],
         ];
     }
     /********* FUNCTIONS *********/
@@ -184,7 +181,7 @@
                     <Label
                         onclick={(e) => ProjectClass.onTransitionClick(e, id)}
                         x={transitionData[1][0] -
-                            (Transitions.get(id)?.on.length ?? 0)**1.5}
+                            (Transitions.get(id)?.on.length ?? 0) ** 1.5}
                         y={transitionData[1][1] - 10}
                         opacity={0.75}>
                         <Tag

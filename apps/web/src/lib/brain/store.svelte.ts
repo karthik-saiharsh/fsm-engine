@@ -14,6 +14,7 @@ import { FSMEngine, type State, type Transition } from "@fsm/engine";
 import type { KonvaMouseEvent, KonvaDragTransformEvent } from "svelte-konva";
 import { SvelteMap } from "svelte/reactivity";
 import secondary_stores from "./extras.svelte";
+import dagre from "@dagrejs/dagre";
 /********* Type Imports *********/
 
 /** Stuff */
@@ -185,10 +186,11 @@ class Project {
         }
 
         if (this.current_mode === DockModes.CONNECT && e.evt.button === 0) {
-            // Add new transition
+            // new transition ? keep the first clicked node in memory
             if (secondary_stores.from_node === null) {
                 secondary_stores.from_node = id;
                 return;
+
             } else {
                 // Add a new transition
                 const from = secondary_stores.from_node
@@ -247,6 +249,7 @@ class Project {
         // Update any linked Transition Positions
     }
 
+    /** What should be done when a Transition is Clicked ? */
     onTransitionClick(e: KonvaMouseEvent, id: number) {
 
         if (ProjectClass.current_mode === DockModes.REMOVE && e.evt.button === 0) {
@@ -263,6 +266,95 @@ class Project {
             secondary_stores.current_tr = id;
             ProjectClass.togglers.show_tr_customizer = true;
         }
+    }
+
+    /** Automatically calculate a good layout for the FSM on screen */
+    autoLayout() {
+        const graph = new dagre.graphlib.Graph();
+
+        // Set an object for the graph label
+        graph.setGraph({
+            rankdir: 'LR',     // L-to-R flow (use 'TB' for Top-to-Bottom)
+            nodesep: 80,       // Vertical spacing between nodes
+            ranksep: 150,      // Horizontal spacing between layers
+            marginx: 50,       // Graph margins
+            marginy: 50
+        });
+
+        // Default configuration for edges
+        graph.setDefaultEdgeLabel(() => ({}));
+
+        //Feed States into Dagre
+        // Dagre uses width and height. For Konva circles, this is radius * 2.
+        for (const key of this.nodes.keys()) {
+            const NodeProp = this.node_properties.get(key);
+            const defaultprops = this.defaultNodeLook;
+
+            graph.setNode(`${key}`, {
+                width: (NodeProp?.radius ?? defaultprops.radius ?? 0) * 2,
+                height: (NodeProp?.radius ?? defaultprops.radius ?? 0) * 2
+            });
+        }
+
+        // Feed transitions into dagre
+        for (const key of this.transitions.keys()) {
+            const Transition = this.transitions.get(key);
+
+            graph.setEdge(`${Transition?.from}`, `${Transition?.to}`)
+        }
+
+
+        // Calculate positions
+        dagre.layout(graph);
+
+        // Calculate Offsets to Center the Graph
+        const graphWidth = graph.graph().width ?? 0;
+        const graphHeight = graph.graph().height ?? 0;
+
+        // Adjust `window.innerWidth`
+        const offsetX = (window.innerWidth - graphWidth) / 2;
+        // Adjust for TopBar height
+        const offsetY = (window.innerHeight - graphHeight) / 2;
+
+        const animations = new Map<number, { startX: number, startY: number, endX: number, endY: number }>()
+
+
+        for (const key of this.nodes.keys()) {
+            const currentProps = this.node_properties.get(key)!;
+            const targetPos = graph.node(`${key}`);
+
+            animations.set(key, {
+                startX: currentProps.x ?? 0,
+                startY: currentProps.y ?? 0,
+                endX: targetPos.x + offsetX,
+                endY: targetPos.y + offsetY
+            });
+        }
+
+        // Animation Loop
+        const duration = 600; // ms
+        const startTime = performance.now();
+
+        const animate = (now: number) => {
+            const timeFraction = Math.min((now - startTime) / duration, 1);
+            // Cubic ease-out function for smooth decelertion
+            const progress = 1 - Math.pow(1 - timeFraction, 3);
+
+            for (const [key, vectors] of animations.entries()) {
+                const NodeProp = this.node_properties.get(key)!;
+                this.node_properties.set(key, {
+                    ...NodeProp,
+                    x: vectors.startX + (vectors.endX - vectors.startX) * progress,
+                    y: vectors.startY + (vectors.endY - vectors.startY) * progress,
+                } as PartialNodeProps);
+            }
+
+            if (timeFraction < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
     }
 
 
