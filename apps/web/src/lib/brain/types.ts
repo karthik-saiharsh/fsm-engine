@@ -5,6 +5,7 @@
  */
 
 import type { EngineTypes } from "@fsm/engine";
+import type { FSMEngine } from "@fsm/engine";
 
 export interface ProjectDetailsType {
     name: string; // Project name
@@ -39,6 +40,18 @@ export enum DockModes {
     REMOVE,
     CONNECT,
 }
+
+export type FrontendProjectData = {
+    project_details: ProjectDetailsType;
+    theme: "dark" | "light";
+    nodes_properties: Array<[number, PartialNodeProps]>;
+    transition_properties: Array<[number, TransitionProps]>;
+};
+
+export type ProjectData = {
+    frontend: FrontendProjectData;
+    backend: ReturnType<FSMEngine["saveProject"]>;
+};
 
 
 export type PartialNodeProps = Partial<NodeProps> & Pick<NodeProps, 'x' | 'y'>

@@ -9,7 +9,7 @@ import { EngineTypes } from "@fsm/engine";
 /********* Library Imports *********/
 
 /********* Type Imports *********/
-import { DockModes, type NodeProps, type PartialNodeProps, type TransitionProps } from "./types";
+import { DockModes, type NodeProps, type PartialNodeProps, type TransitionProps, type ProjectData } from "./types";
 import { FSMEngine, type State, type Transition } from "@fsm/engine";
 import type { KonvaMouseEvent, KonvaDragTransformEvent } from "svelte-konva";
 import { SvelteMap } from "svelte/reactivity";
@@ -17,9 +17,9 @@ import secondary_stores from "./extras.svelte";
 import dagre from "@dagrejs/dagre";
 /********* Type Imports *********/
 
-/** Stuff */
+/** Useful variables **/
 const date = new Date();
-/** Stuff */
+/** Useful variables **/
 
 /**
  * This monolithic beast of a class has every detail of the current project.
@@ -131,6 +131,81 @@ class Project {
                 this.transition_properties.delete(key);
             }
         }
+    }
+
+    /** Exports the project as JSON and triggers a local download */
+    exportProject() {
+        const data: ProjectData = {
+            frontend: {
+                project_details: {
+                    ...this.project_details,
+                },
+                theme: this.theme,
+                nodes_properties: Array.from(this.node_properties.entries()).map(
+                    ([id, props]) => [id, { ...props }] as [number, PartialNodeProps]
+                ),
+                transition_properties: Array.from(this.transition_properties.entries()).map(
+                    ([id, props]) => [id, { ...props }] as [number, TransitionProps]
+                ),
+            },
+            backend: this.engine.saveProject(),
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${this.project_details.name || "project"}.fsm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    /** Prompts user to upload a JSON file and restores the project */
+    importProject() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.onchange = (e: Event) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event: ProgressEvent<FileReader>) => {
+                try {
+                    const data = JSON.parse(event.target?.result as string) as ProjectData;
+
+                    this.engine.loadProject(data.backend);
+
+                    this.project_details = {
+                        ...data.frontend.project_details,
+                    };
+                    this.theme = data.frontend.theme;
+
+                    this.node_properties.clear();
+                    for (const [id, props] of data.frontend.nodes_properties) {
+                        this.node_properties.set(id, { ...props });
+                    }
+
+                    this.transition_properties.clear();
+                    for (const [id, props] of data.frontend.transition_properties) {
+                        this.transition_properties.set(id, { ...props });
+                    }
+
+                    // Keep UI + look-and-feel stores aligned with engine maps after load.
+                    this.syncNodePropStore();
+                    this.syncTrPropStore();
+
+                    document.getElementById("body")?.classList.toggle("dark", this.theme === "dark");
+                } catch (error) {
+                    console.error("Failed to parse project file", error);
+                    alert("Invalid project file.");
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
     }
 
 

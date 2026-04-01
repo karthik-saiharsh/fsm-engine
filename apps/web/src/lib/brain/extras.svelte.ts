@@ -25,7 +25,7 @@ class SecondaryStores {
     current_tr = $state<number | null>(null);
 
     // Show transition table window
-    show_transition_table = $state(true);
+    show_transition_table = $state(false);
 }
 
 const secondary_stores = new SecondaryStores();
