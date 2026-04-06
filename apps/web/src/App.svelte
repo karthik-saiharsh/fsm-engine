@@ -10,12 +10,13 @@
     import Launch from "./lib/components/Launch.svelte";
     import Editor from "./lib/components/Editor.svelte";
     import ScreenSizeFallback from "./lib/components/generic/ScreenSizeFallback.svelte";
+    import ProjectClass from "./lib/brain/store.svelte";
 </script>
 
 <!-- Show Project details if not already chosen -->
-<!-- {#if ProjectData.show_proj_selector}
+{#if ProjectClass.togglers.show_launch}
     <Launch />
-{/if} -->
+{/if}
 
 <Editor />
 

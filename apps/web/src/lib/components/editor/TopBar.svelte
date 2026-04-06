@@ -8,7 +8,6 @@
 
 <script lang="ts">
     import Button from "../ui/button/button.svelte";
-    import Input from "../ui/input/input.svelte";
     import Separator from "../ui/separator/separator.svelte";
     import {
         NotepadText,
@@ -23,12 +22,6 @@
     import MachinePicker from "./MachinePicker.svelte";
     import { EngineTypes } from "@fsm/engine";
     import secondary_stores from "../../brain/extras.svelte";
-
-    /**
-     * Meta-data about the Project.
-     * @see ProjectClass.project_details
-     */
-    const projectData = ProjectClass.project_details;
 
     /**
      * Show additional Project Settings Data
@@ -51,19 +44,19 @@
     <!-- Project Meta Data Settings and Details -->
 
     <!-- New Project  -->
-    <Button variant="outline">
+    <Button variant="outline" onclick={() => ProjectClass.newProject()}>
         <CirclePlus />
         <p class="font-geist">New</p>
     </Button>
 
     <!-- Project Save  -->
-    <Button variant="outline">
+    <Button variant="outline" onclick={() => ProjectClass.exportProject()}>
         <Save />
         <p class="font-geist">Save</p>
     </Button>
 
     <!-- Open Saved Project -->
-    <Button variant="outline">
+    <Button variant="outline" onclick={() => ProjectClass.importProject()}>
         <NotepadText />
         <p class="font-geist">Open</p>
     </Button>
@@ -75,7 +68,7 @@
         bind:value={projectData.name} /> -->
     <p
         class="w-[24ch] font-geist font-semi-bold border py-1 px-2 rounded-md truncate">
-        {projectData.name}
+        {ProjectClass.project_details.name}
     </p>
 
     <!-- Open Additional Project Configuration Options -->
@@ -91,7 +84,7 @@
     <MachinePicker />
 
     <Button
-        disabled={projectData.type === EngineTypes.FREE}
+        disabled={ProjectClass.project_details.type === EngineTypes.FREE}
         variant="outline"
         size="icon">
         <Settings2 />

@@ -38,6 +38,7 @@ class Project {
 
     /****** TOGGLER VARIABLES ******/
     togglers = $state({
+        show_launch: true,
         show_proj_details: false,
         show_node_customizer: false,
         show_tr_customizer: false,
@@ -166,7 +167,7 @@ class Project {
     importProject() {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "application/json";
+        input.accept = ".fsm,application/json";
         input.onchange = (e: Event) => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (!file) return;
@@ -430,6 +431,39 @@ class Project {
         };
 
         requestAnimationFrame(animate);
+    }
+
+
+    /**
+     * Creates a new project, and initializes all necessary variables to empty state
+     */
+    newProject() {
+        // Clear all states and transitions from Svelte stores
+        this.nodes.clear();
+        this.transitions.clear();
+        this.node_properties.clear();
+        this.transition_properties.clear();
+
+        // Let the engine clear its own inner state mechanisms safely
+        this.engine.newProject();
+
+        // Reset project details
+        this.project_details = {
+            ...this.project_details,
+            name: `FSM_Project_${date.toDateString()}`,
+            author: "Unnamed Author",
+            created: date.toDateString(),
+            type: EngineTypes.FREE,
+        };
+
+        // Make sure engine name matches the reset name
+        this.engine.name = this.project_details.name;
+
+        // Reset memory on secondary stores
+        secondary_stores.deleted_state_names = [];
+        secondary_stores.current_select = null;
+        secondary_stores.current_tr = null;
+        secondary_stores.from_node = null;
     }
 
 
