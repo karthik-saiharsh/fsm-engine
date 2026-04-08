@@ -29,6 +29,8 @@
     import ProjectClass from "../brain/store.svelte";
     import TransitionCustomizer from "./popus/TransitionCustomizer.svelte";
     import Window from "./generic/Window.svelte";
+    import type { KonvaWheelEvent } from "svelte-konva";
+
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
     const NodeProps = ProjectClass.node_properties;
@@ -43,6 +45,8 @@
     /******** REACTIVE VARIABLES ********/
     let width: number = $state(0); // Width of Konav Stage
     let height: number = $state(0); // Width of Konav Stage
+    let startAngle: number = $state(Math.PI); // Store rotation angle for the single start state arrow
+    let stage: ReturnType<typeof Stage> | undefined = $state(); // Konva Stage
     /******** REACTIVE VARIABLES ********/
 
     /********* FUNCTIONS *********/
@@ -110,6 +114,45 @@
             [xControl, yControl - 20],
         ];
     }
+
+    /** Zoom the Canvas, got it from konva documentation */
+    function handleScroll(e: KonvaWheelEvent) {
+        e.evt.preventDefault();
+
+        if (!stage?.node) return;
+
+        // const stage = stageRef.current;
+        const oldScale = stage.node.scaleX();
+        const pointer = stage.node.getPointerPosition();
+
+        if (!pointer) return;
+
+        const mousePointTo = {
+            x: (pointer.x - stage.node.x()) / oldScale,
+            y: (pointer.y - stage.node.y()) / oldScale,
+        };
+
+        // how to scale? Zoom in? Or zoom out?
+        let direction = e.evt.deltaY > 0 ? 1 : -1;
+
+        // when we zoom on trackpad, e.evt.ctrlKey is true
+        // in that case lets revert direction
+        if (e.evt.ctrlKey) {
+            direction = -direction;
+        }
+
+        const scaleBy = 1.01;
+        const newScale =
+            direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+        stage.node.scale({ x: newScale, y: newScale });
+
+        const newPos = {
+            x: pointer.x - mousePointTo.x * newScale,
+            y: pointer.y - mousePointTo.y * newScale,
+        };
+        stage.node.position(newPos);
+    }
     /********* FUNCTIONS *********/
 </script>
 
@@ -123,7 +166,6 @@
         bind:clientHeight={height}
         class="w-full flex-1 h-screen bg-card">
         <Stage
-            draggable
             {width}
             {height}
             onclick={(e) => {
@@ -131,7 +173,9 @@
                 if (e.evt.button === 0) {
                     ProjectClass.onStageClick(e);
                 }
-            }}>
+            }}
+            onwheel={(e) => handleScroll(e)}
+            bind:this={stage}>
             <Layer>
                 {#each ProjectClass.node_properties.keys() as id}
                     <Group
@@ -153,7 +197,9 @@
 
                         <!-- The calculations for attributes x,y were obtained empirically, so don't try to make logical sense of them; these partical calculations just seem to work -->
                         <Text
-                            fill="#ffffff"
+                            fill={ProjectClass.theme === "dark"
+                                ? "#ffffff"
+                                : "#00000090"}
                             fontSize={18}
                             text={Nodes.get(id)!.value.length > 10
                                 ? Nodes.get(id)?.value.substring(0, 7) + "..."
@@ -167,6 +213,56 @@
                             align="center"
                             verticalAlign="middle"
                             fontFamily="Sans" />
+
+                        {#if Nodes.get(id)?.isStart}
+                            {@const radius =
+                                NodeProps.get(id)?.radius ?? defaultLook.radius}
+                            <Arrow
+                                x={0}
+                                y={0}
+                                points={[
+                                    Math.cos(startAngle) * (radius! + 40),
+                                    Math.sin(startAngle) * (radius! + 40),
+                                    Math.cos(startAngle) * (radius! + 4),
+                                    Math.sin(startAngle) * (radius! + 4),
+                                ]}
+                                pointerLength={10}
+                                pointerWidth={10}
+                                fill={NodeProps.get(id)?.stroke ??
+                                    defaultLook.stroke}
+                                stroke={NodeProps.get(id)?.stroke ??
+                                    defaultLook.stroke}
+                                strokeWidth={2}
+                                tension={0}
+                                draggable
+                                ondragmove={(e) => {
+                                    e.target.x(0);
+                                    e.target.y(0);
+                                    const stage = e.target.getStage();
+                                    const pointerPos =
+                                        stage?.getPointerPosition();
+                                    const group = e.target.getParent();
+                                    if (pointerPos && group) {
+                                        const dx = pointerPos.x - group.x();
+                                        const dy = pointerPos.y - group.y();
+                                        startAngle = Math.atan2(dy, dx);
+                                    }
+                                }} />
+                        {/if}
+
+                        {#if Nodes.get(id)?.isEnd}
+                            <Circle
+                                radius={(NodeProps.get(id)?.radius ??
+                                    defaultLook.radius)! + 6}
+                                fill="#00000000"
+                                stroke={secondary_stores.current_select === id
+                                    ? ProjectClass.theme === "dark"
+                                        ? "#ffffff"
+                                        : "#00000090"
+                                    : (NodeProps.get(id)?.stroke ??
+                                      defaultLook.stroke)}
+                                strokeWidth={2} />
+                        {/if}
                     </Group>
                 {/each}
 
@@ -186,9 +282,13 @@
                         y={transitionData[1][1] - 10}
                         opacity={0.75}>
                         <Tag
-                            fill="#f1f1f170"
+                            fill={ProjectClass.theme === "dark"
+                                ? "#ffffff"
+                                : "#000000"}
                             lineJoin="round"
-                            shadowColor="#ffffff20"
+                            shadowColor={ProjectClass.theme === "dark"
+                                ? "#ffffff40"
+                                : "#00000090"}
                             shadowBlur={30}
                             cornerRadius={8} />
                         <Text
@@ -215,13 +315,20 @@
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->
-<Dock />
+<Dock {stage} />
 <!-- Options Dock -->
 
-{#if secondary_stores.grid_shown}
+{#if secondary_stores.grid_shown && ProjectClass.theme === "dark"}
     <style>
         #body {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%23ffffff25' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
+            background-size: 30px 30px;
+        }
+    </style>
+{:else if secondary_stores.grid_shown && ProjectClass.theme === "light"}
+    <style>
+        #body {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0 -0 10 10'%3E%3Cpath d='M 0 1 L 10 1 M 1 0 L 1 10' stroke='%2300000050' stroke-dasharray='1' stroke-width='0.3' /%3E%3C/svg%3E");
             background-size: 30px 30px;
         }
     </style>

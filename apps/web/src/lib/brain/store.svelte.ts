@@ -32,7 +32,7 @@ class Project {
         type: EngineTypes.FREE, // Type of the State Machine
     });
 
-    theme: "dark" | "light" = "dark"; // UI Theme
+    theme = $state<"dark" | "light">("dark"); // UI Theme
 
     current_mode: DockModes = $state(DockModes.NIL); // Current chosen Dock Mode
 
@@ -51,10 +51,12 @@ class Project {
     transitions = new SvelteMap<number, Transition>(); // This stores the actual nodes
 
     // This stores the look and feel of the nodes for the frontend
-    defaultNodeLook: Partial<NodeProps> = {
-        color: "#ffffff80",
-        stroke: "#ffffff90",
-        radius: 40
+    get defaultNodeLook(): Partial<NodeProps> {
+        return {
+            color: (this.theme === "dark" ? "#ffffff80" : "#00000030"),
+            stroke: (this.theme === "dark" ? "#ffffff80" : "#00000080"),
+            radius: 40
+        }
     }
     node_properties = new SvelteMap<number, PartialNodeProps>();
     transition_properties = new SvelteMap<number, TransitionProps>();
@@ -284,7 +286,7 @@ class Project {
                 this.transition_properties.set(tr_id, {
                     curvature: 0.5,
                     strokeWidth: 2,
-                    stroke: "#ffffff80",
+                    stroke: (this.theme === "dark" ? "#ffffff80" : "#00000080"),
                 })
 
                 // Clear memory

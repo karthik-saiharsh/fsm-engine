@@ -11,9 +11,11 @@
     import Button from "./ui/button/button.svelte";
     import { DockModes } from "../brain/types";
     import ProjectClass from "../brain/store.svelte";
-    import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { IconProps } from "@lucide/svelte";
+
+    // Get props from Editor
+    let { stage } = $props();
 
     // Items in the Dock
     const DockItems: {
@@ -40,10 +42,12 @@
         {
             name: "Zoom In",
             icon: ZoomIn,
+            onClick: () => zoomCenter(1),
         },
         {
             name: "Zoom Out",
             icon: ZoomOut,
+            onClick: () => zoomCenter(-1),
         },
     ];
 
@@ -55,6 +59,33 @@
             // set the mode otherwise
             ProjectClass.current_mode = mode;
         }
+    }
+
+    // Add this new function to zoom at the center of the stage
+    function zoomCenter(direction: 1 | -1) {
+        if (!stage?.node) return;
+
+        const oldScale = stage.node.scaleX();
+        const scaleBy = 1.2; // Step Size
+        const newScale =
+            direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+        // Find the center of the stage
+        const center = {
+            x: stage.node.width() / 2,
+            y: stage.node.height() / 2,
+        };
+
+        const pointTo = {
+            x: (center.x - stage.node.x()) / oldScale,
+            y: (center.y - stage.node.y()) / oldScale,
+        };
+
+        stage.node.scale({ x: newScale, y: newScale });
+        stage.node.position({
+            x: center.x - pointTo.x * newScale,
+            y: center.y - pointTo.y * newScale,
+        });
     }
 </script>
 

@@ -38,7 +38,7 @@
     <main
         class="absolute top-0 left-0 z-20 flex justify-center items-center w-screen h-screen bg-background/10 backdrop-blur">
         <Card.Root
-            class="-my-4 w-full max-w-sm shadow-[0px_0px_50px_0px_#00000085]">
+            class={`-my-4 w-full max-w-sm shadow-[0px_0px_50px_0px_#000000${ProjectClass.theme === "dark" ? "85" : "25"}]`}>
             <Card.Header>
                 <Card.Title class="font-geist">Project Settings</Card.Title>
                 <Card.Description class="font-geist"

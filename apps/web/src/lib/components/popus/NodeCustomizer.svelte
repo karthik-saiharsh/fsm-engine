@@ -20,6 +20,8 @@
     /********** REACTIVE VARIABLES **********/
     let name = $state<undefined | string>(undefined);
     let color = $state<undefined | string>(undefined);
+    let isStart = $state<undefined | boolean>(undefined);
+    let isEnd = $state<undefined | boolean>(undefined);
     /********** REACTIVE VARIABLES **********/
 
     $effect(() => {
@@ -34,6 +36,8 @@
 
                 name = currentSelected?.value;
                 color = currentSelectedProp?.color ?? defaultLook.color;
+                isStart = currentSelected?.isStart ?? false;
+                isEnd = currentSelected?.isEnd ?? false;
             }
         }
     });
@@ -48,17 +52,24 @@
 
             // Update Node's name
             if (currentSelected) {
+                const newIsStart = isStart ?? currentSelected.isStart;
+                const newIsEnd = isEnd ?? currentSelected.isEnd;
+
                 ProjectClass.nodes.set(currentId, {
                     ...currentSelected,
                     value: name ?? currentSelected.value,
+                    isStart: false,
+                    isEnd: false,
                 } as State);
+
+                if (newIsStart) ProjectClass.engine.setStart(currentId);
+                if (newIsEnd) ProjectClass.engine.setEnd(currentId);
             }
 
-            console.log(color);
             if (color?.length === 7) {
                 color += "80";
             }
-            console.log(color);
+
             // Update color
             ProjectClass.node_properties.set(currentId, {
                 ...currentSelectedProp,
@@ -86,7 +97,7 @@
     <main
         class="absolute top-0 left-0 z-20 flex justify-center items-center w-screen h-screen bg-background/10 backdrop-blur">
         <Card.Root
-            class="-my-4 w-full max-w-sm shadow-[0px_0px_50px_0px_#00000085]">
+            class={`-my-4 w-full max-w-sm shadow-[0px_0px_50px_0px_#000000${ProjectClass.theme === "dark" ? "85" : "25"}]`}>
             <Card.Header>
                 <Card.Title class="font-geist">Node Properties</Card.Title>
                 <Card.Description class="font-geist"
@@ -114,15 +125,30 @@
                         id="" />
                 </span>
 
-                <!-- <span class="w-full flex flex-col gap-2">
+                <span class="w-full flex flex-col gap-2">
                     <Label for="created">State Type</Label>
                     <span class="flex justify-center gap-1">
-                        <Button size="sm" variant="outline">Start State</Button>
-                        <Button size="sm" variant="outline"
+                        <Button
+                            size="sm"
+                            onclick={() => (isStart = !isStart)}
+                            variant={isStart ? "default" : "outline"}
+                            >Start State</Button>
+
+                        <Button
+                            size="sm"
+                            onclick={() => {
+                                isStart = false;
+                                isEnd = false;
+                            }}
+                            variant={!isStart && !isEnd ? "default" : "outline"}
                             >Intermediate State</Button>
-                        <Button size="sm" variant="outline">End State</Button>
+
+                        <Button
+                            size="sm"
+                            variant={isEnd ? "default" : "outline"}
+                            onclick={() => (isEnd = !isEnd)}>End State</Button>
                     </span>
-                </span> -->
+                </span>
             </Card.Content>
 
             <Card.Footer class="flex justify-center items-center gap-5">

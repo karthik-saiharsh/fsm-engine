@@ -19,6 +19,9 @@
         const body = document.querySelector("body");
         body?.classList.toggle("dark");
         currentTheme = Math.abs(currentTheme - 1);
+
+        if(ProjectClass.theme === "dark") ProjectClass.theme = "light";
+        else ProjectClass.theme = "dark";
     }
 </script>
 
