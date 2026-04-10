@@ -11,7 +11,7 @@
 
 Design, connect, and explore DFAs, NFAs, and free-form state machines — all from your browser.
 
-[**Try it Live →**](https://fsm-engine.vercel.app)
+[**Try it Live →**](https://fsm-engine-v3.vercel.app)
 
 <br/>
 
