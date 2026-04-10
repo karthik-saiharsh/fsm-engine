@@ -49,7 +49,7 @@
     $effect(() => {
         if (value != "FREESTYLE") {
             alert(
-                `Machine Type ${selectedValue} is being implemented. For now, only Free Style mode is available.\nYou can check back later, or use the legacy version to use DFA and NFA modes.`
+                "This feature hasn't been implemented yet. We are working on it.\n\nIf you want to use NFA or DFA modes, check out the legacy version at (https://fsm-engine.vercel.app/) \n\nDevelopment of FSM Engine takes time and effort, and the team is very small (only 1 developer for now; so bear with me if new features, and fixes take time)"
             );
             value = "FREESTYLE";
         }

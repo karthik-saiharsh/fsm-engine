@@ -40,6 +40,7 @@ class Project {
     togglers = $state({
         show_launch: true,
         show_proj_details: false,
+        show_save_details: false,
         show_node_customizer: false,
         show_tr_customizer: false,
     });
@@ -217,7 +218,6 @@ class Project {
 
     /** What should be done when the Konva Stage is Clicked ? */
     onStageClick(e: KonvaMouseEvent) {
-
         /**
          * If the editor is in add mode, then add a new state
          */
@@ -234,11 +234,17 @@ class Project {
                 y: mouse?.y!,
             }
             this.node_properties.set(id, nodeProps)
+        } else {
+            // If it's nothing, remove focus from any selected states
+            if (secondary_stores.current_select !== null) {
+                secondary_stores.current_select = null;
+            }
         }
     }
 
     /** What should be done when a Node is Clicked ? */
     onNodeClick(e: KonvaMouseEvent, id: number) {
+        e.evt.preventDefault();
 
         if (this.current_mode === DockModes.REMOVE && e.evt.button === 0) {
             // Handle Node Deletion

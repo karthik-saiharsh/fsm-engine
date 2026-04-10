@@ -17,6 +17,7 @@
         Table,
         CirclePlus,
         Grid3X3,
+        Github,
     } from "@lucide/svelte";
     import ProjectClass from "../../brain/store.svelte";
     import MachinePicker from "./MachinePicker.svelte";
@@ -50,7 +51,9 @@
     </Button>
 
     <!-- Project Save  -->
-    <Button variant="outline" onclick={() => ProjectClass.exportProject()}>
+    <Button
+        variant="outline"
+        onclick={() => (ProjectClass.togglers.show_save_details = true)}>
         <Save />
         <p class="font-geist">Save</p>
     </Button>
@@ -109,9 +112,18 @@
         Auto Layout
     </Button>
 
-    <Button variant="outline" class="font-geist">
+    <Button variant="outline" class="font-geist" onclick={() => {
+        alert("This feature hasn't been implemented yet. We are working on it.\n\nDevelopment of FSM Engine takes time and effort, and the team is very small (only 1 developer for now; so bear with me if new features, and fixes take time)")
+    }}>
         <Table />
         Transition Table
     </Button>
+
+    <a href="https://github.com/karthik-saiharsh/fsm-engine" target="_blank">
+        <Button variant="outline" class="font-geist">
+            <Github />
+            Github
+        </Button>
+    </a>
     <!-- Special Functions and Features -->
 </div>

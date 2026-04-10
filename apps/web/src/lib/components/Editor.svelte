@@ -30,6 +30,7 @@
     import TransitionCustomizer from "./popus/TransitionCustomizer.svelte";
     import Window from "./generic/Window.svelte";
     import type { KonvaWheelEvent } from "svelte-konva";
+    import SaveDialog from "./popus/SaveDialog.svelte";
 
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
@@ -283,7 +284,7 @@
                         opacity={0.75}>
                         <Tag
                             fill={ProjectClass.theme === "dark"
-                                ? "#ffffff"
+                                ? "#ffffff80"
                                 : "#000000"}
                             lineJoin="round"
                             shadowColor={ProjectClass.theme === "dark"
@@ -316,6 +317,7 @@
 
 <!-- Options Dock -->
 <Dock {stage} />
+<SaveDialog {stage} />
 <!-- Options Dock -->
 
 {#if secondary_stores.grid_shown && ProjectClass.theme === "dark"}

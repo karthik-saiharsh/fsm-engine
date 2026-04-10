@@ -28,7 +28,7 @@
 <main
     class="absolute left-0 top-0 w-screen h-screen bg-background z-100 select-none flex flex-col justify-center items-center gap-20 text-center max-md:hidden">
     <!-- Theme Switcher -->
-    <Button
+    <!-- <Button
         class="absolute right-5 top-5 cursor-pointer active:scale-90 rounded-full"
         variant="outline"
         size="icon"
@@ -38,7 +38,7 @@
         {:else}
             <SunMedium size={18} />
         {/if}
-    </Button>
+    </Button> -->
 
     <span>
         <h1 class="text-4xl font-bold font-geist">FSM Engine 3.0</h1>
