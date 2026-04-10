@@ -26,6 +26,9 @@ export enum EngineTypes {
 export interface State {
     id: number;
     value: string;
+    /** There can only be one start state */
+    isStart: boolean;
+    isEnd: boolean;
     transitions: {
         incoming: Set<number>;
         outgoing: Set<number>;

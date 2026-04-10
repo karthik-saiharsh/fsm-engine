@@ -192,6 +192,9 @@ export class FSMEngine {
         const state: State = {
             id: id,
             value: value,
+            // A state is intermediate when both flags are false.
+            isStart: false,
+            isEnd: false,
             transitions: {
                 incoming: new Set<number>(),
                 outgoing: new Set<number>(),
@@ -200,6 +203,34 @@ export class FSMEngine {
         };
         this.nodes.set(id, state);
         return id;
+    }
+
+    /**
+     * Mark the provided state as START.
+     * Only one start state can exist at a time.
+     * @param id Reference id of the State
+     */
+    setStart(id: number) {
+        this.verifyStateExistance(id);
+        // Remove START status from any existing start state.
+        for (const state of this.nodes.values()) {
+            if (state.isStart) {
+                state.isStart = false;
+            }
+        }
+
+        this.nodes.get(id)!.isStart = true;
+    }
+
+    /**
+     * Mark the provided state as END.
+     * Multiple end states are allowed.
+     * @param id Reference id of the State
+     */
+    setEnd(id: number) {
+        this.verifyStateExistance(id);
+
+        this.nodes.get(id)!.isEnd = true;
     }
 
     /**
@@ -333,6 +364,8 @@ export class FSMEngine {
                 state: {
                     id: value.id,
                     value: value.value,
+                    isStart: value.isStart,
+                    isEnd: value.isEnd,
                     transitions: {
                         incoming: Array.from(value.transitions.incoming),
                         outgoing: Array.from(value.transitions.outgoing),
@@ -371,9 +404,12 @@ export class FSMEngine {
         // Restore Map of nodes and convert Arrays back to Sets
         this.nodes.clear();
         for (const nodeData of projectData.nodes) {
+
             this.nodes.set(nodeData.key, {
                 id: nodeData.state.id,
                 value: nodeData.state.value,
+                isStart: nodeData.state.isStart,
+                isEnd: nodeData.state.isEnd,
                 transitions: {
                     incoming: new Set(nodeData.state.transitions.incoming),
                     outgoing: new Set(nodeData.state.transitions.outgoing),
