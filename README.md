@@ -15,6 +15,10 @@ A web-based tool for creating, and visualizing, Finite State Machines (FSMs). Bu
 >
 > To support future features and maintain performance, a fundamental architectural overhaul and potential stack migration is underway. New features are currently on hold until the new core structure is finalized.
 
+⚠️ **A Note on the Future of FSM-Engine**
+
+Development on this branch is currently frozen. We are in the process of a fundamental architectural overhaul and potential stack migration to improve scalability. New features are currently on hold until the new core structure is finalized.
+
 ## Features
 
 - Interactive Canvas Editor
