@@ -40,9 +40,22 @@
             : true;
     }
 
+    /**
+     * Show the Transition Table Window
+     */
     function toggleTransitionTableWindow() {
         secondary_stores.show_transition_table =
             !secondary_stores.show_transition_table;
+    }
+
+    /**
+     * Toggle the save window
+     */
+    function toggleSaveWindow() {
+        ProjectClass.togglers.show_save_details = ProjectClass.togglers
+            .show_save_details
+            ? false
+            : true;
     }
 </script>
 
@@ -56,9 +69,7 @@
     </Button>
 
     <!-- Project Save  -->
-    <Button
-        variant="outline"
-        onclick={() => (ProjectClass.togglers.show_save_details = true)}>
+    <Button variant="outline" onclick={toggleSaveWindow}>
         <Save />
         <p class="font-geist">Save</p>
     </Button>
