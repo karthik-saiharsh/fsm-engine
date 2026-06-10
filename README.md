@@ -314,9 +314,9 @@ Contributions are welcome and greatly appreciated! Here's how to get involved:
 - [x] Project export / import (`.fsm` JSON format)
 - [x] Export canvas as PNG (1×, 2×, 3×)
 - [x] Auto layout (Dagre)
-- [x] Dark / Light theme
+- [ ] Dark / Light theme
 - [x] DFA string validation with path tracing
-- [ ] Transition table generation & display
+- [x] Transition table generation & display
 - [ ] NFA → DFA subset construction
 - [ ] DFA minimization
 - [ ] Undo / Redo
