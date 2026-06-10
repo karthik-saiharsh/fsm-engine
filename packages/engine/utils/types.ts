@@ -45,3 +45,11 @@ export interface Transition {
     to: number;
     on: string;
 }
+
+/**
+ * The return type of the transitionTable Method
+ */
+export interface TransitionTable {
+    table: Map<number, Map<string, number[]>>;
+    alphabets: Set<string>;
+}

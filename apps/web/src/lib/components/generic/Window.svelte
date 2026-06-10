@@ -8,17 +8,28 @@
 
 <script lang="ts">
     import { X } from "@lucide/svelte";
+    import type { Snippet } from "svelte";
+
+    let {
+        title,
+        is_shown,
+        win_dim = { width: 300, height: 300 },
+        children,
+    }: {
+        title: string;
+        is_shown: boolean;
+        win_dim: { width: number; height: number };
+        children: Snippet;
+    } = $props();
 
     let x = $state(50);
     let y = $state(100);
 
-    let width = $state(300);
-    let height = $state(300);
+    let width = $derived(win_dim.width);
+    let height = $derived(win_dim.height);
 
     let mousedown = $state(false);
     let resizing = $state(false);
-
-    let { is_shown }: { is_shown: boolean } = $props();
 
     function onMouseMove(e: MouseEvent) {
         if (mousedown) {
@@ -45,23 +56,23 @@
         style:--top-pos={`${y}px`}
         style:--width-val={`${width}px`}
         style:--height-val={`${height}px`}
-        class="absolute flex flex-col z-100 p-2 bg-card border border-border rounded-md overflow-hidden shadow-[0px_0px_50px_0px_#00000085]">
-        <span class="flex justify-center items-center px-3">
+        class="absolute flex flex-col z-100 p-2 bg-card border border-border rounded-md overflow-scroll shadow-[0px_0px_50px_0px_#00000085]">
+        <span class="flex justify-center items-center px-3 mb-3">
             <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <p
                 onmousedown={() => (mousedown = true)}
                 class="w-full h-8 font-geist text-center select-none leading-8 cursor-move">
-                Window Title
+                {title}
             </p>
-            <X
+            <!-- <X
                 class="cursor-pointer"
                 size={17}
-                onclick={() => (is_shown = false)} />
+                onclick={() => (is_shown = false)} /> -->
         </span>
 
         <!-- Resize div, hovering on this this let user resize -->
         <div
-            class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
+            class="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize"
             style="z-index: 10;"
             onmousedown={(e) => {
                 resizing = true;
@@ -69,6 +80,8 @@
             }}
             aria-hidden="true">
         </div>
+
+        {@render children()}
     </div>
 {/if}
 

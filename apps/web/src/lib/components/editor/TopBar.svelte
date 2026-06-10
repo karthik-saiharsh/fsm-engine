@@ -39,6 +39,11 @@
             ? false
             : true;
     }
+
+    function toggleTransitionTableWindow() {
+        secondary_stores.show_transition_table =
+            !secondary_stores.show_transition_table;
+    }
 </script>
 
 <div class="w-full h-15 flex items-center px-3 gap-2 bg-secondary border-b">
@@ -112,9 +117,10 @@
         Auto Layout
     </Button>
 
-    <Button variant="outline" class="font-geist" onclick={() => {
-        alert("This feature hasn't been implemented yet. We are working on it.\n\nDevelopment of FSM Engine takes time and effort, and the team is very small (only 1 developer for now; so bear with me if new features, and fixes take time)")
-    }}>
+    <Button
+        variant={secondary_stores.show_transition_table ? "default" : "outline"}
+        class="font-geist"
+        onclick={toggleTransitionTableWindow}>
         <Table />
         Transition Table
     </Button>

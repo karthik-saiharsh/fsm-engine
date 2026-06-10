@@ -4,7 +4,7 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
-import type { State, Transition } from "./utils/types";
+import type { State, Transition, TransitionTable } from "./utils/types";
 import { EngineTypes } from "./utils/types";
 import { MinHeap } from "min-heap-typed";
 
@@ -436,6 +436,56 @@ export class FSMEngine {
         // clear track of deleted state and transition ids
         while (this.freeIds.size > 0) this.freeIds.poll();
         while (this.freeTrIds.size > 0) this.freeTrIds.poll();
+    }
+
+
+    /**
+     * Returns the transition table of the FSM
+     */
+    makeTransitionTable(): TransitionTable {
+        /**
+         * The idea is to have a object with node/states and each of the language alphabets mapped out.
+         * We'll be using the Transition map to build this
+         */
+
+        let transitionTable = new Map<number, Map<string, number[]>>();
+
+        let alphabets = new Set<string>(); // keep track of all alphabets
+
+        for (const [key, value] of this.transitions) {
+            const from = value.from;
+            const alphabet = value.on;
+            const to = value.to;
+
+            // Push alphabet to set of alphabets
+            alphabets.add(alphabet);
+
+            if (transitionTable.has(from)) {
+                const nodeCell = transitionTable.get(from);
+
+                if (nodeCell?.has(alphabet)) {
+                    nodeCell.get(alphabet)?.push(to);
+                } else {
+                    nodeCell?.set(alphabet, [to]);
+                }
+            } else {
+                let res = new Map<string, number[]>();
+                res.set(alphabet, [to]);
+                transitionTable.set(from, res);
+            }
+        }
+
+        for (const [key, _] of this.nodes) {
+            if (!transitionTable.has(key)) {
+                transitionTable.set(key, new Map<string, number[]>())
+            }
+        }
+
+        return {
+            table: transitionTable,
+            alphabets: alphabets
+        }
+
     }
 
     /********* HELPER FUNCTIONS *********/

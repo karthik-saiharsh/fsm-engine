@@ -31,6 +31,7 @@
     import Window from "./generic/Window.svelte";
     import type { KonvaWheelEvent } from "svelte-konva";
     import SaveDialog from "./popus/SaveDialog.svelte";
+    import TransitionTable from "./popus/TransitionTable.svelte";
 
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
@@ -312,7 +313,7 @@
 <ProjectDetailsPopup />
 <NodeCustomizer />
 <TransitionCustomizer />
-<Window is_shown={secondary_stores.show_transition_table} />
+<TransitionTable />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->
