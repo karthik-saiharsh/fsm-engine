@@ -14,11 +14,13 @@
         title,
         is_shown,
         win_dim = { width: 300, height: 300 },
+        closeWindow,
         children,
     }: {
         title: string;
         is_shown: boolean;
         win_dim: { width: number; height: number };
+        closeWindow: () => void;
         children: Snippet;
     } = $props();
 
@@ -64,10 +66,7 @@
                 class="w-full h-8 font-geist text-center select-none leading-8 cursor-move">
                 {title}
             </p>
-            <!-- <X
-                class="cursor-pointer"
-                size={17}
-                onclick={() => (is_shown = false)} /> -->
+            <X class="cursor-pointer" size={17} onclick={closeWindow} />
         </span>
 
         <!-- Resize div, hovering on this this let user resize -->

@@ -26,6 +26,9 @@ class SecondaryStores {
 
     // Show transition table window
     show_transition_table = $state(false);
+
+    // Save Dialog Visibility
+    show_save_dialog = $state(false);
 }
 
 const secondary_stores = new SecondaryStores();
