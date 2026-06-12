@@ -488,6 +488,65 @@ export class FSMEngine {
 
     }
 
+    /**
+     * Returns the transition table of the state machine as a string (csv format)
+     */
+    getTransitionTableCSV(): string {
+        let result: string[] = [];
+
+        const { table, alphabets } = this.makeTransitionTable();
+
+        // The first row is just all the alphabets
+        result.push(["State \\ Alphabets", ...alphabets].join(","));
+
+        // Subsequent rows start with a state(from) and go have other states on an alphabet
+        // Check which state a transition goes to from each state
+        for (const [key, value] of table) {
+            let row: string[] = [];
+
+            const fromState = this.nodes.get(key);
+
+            if (fromState?.isStart) {
+                row.push((fromState.value) + "(S)"); // Indicate if start state
+            } else if (fromState?.isEnd) {
+                row.push((fromState.value) + "(E)"); // Indicate if end state
+            } else {
+                row.push(fromState?.value ?? "");
+            }
+
+            // Check every alphabet from each state
+            for (const alph of alphabets) {
+
+                if (value.has(alph)) {
+
+                    for (const toState of value.get(alph)!) {
+
+                        const state = this.nodes.get(toState);
+
+                        if (state?.isStart) {
+                            row.push((state.value) + "(S)"); // Indicate if start state
+                        } else if (state?.isEnd) {
+                            row.push((state.value) + "(E)"); // Indicate if end state
+                        } else {
+                            row.push(state?.value ?? "");
+                        }
+
+                    }
+
+                } else {
+                    row.push(" ");
+                }
+            }
+
+            row.push(" ");
+            result.push(row.join(","))
+        }
+
+
+        return result.join("\n");
+
+    }
+
     /********* HELPER FUNCTIONS *********/
 
     /**
