@@ -52,10 +52,7 @@
      * Toggle the save window
      */
     function toggleSaveWindow() {
-        ProjectClass.togglers.show_save_details = ProjectClass.togglers
-            .show_save_details
-            ? false
-            : true;
+        secondary_stores.show_save_dialog = true;
     }
 </script>
 

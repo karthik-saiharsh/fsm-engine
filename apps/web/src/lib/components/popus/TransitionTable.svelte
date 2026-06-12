@@ -55,12 +55,47 @@
             return "-";
         }
     }
+
+    /**
+     * Download State Machine Transition Table as CSV
+     */
+    function downloadCSV() {
+        // get csv contents as string
+        const csvData: string = ProjectClass.engine.getTransitionTableCSV();
+
+        // Create a a tag with href to download the csv
+        var link = document.createElement("a");
+        link.setAttribute(
+            "href",
+            "data:text/json;charset=utf-8," + encodeURIComponent(csvData)
+        );
+
+        link.setAttribute(
+            "download",
+            ProjectClass.project_details.name + ".csv"
+        );
+
+        link.style.display = "none";
+        document.body.appendChild(link);
+
+        link.click(); // click link, start download
+
+        document.body.removeChild(link); // cleanup, delete the element
+    }
+
+    /**
+     * Function to handle Closing of the Transition table window
+     */
+    function closeWindow() {
+        secondary_stores.show_transition_table = false;
+    }
 </script>
 
 <Window
     win_dim={{ width: 500, height: 200 }}
     title="Transition Table"
-    is_shown={secondary_stores.show_transition_table}>
+    is_shown={secondary_stores.show_transition_table}
+    {closeWindow}>
     <div class="flex flex-col gap-5 justify-evenly items-center w-full h-full">
         {#if (table?.table.size ?? 0) > 0 && (table?.alphabets.size ?? 0) > 0}
             <table>
@@ -86,7 +121,7 @@
                 </tbody>
             </table>
 
-            <!-- <Button>Export Data as CSV</Button> Upcoming Feature -->
+            <Button onclick={downloadCSV}>Export Data as CSV</Button>
         {:else}
             <div class="flex flex-col gap-1 justify-center items-center">
                 <Wind size={50} class="opacity-70" />

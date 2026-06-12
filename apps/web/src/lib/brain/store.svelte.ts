@@ -40,7 +40,6 @@ class Project {
     togglers = $state({
         show_launch: true,
         show_proj_details: false,
-        show_save_details: false,
         show_node_customizer: false,
         show_tr_customizer: false,
     });

@@ -11,6 +11,7 @@
     import * as Card from "../ui/card/index";
     import Button from "../ui/button/button.svelte";
     import { X, Download, ImageDown } from "@lucide/svelte";
+    import secondary_stores from "../../brain/extras.svelte";
 
     let { stage } = $props();
 
@@ -18,7 +19,7 @@
     const togglers = ProjectClass.togglers;
 
     function handleCancel() {
-        togglers.show_save_details = false;
+        secondary_stores.show_save_dialog = false;
     }
 
     function saveProject() {
@@ -47,7 +48,7 @@
     }
 </script>
 
-{#if togglers.show_save_details}
+{#if secondary_stores.show_save_dialog}
     <main
         class="absolute top-0 left-0 z-20 flex justify-center items-center w-screen h-screen bg-background/10 backdrop-blur">
         <Card.Root
