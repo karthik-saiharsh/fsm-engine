@@ -6,19 +6,24 @@
     import * as Popover from "../ui/popover/index";
     import { Button } from "../ui/button/index";
     import { cn } from "../../utils";
+    import ProjectClass from "../../brain/store.svelte";
+    import { EngineTypes } from "@fsm/engine";
 
-    const frameworks = [
+    const frameworks: { value: string; label: string; typ?: EngineTypes }[] = [
         {
             value: "FREESTYLE",
             label: "Free Style",
+            typ: EngineTypes.FREE,
         },
         {
             value: "DFA",
             label: "DFA",
+            typ: EngineTypes.DFA,
         },
         {
             value: "NFA",
             label: "NFA",
+            typ: EngineTypes.NFA,
         },
         {
             value: "PDA",
@@ -46,15 +51,6 @@
     let value = $state("FREESTYLE");
     let triggerRef = $state<HTMLButtonElement>(null!);
 
-    $effect(() => {
-        if (value != "FREESTYLE") {
-            alert(
-                "This feature hasn't been implemented yet. We are working on it.\n\nIf you want to use NFA or DFA modes, check out the legacy version at (https://fsm-engine.vercel.app/) \n\nDevelopment of FSM Engine takes time and effort, and the team is very small (only 1 developer for now; so bear with me if new features, and fixes take time)"
-            );
-            value = "FREESTYLE";
-        }
-    });
-
     const selectedValue = $derived(
         frameworks.find((f) => f.value === value)?.label
     );
@@ -62,11 +58,27 @@
     // We want to refocus the trigger button when the user selects
     // an item from the list so users can continue navigating the
     // rest of the form with the keyboard.
-    function closeAndFocusTrigger() {
+    function closeAndFocusTrigger(index: number) {
         open = false;
         tick().then(() => {
             triggerRef.focus();
         });
+
+        // Alert if un available state chosen
+        if (index > 1) {
+            alert(
+                "Only DFA mode is available for now. I are working on implementing the other machines as well. Hang on, give me some time."
+            );
+            return;
+        }
+
+        // Set new value
+        value = frameworks[index].value;
+
+        // Call the backend to change Machine Type
+        ProjectClass.changeProjectType(
+            frameworks[index].typ ?? EngineTypes.FREE
+        );
     }
 </script>
 
@@ -90,12 +102,11 @@
             <Command.List>
                 <Command.Empty>No framework found.</Command.Empty>
                 <Command.Group value="frameworks">
-                    {#each frameworks as framework (framework.value)}
+                    {#each frameworks as framework, index}
                         <Command.Item
                             value={framework.value}
                             onSelect={() => {
-                                value = framework.value;
-                                closeAndFocusTrigger();
+                                closeAndFocusTrigger(index);
                             }}>
                             <CheckIcon
                                 class={cn(

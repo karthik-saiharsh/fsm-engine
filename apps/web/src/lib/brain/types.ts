@@ -55,3 +55,19 @@ export type ProjectData = {
 
 
 export type PartialNodeProps = Partial<NodeProps> & Pick<NodeProps, 'x' | 'y'>
+
+export interface TransitionDraw {
+    stroke: string | undefined,
+    strokeWidth: number | undefined,
+    fill: string | undefined,
+    points: number[],
+    tension: number | undefined,
+    labels: LabelDraw[],
+}
+
+export interface LabelDraw {
+    id: number,
+    labelX: number | undefined,
+    labelY: number | undefined,
+    on: string | undefined,
+}

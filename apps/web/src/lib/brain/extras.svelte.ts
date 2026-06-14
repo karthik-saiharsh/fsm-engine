@@ -29,6 +29,9 @@ class SecondaryStores {
 
     // Save Dialog Visibility
     show_save_dialog = $state(false);
+
+    // Language Specific Settings Window
+    show_lang_settings = $state(false);
 }
 
 const secondary_stores = new SecondaryStores();

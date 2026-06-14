@@ -5,7 +5,7 @@
  */
 
 /********* Library Imports *********/
-import { EngineTypes } from "@fsm/engine";
+import { DFA, EngineTypes } from "@fsm/engine";
 /********* Library Imports *********/
 
 /********* Type Imports *********/
@@ -63,7 +63,7 @@ class Project {
     /****** STATE MACHINE VARIABLES ******/
 
     /****** BACKEND CLASSES ******/
-    engine: FSMEngine; // The backend FSM Engine Class
+    engine: FSMEngine | DFA; // The backend FSM Engine Class
     /****** BACKEND CLASSES ******/
 
     /**
@@ -278,7 +278,23 @@ class Project {
                 // Add a new transition
                 const from = secondary_stores.from_node
                 const to = id;
-                const tr_id = this.engine.addTransition(from, to, "...");
+                let tr_id: number;
+
+                /**
+                 * If not in Free Style mode, first add a transition automatically, then let user change the alphabet
+                 */
+                if ("addAutoTransition" in ProjectClass.engine) {
+                    const result = ProjectClass.engine.addAutoTransition(from, to);
+
+                    if (result.success) {
+                        tr_id = result.tr_id!;
+                    } else {
+                        alert(result.error);
+                        secondary_stores.from_node = null;
+                        return;
+                    }
+                }
+                else { tr_id = this.engine.addTransition(from, to, "..."); }
 
                 // Add Details of this pransition to Transition Props
                 const fromNodeProps = this.node_properties.get(from)!;
@@ -286,7 +302,6 @@ class Project {
 
                 const start = [fromNodeProps.x!, fromNodeProps.y!];
                 const end = [toNodeProps.x!, toNodeProps.y!];
-                const control = [(start[0]! + end[0]!) / 2, (start[1]! + end[1]! / 2)];
 
                 this.transition_properties.set(tr_id, {
                     curvature: 0.5,
@@ -471,6 +486,26 @@ class Project {
         secondary_stores.current_select = null;
         secondary_stores.current_tr = null;
         secondary_stores.from_node = null;
+    }
+
+
+    /**
+     * Change the type of State Machines
+     * @param projType Type of State Machine
+     */
+    changeProjectType(projType: EngineTypes) {
+        this.newProject(); // Create a new Project
+
+        this.project_details.type = projType;
+        this.engine = new DFA(this.project_details.name);
+
+
+        // Set nodes Map to be used instead as node store
+        this.engine.setNodes(this.nodes);
+        this.engine.setTransitions(this.transitions);
+
+        // Open Machine Settings Window
+        secondary_stores.show_lang_settings = true;
     }
 
 
