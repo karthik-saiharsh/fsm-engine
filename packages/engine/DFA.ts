@@ -5,34 +5,20 @@ export class DFA extends FSMEngine {
     /** Set of all language alphabets for this grammar */
     languageAlphabet: Set<string>;
 
-    /**
-     * In a DFA, we need to make sure that every state has a transition
-     * on every language alphabet. To do that, we keep another hashmap in store
-     * to track of which node has what transition on what alphabet.
-     * This attribute has key as state id and value as another map
-     * with key as language alphabet and value as id of the to state
-     */
-    protected dfaGraph: Map<number, Map<string, number>>;
-
     startState: number | undefined;
-    endState: Set<number>;
 
     constructor(name: string) {
         super(name);
         this.type = EngineTypes.DFA;
         this.languageAlphabet = new Set<string>();
-        this.dfaGraph = new Map<number, Map<string, number>>();
-        this.endState = new Set<number>();
     }
 
     /**
      * Set a state as starting state
      * @param id Reference id of start state
      */
-    setStartState(id: number) {
-        // Check state exists
-        this.verifyStateExistance(id);
-
+    override setStart(id: number): void {
+        super.setStart(id);
         this.startState = id;
     }
 
@@ -44,6 +30,13 @@ export class DFA extends FSMEngine {
         for (const alph of alphs) {
             this.languageAlphabet.add(alph);
         }
+    }
+
+    /**
+     * Returns a string array of language alphabets
+     */
+    getAlphabets(): string[] {
+        return Array.from(this.languageAlphabet);
     }
 
     /**
@@ -71,33 +64,6 @@ export class DFA extends FSMEngine {
     }
 
     /**
-     * Adds a new State
-     * @param value Value of the State
-     * @returns The id of the state (reference value to access this state).
-     */
-    override addState(value: string): number {
-        // Add State
-        const id = super.addState(value);
-
-        // Make a entry for this state in dfaGraph
-        this.dfaGraph.set(id, new Map<string, number>());
-
-        return id;
-    }
-
-    /**
-     * Delete a State
-     * @param id Reference id of the state to be deleted
-     */
-    override deleteState(id: number): void {
-        // Delete State
-        super.deleteState(id);
-
-        // If deletion worked, then remove any mention of it from dfaGraph
-        this.dfaGraph.delete(id);
-    }
-
-    /**
      * Adds a new Transition.
      * In Case you are wondering, a reference number of the state
      * is returned when a new state is added @see addState method
@@ -107,6 +73,9 @@ export class DFA extends FSMEngine {
      * @returns a reference id of the transition
      */
     override addTransition(from: number, to: number, on: string): number {
+
+        const dfaGraph = this.makeTransitionTable().table;
+
         // Verify existance of from and to
         this.verifyStateExistance(from);
         this.verifyStateExistance(to);
@@ -115,36 +84,61 @@ export class DFA extends FSMEngine {
         this.verifyAlphExistance(on);
 
         // Then check that a transition on said alphabet doesn't already exist for state `from`
-        if (this.dfaGraph.get(from)?.has(on)) {
+        if (dfaGraph.get(from)?.has(on)) {
             throw new Error(
                 `A transition for State ${from} on ${on} already exists.`
             );
         }
 
-        // Add this transntion to dfaGraph
-        this.dfaGraph.get(from)?.set(on, to);
-
         // If all is well, add this transition
         return super.addTransition(from, to, on);
     }
 
+
     /**
-     * Deletes a Transition with given id
-     * @param id Reference id of the Transition
+     * Use this to add a transition between two states 
+     * without having to provide an input alphabet.
+     * This automatically assigns the next available lanuage alphabet for that transition.
+     * @param from Starting State of the Transition
+     * @param to Target State of the Transition
      */
-    override deleteTransition(id: number): void {
-        // Verify existance of transition
-        this.verifyTransitionExistance(id);
+    addAutoTransition(from: number, to: number): { success: boolean, error: null | string, tr_id?: number } {
 
-        // Get from state for this transition
-        const from = this.transitions.get(id)?.from!;
-        const on = this.transitions.get(id)?.on!;
+        /**
+         * This method does not have much utility on its own.
+         * It's main aim is to aid in developing the web interface.
+         * This method therefore does not throw errors, but rather returns a 
+         * success boolean or a string error in case of a failure for the frontend to parse.
+         * I would not recommend using this if you are using fsm-engine progrmatically.
+         * But hey if you want to use, who am I to stop you XD!
+         */
 
-        // Delete Transition
-        super.deleteTransition(id);
+        const dfaGraph = this.makeTransitionTable().table;
 
-        // If deletion worked, then remove any mention of it in dfaGraph as well.
-        this.dfaGraph.get(from)?.delete(on);
+
+        // Verify existance of from and to
+        this.verifyStateExistance(from);
+        this.verifyStateExistance(to);
+
+        // Get the list of alphabets `from` already has a transition from
+        const usedAlphabets = new Set(dfaGraph.get(from)?.keys());
+        const availableAlphabets = this.languageAlphabet.difference(usedAlphabets);
+
+        if (availableAlphabets.size) {
+            // Get the next available alphabet to make a transition
+            const on = availableAlphabets.values().next().value ?? "";
+            const id = this.addTransition(from, to, on);
+            return {
+                success: true,
+                error: null,
+                tr_id: id,
+            }
+        } else {
+            return {
+                success: false,
+                error: `The State ${this.nodes.get(from)?.value} already has a transition for every alphabet in the language`
+            }
+        }
     }
 
     /**
@@ -154,6 +148,9 @@ export class DFA extends FSMEngine {
      * indicating whether string is accepted or not
      */
     validateString(str: string): { path: number[]; accepted: boolean } {
+
+        const dfaGraph = this.makeTransitionTable().table;
+
         // Verify start state exists
         this.verifyStartState();
 
@@ -169,15 +166,15 @@ export class DFA extends FSMEngine {
             this.verifyAlphExistance(ch);
 
             // get next state to move to
-            const next = this.dfaGraph.get(current)?.get(ch);
+            const next = dfaGraph.get(current)?.get(ch)!;
 
             if (current !== undefined) {
-                current = next!;
+                current = next[0]!;
             } else {
                 // Return failure of string acceptance
                 return {
                     path: path,
-                    accepted: this.endState.has(current),
+                    accepted: this.nodes.get(current)!.isEnd,
                 };
             }
         }
@@ -187,6 +184,52 @@ export class DFA extends FSMEngine {
             path: path,
             accepted: true,
         };
+    }
+
+
+    /**
+     * Edit the Label of an existing transition.
+     * @param id Id of the transitions you wish to edit the label of
+     * @param newLabel Updated Label
+     * @param [swap=false] If the @param newLabel is already assigned to another transition, should the labels get swapped ?
+     */
+    editLabel(id: number, newLabel: string, swap: boolean = false) {
+        // verify `id` is valid
+        this.verifyTransitionExistance(id);
+
+        // Verify alphabet is valid
+        this.verifyAlphExistance(newLabel);
+
+        // get the current transition
+        const tr = this.getTransition(id);
+
+        // Get list of all Outgoing transitions from `from`
+        const trs = this.getState(tr.from).transitions.outgoing.union(this.getState(tr.from).transitions.self);
+
+        let isUnique: { status: boolean, by: null | number } = { status: true, by: null };
+
+        // Check if `newLabel` is used by any other transition
+        for (const tr_ of trs) {
+            const tr__ = this.getTransition(tr_);
+            if (tr__.on === newLabel) {
+                if (!swap)
+                    throw new Error(`The Label ${newLabel} is set to the transition with id ${tr__.id}. Assign a Label that's free`);
+                else {
+                    isUnique = { status: false, by: tr__.id };
+                    break;
+                }
+            }
+        }
+
+        // Set or swap labels accordingly
+        if (isUnique.status) {
+            this.transitions.set(id, { ...tr, on: newLabel });
+        } else {
+            const old = tr.on;
+            this.transitions.set(isUnique.by as number, { ...this.getTransition(isUnique.by as number), on: old });
+            this.transitions.set(id, { ...tr, on: newLabel });
+        }
+
     }
 
     /********* HELPER FUNCTIONS *********/

@@ -46,7 +46,6 @@
      * @param alphabet the alphabet to get transition on
      */
     function getCell(id: number, alphabet: string): string {
-        console.log(table?.table);
         if (table?.table.get(id)?.has(alphabet)) {
             let result = table.table.get(id)?.get(alphabet);
             const return_val = result?.map((id) => getNodeName(id));

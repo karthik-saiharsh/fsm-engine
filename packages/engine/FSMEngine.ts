@@ -129,7 +129,7 @@ export class FSMEngine {
     }
 
     /**
-     * Returns a list of all transition id between 2 states
+     * Returns a list of all transition ids between 2 states
      * @param from Statr State
      * @param to End State
      * @returns List of all transition ids that go from start state to end state
@@ -497,7 +497,7 @@ export class FSMEngine {
         const { table, alphabets } = this.makeTransitionTable();
 
         // The first row is just all the alphabets
-        result.push(["State \\ Alphabets", ...alphabets].join(","));
+        result.push(["State \\ Alphabets", ...alphabets, " "].join(","));
 
         // Subsequent rows start with a state(from) and go have other states on an alphabet
         // Check which state a transition goes to from each state

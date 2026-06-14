@@ -32,6 +32,9 @@
     import type { KonvaWheelEvent } from "svelte-konva";
     import SaveDialog from "./popus/SaveDialog.svelte";
     import TransitionTable from "./popus/TransitionTable.svelte";
+    import LangSettings from "./popus/LangSettings.svelte";
+    import { render } from "svelte/server";
+    import type { LabelDraw, TransitionDraw } from "../brain/types";
 
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
@@ -156,6 +159,69 @@
         stage.node.position(newPos);
     }
     /********* FUNCTIONS *********/
+
+    /********* DERIVED STATES *********/
+    /**
+     * Basically, 2 states can multiple transitions between them. But we only want to draw a single arrow between two states.
+     * To display multiple transitions here the labels get stacked on top.
+     *
+     * This state calculates what needs to be drawn on screen.
+     * It maintains a map primary with `from` state id as key and has another map with `to` state as id and
+     * a Object which defines the display elements of that particular transition from `from` to `to`
+     */
+    let drawTransitions = $derived.by(() => {
+        let transitions = new Map<number, Map<number, TransitionDraw>>();
+
+        for (const [id, value] of Transitions) {
+            const from = value.from;
+            const to = value.to;
+            const on = value.on;
+            const transitionMathData = getTransitionPoints(id);
+
+            if (transitions.has(from) && transitions.get(from)?.has(to)) {
+                const lastLabel = transitions.get(from)?.get(to)?.labels.at(-1);
+
+                const labelProperties: LabelDraw = {
+                    id,
+                    labelX: transitionMathData[1][0] - on.length ** 1.5,
+                    labelY: lastLabel?.labelY! - 30,
+                    on,
+                };
+
+                transitions.get(from)?.get(to)?.labels.push(labelProperties);
+            } else {
+                const labelProperties: LabelDraw = {
+                    id,
+                    labelX: transitionMathData[1][0] - on.length ** 1.5,
+                    labelY: transitionMathData[1][1] - 10,
+                    on,
+                };
+
+                const drawingProperties: TransitionDraw = {
+                    stroke: TransitionProps.get(id)?.stroke,
+                    strokeWidth: TransitionProps.get(id)?.strokeWidth,
+                    fill: TransitionProps.get(id)?.stroke,
+                    points: transitionMathData[0],
+                    tension: TransitionProps.get(id)?.curvature,
+                    labels: [labelProperties],
+                };
+
+                if (transitions.has(from)) {
+                    transitions.get(from)?.set(to, drawingProperties);
+                } else {
+                    transitions.set(
+                        from,
+                        new Map<number, TransitionDraw>([
+                            [to, drawingProperties],
+                        ])
+                    );
+                }
+            }
+        }
+
+        return transitions;
+    });
+    /********* DERIVED STATES *********/
 </script>
 
 <!-- Main Editor Window -->
@@ -197,7 +263,7 @@
                                 : (NodeProps.get(id)?.stroke ??
                                   defaultLook.stroke)} />
 
-                        <!-- The calculations for attributes x,y were obtained empirically, so don't try to make logical sense of them; these partical calculations just seem to work -->
+                        <!-- The calculations for attributes x,y were obtained empirically. So don't try to make logical sense of them; these practical calculations just seem to work well -->
                         <Text
                             fill={ProjectClass.theme === "dark"
                                 ? "#ffffff"
@@ -268,38 +334,43 @@
                     </Group>
                 {/each}
 
-                {#each ProjectClass.transition_properties.keys() as id}
-                    {@const transitionData = getTransitionPoints(id)}
-                    <Arrow
-                        stroke={TransitionProps.get(id)?.stroke}
-                        strokewidth={TransitionProps.get(id)?.strokeWidth}
-                        fill={TransitionProps.get(id)?.stroke}
-                        points={transitionData[0]}
-                        tension={TransitionProps.get(id)?.curvature} />
+                {#each drawTransitions.values() as superTransition}
+                    {#each superTransition.values() as transition}
+                        {@const {stroke, strokeWidth, fill, points, tension, labels}: TransitionDraw = transition}
+                        <Arrow
+                            {stroke}
+                            strokewidth={strokeWidth}
+                            {fill}
+                            {points}
+                            {tension} />
 
-                    <Label
-                        onclick={(e) => ProjectClass.onTransitionClick(e, id)}
-                        x={transitionData[1][0] -
-                            (Transitions.get(id)?.on.length ?? 0) ** 1.5}
-                        y={transitionData[1][1] - 10}
-                        opacity={0.75}>
-                        <Tag
-                            fill={ProjectClass.theme === "dark"
-                                ? "#ffffff80"
-                                : "#000000"}
-                            lineJoin="round"
-                            shadowColor={ProjectClass.theme === "dark"
-                                ? "#ffffff40"
-                                : "#00000090"}
-                            shadowBlur={30}
-                            cornerRadius={8} />
-                        <Text
-                            text={Transitions.get(id)?.on}
-                            fontFamily="Sans"
-                            fontSize={16}
-                            padding={5}
-                            fill="white" />
-                    </Label>
+                        {#each labels as label}
+                            {@const {id, labelX, labelY, on}: LabelDraw = label}
+                            <Label
+                                onclick={(e) =>
+                                    ProjectClass.onTransitionClick(e, id)}
+                                x={labelX}
+                                y={labelY}
+                                opacity={0.75}>
+                                <Tag
+                                    fill={ProjectClass.theme === "dark"
+                                        ? "#ffffff80"
+                                        : "#000000"}
+                                    lineJoin="round"
+                                    shadowColor={ProjectClass.theme === "dark"
+                                        ? "#ffffff40"
+                                        : "#00000090"}
+                                    shadowBlur={30}
+                                    cornerRadius={8} />
+                                <Text
+                                    text={on}
+                                    fontFamily="Sans"
+                                    fontSize={16}
+                                    padding={5}
+                                    fill="white" />
+                            </Label>
+                        {/each}
+                    {/each}
                 {/each}
             </Layer>
         </Stage>
@@ -314,6 +385,7 @@
 <NodeCustomizer />
 <TransitionCustomizer />
 <TransitionTable />
+<LangSettings />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->

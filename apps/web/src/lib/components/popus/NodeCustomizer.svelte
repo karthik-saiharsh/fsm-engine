@@ -44,7 +44,6 @@
 
     function handleSave() {
         const currentId = secondary_stores.current_select;
-        console.log(`Current selected: ${currentId}`);
         if (currentId != null) {
             const currentSelected = ProjectClass.nodes.get(currentId);
             const currentSelectedProp =

@@ -14,6 +14,7 @@
     import Input from "../ui/input/input.svelte";
     import { X, CircleCheck, CircleX } from "@lucide/svelte";
     import secondary_stores from "../../brain/extras.svelte";
+    import { DFA } from "@fsm/engine";
 
     /********** REACTIVE VARIABLES **********/
     let label = $state<undefined | string>(undefined);
@@ -34,14 +35,29 @@
     });
 
     function handleSave() {
-        if (secondary_stores.current_tr !== null && label !== undefined) {
-            const id = secondary_stores.current_tr;
-            const oldTransition = transitions.get(id)!;
+        if (
+            "editLabel" in ProjectClass.engine &&
+            secondary_stores.current_tr !== null &&
+            label !== undefined
+        ) {
+            ("Calling editLabels()");
+            // Use the Engine provided editLabel Method for non Free Style State Machines
+            ProjectClass.engine.editLabel(
+                secondary_stores.current_tr,
+                label,
+                true
+            );
+        } else {
+            // And for FreeStyle, simple edit the label in place
+            if (secondary_stores.current_tr !== null && label !== undefined) {
+                const id = secondary_stores.current_tr;
+                const oldTransition = transitions.get(id)!;
 
-            ProjectClass.transitions.set(id, {
-                ...oldTransition,
-                on: label,
-            });
+                ProjectClass.transitions.set(id, {
+                    ...oldTransition,
+                    on: label,
+                });
+            }
         }
 
         secondary_stores.current_tr = null;
@@ -72,10 +88,29 @@
 
             <Card.Content
                 class="flex flex-col justify-center items-center gap-5">
-                <span class="w-full flex flex-col gap-2">
-                    <Label for="name">Transition Label</Label>
-                    <Input id="name" type="text" bind:value={label} />
-                </span>
+                {#if ProjectClass.engine instanceof DFA}
+                    <!-- If not in free style, then there is a restriction on the language alphabets -->
+                    <!-- Only show the available alphabets to pick from -->
+
+                    <p class="font-bold text-base">
+                        Choose Alphabet for this transition
+                    </p>
+
+                    <div
+                        class="w-85 h-max-50 overflow-scroll flex flex-wrap gap-5">
+                        {#each ProjectClass.engine.languageAlphabet as alph}
+                            <Button
+                                onclick={() => (label = alph)}
+                                variant={label === alph ? "default" : "outline"}
+                                >{alph}</Button>
+                        {/each}
+                    </div>
+                {:else}
+                    <span class="w-full flex flex-col gap-2">
+                        <Label for="name">Transition Label</Label>
+                        <Input id="name" type="text" bind:value={label} />
+                    </span>
+                {/if}
             </Card.Content>
 
             <Card.Footer class="flex justify-center items-center gap-5">

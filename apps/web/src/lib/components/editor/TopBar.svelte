@@ -54,6 +54,13 @@
     function toggleSaveWindow() {
         secondary_stores.show_save_dialog = true;
     }
+
+    /**
+     * Opens the machine specific settings
+     */
+    function openMachineSettings() {
+        secondary_stores.show_lang_settings = true;
+    }
 </script>
 
 <div class="w-full h-15 flex items-center px-3 gap-2 bg-secondary border-b">
@@ -102,7 +109,8 @@
     <Button
         disabled={ProjectClass.project_details.type === EngineTypes.FREE}
         variant="outline"
-        size="icon">
+        size="icon"
+        onclick={openMachineSettings}>
         <Settings2 />
     </Button>
 
