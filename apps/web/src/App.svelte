@@ -23,3 +23,8 @@
 
 <!-- Displayed if screen size is too small -->
 <ScreenSizeFallback />
+
+<!-- Add Copyrights -->
+<p class="z-50 absolute bottom-1.5 text-[0.5rem] text-center w-full opacity-85 select-none">
+    Copyright (C) 2026 Illindala Karthik Saiharsh - All Rights Reserved
+</p>
