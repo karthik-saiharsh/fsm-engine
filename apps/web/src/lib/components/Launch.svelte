@@ -42,7 +42,7 @@
 
     <span>
         <h1 class="text-4xl font-bold font-geist">FSM Engine 3.0</h1>
-        <p class="font-geist text-balance">One Tool To Tule Them All</p>
+        <p class="font-geist text-balance">One Tool To Rule Them All</p>
     </span>
 
     <span class="flex justify-center items-center gap-5">
