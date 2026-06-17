@@ -31,13 +31,16 @@
     function collectLanguageAlphabets() {
         let alphabets = alphabetInput.split(",");
         alphabets = alphabets.map((alph) => alph.trim());
-
-        if (alphabets.length) {
+        console.log(alphabets)
+        if (alphabets.join("").length > 0) {
             if (ProjectClass.engine instanceof DFA) {
                 ProjectClass.engine.addAlphabets(...alphabets);
             }
         } else {
-            alert("You have to enter atleast one alphabet!");
+            secondary_stores.openAlert(
+                "info",
+                "You have to enter atleast one alphabet!"
+            );
         }
 
         handleCancel();

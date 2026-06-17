@@ -35,6 +35,8 @@
     import LangSettings from "./popus/LangSettings.svelte";
     import { render } from "svelte/server";
     import type { LabelDraw, TransitionDraw } from "../brain/types";
+    import Alert from "./Alert.svelte";
+    import CustomAlert from "./popus/CustomAlert.svelte";
 
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
@@ -386,6 +388,7 @@
 <TransitionCustomizer />
 <TransitionTable />
 <LangSettings />
+<CustomAlert />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->
