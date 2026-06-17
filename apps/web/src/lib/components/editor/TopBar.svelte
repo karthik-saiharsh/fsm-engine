@@ -67,7 +67,16 @@
     <!-- Project Meta Data Settings and Details -->
 
     <!-- New Project  -->
-    <Button variant="outline" onclick={() => ProjectClass.newProject()}>
+    <Button
+        variant="outline"
+        onclick={() =>
+            secondary_stores.openAlert(
+                "confirm",
+                "Are you sure you want to create a new Project ? Creating a new project will start a blank canvas. Any unsaved work will be lost. Please save any unsaved work if needed.",
+                () => {
+                    ProjectClass.newProject();
+                }
+            )}>
         <CirclePlus />
         <p class="font-geist">New</p>
     </Button>

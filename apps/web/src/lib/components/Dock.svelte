@@ -13,6 +13,9 @@
     import ProjectClass from "../brain/store.svelte";
     import type { Component } from "svelte";
     import type { IconProps } from "@lucide/svelte";
+    import AdditionalTools from "./editor/AdditionalTools.svelte";
+    import Separator from "./ui/separator/separator.svelte";
+    import { DFA, EngineTypes } from "@fsm/engine";
 
     // Get props from Editor
     let { stage } = $props();
@@ -107,5 +110,10 @@
                 <DockItem.icon />
             </Button>
         {/each}
+
+        {#if ProjectClass.project_details.type !== EngineTypes.FREE}
+            <span class="h-10 w-px bg-primary/20"> </span>
+            <AdditionalTools />
+        {/if}
     </div>
 </main>

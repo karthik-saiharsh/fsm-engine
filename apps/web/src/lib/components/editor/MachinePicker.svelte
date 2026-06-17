@@ -8,6 +8,7 @@
     import { cn } from "../../utils";
     import ProjectClass from "../../brain/store.svelte";
     import { EngineTypes } from "@fsm/engine";
+    import secondary_stores from "../../brain/extras.svelte";
 
     const frameworks: { value: string; label: string; typ?: EngineTypes }[] = [
         {
@@ -66,8 +67,9 @@
 
         // Alert if un available state chosen
         if (index > 1) {
-            alert(
-                "Only DFA mode is available for now. I are working on implementing the other machines as well. Hang on, give me some time."
+            secondary_stores.openAlert(
+                "info",
+                "Only DFA mode is available for now. I am working on implementing the other machines as well. Hang on, give me some time."
             );
             return;
         }

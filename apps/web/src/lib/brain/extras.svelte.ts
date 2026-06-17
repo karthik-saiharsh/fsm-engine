@@ -8,6 +8,27 @@
  * @fileoverview This class contains global stores that aren't
  * as important and so needn't belong in ProjectClass */
 
+
+/**
+ * Describes the parameters of the alert window popup
+ */
+export interface AlertParams {
+    /** Should the Window be visible */
+    visible: boolean,
+    /** What kind of a window is it ? Info only shows info
+     * confirm has a yes/no button that the user has to acknowledge
+     */
+    type: "info" | "confirm",
+    /** What message should be displayed */
+    message: string | null,
+
+    /** If type is confirm, what has to be done on accept */
+    onAccept: null | (() => void),
+
+    /** What to do on cancel if type is confirm*/
+    onReject: null | (() => void),
+};
+
 class SecondaryStores {
     // should grid be shown ?
     grid_shown = $state<boolean>(true);
@@ -32,6 +53,42 @@ class SecondaryStores {
 
     // Language Specific Settings Window
     show_lang_settings = $state(false);
+
+    // Custom Alert Window
+    alert_popup: AlertParams = $state({
+        visible: false,
+        type: "info",
+        message: null,
+        onAccept: null,
+        onReject: null,
+    });
+
+    /**
+     * Opens a new Alert Window
+     * @param alert_params parameters of the alert window. see @interface AlertParams
+     */
+    openAlert(type: "info" | "confirm", message: string, onAccept?: () => void, onReject?: () => void) {
+
+        // Define a fallback default onRejectFunction that simple closes the alert again
+        const defaultClose = () => {
+            this.alert_popup = { ...this.alert_popup, visible: false };
+        }
+
+
+        if (type === "info") {
+            this.alert_popup = { visible: true, type, message, onAccept: null, onReject: defaultClose };
+        } else {
+
+            this.alert_popup = {
+                visible: true,
+                type,
+                message,
+                onAccept: onAccept ? () => { defaultClose(); onAccept() } : defaultClose, // After the onAccept function runs, the alert must close again, hence defaultClose is called before onAccept to close the alert popup
+                onReject: onReject ?? defaultClose
+            }
+        }
+    }
+
 }
 
 const secondary_stores = new SecondaryStores();

@@ -203,7 +203,7 @@ class Project {
                     document.getElementById("body")?.classList.toggle("dark", this.theme === "dark");
                 } catch (error) {
                     console.error("Failed to parse project file", error);
-                    alert("Invalid project file.");
+                    secondary_stores.openAlert("info", "Invalid project file.");
                 }
             };
             reader.readAsText(file);
@@ -289,7 +289,7 @@ class Project {
                     if (result.success) {
                         tr_id = result.tr_id!;
                     } else {
-                        alert(result.error);
+                        secondary_stores.openAlert("info", result.error ?? "");
                         secondary_stores.from_node = null;
                         return;
                     }
@@ -504,8 +504,10 @@ class Project {
         this.engine.setNodes(this.nodes);
         this.engine.setTransitions(this.transitions);
 
-        // Open Machine Settings Window
-        secondary_stores.show_lang_settings = true;
+        // Open Machine Settings Window if not in FREE mode
+        if (projType !== EngineTypes.FREE) {
+            secondary_stores.show_lang_settings = true;
+        }
     }
 
 
