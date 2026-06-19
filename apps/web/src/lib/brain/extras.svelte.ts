@@ -54,6 +54,10 @@ class SecondaryStores {
     // Language Specific Settings Window
     show_lang_settings = $state(false);
 
+    // String Validator Popup Window
+    show_string_validator = $state(false)
+
+
     // Custom Alert Window
     alert_popup: AlertParams = $state({
         visible: false,

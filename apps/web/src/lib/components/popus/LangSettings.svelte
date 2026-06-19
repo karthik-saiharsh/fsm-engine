@@ -15,6 +15,7 @@
     import secondary_stores from "../../brain/extras.svelte";
     import ProjectClass from "../../brain/store.svelte";
     import { DFA, EngineTypes } from "@fsm/engine";
+    import ProjectDetailsPopup from "./ProjectDetailsPopup.svelte";
 
     let alphabetInput: string = $state("");
 
@@ -31,10 +32,18 @@
     function collectLanguageAlphabets() {
         let alphabets = alphabetInput.split(",");
         alphabets = alphabets.map((alph) => alph.trim());
-        console.log(alphabets)
-        if (alphabets.join("").length > 0) {
+
+        if (alphabets.join("").trim().length > 0) {
             if (ProjectClass.engine instanceof DFA) {
+                // First clear all alphabets
+                ProjectClass.engine.removeAlphabets(
+                    ...ProjectClass.engine.getAlphabets()
+                );
                 ProjectClass.engine.addAlphabets(...alphabets);
+                console.log(
+                    "Alphabets right now: ",
+                    ProjectClass.engine.languageAlphabet
+                );
             }
         } else {
             secondary_stores.openAlert(

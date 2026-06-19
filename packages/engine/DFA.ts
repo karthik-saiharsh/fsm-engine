@@ -147,43 +147,45 @@ export class DFA extends FSMEngine {
      * @returns an object consisting path of states taken to reach the end and a boolean
      * indicating whether string is accepted or not
      */
-    validateString(str: string): { path: number[]; accepted: boolean } {
+    validateString(str: string): { path: number[]; str: null | string, accepted: boolean } {
 
-        const dfaGraph = this.makeTransitionTable().table;
-
-        // Verify start state exists
-        this.verifyStartState();
-
-        // Keep track of all states visited
-        const path: number[] = [];
+        // Validate DFA
+        this.validateDFA();
 
         let current: number = this.startState!;
+        let path = [];
 
-        for (const ch of [...str]) {
-            // push current state to path
+        // get dfa
+        const dfa = this.makeTransitionTable().table;
+
+        // make a copy of the inputString
+        const res_string = str
+
+        while (str.length > 0) {
+            const letter = str.charAt(0); // Get the first letter
+
+
+            // Check if the current alphabet is part of language alphabet
+            this.verifyAlphExistance(letter);
+
+            // Add current state to path
             path.push(current);
-            // verify the alphabet exists
-            this.verifyAlphExistance(ch);
 
-            // get next state to move to
-            const next = dfaGraph.get(current)?.get(ch)!;
+            // Go to the next state
+            current = dfa.get(current)?.get(letter)![0]!;
 
-            if (current !== undefined) {
-                current = next[0]!;
-            } else {
-                // Return failure of string acceptance
-                return {
-                    path: path,
-                    accepted: this.nodes.get(current)!.isEnd,
-                };
-            }
+            // Remove the first letter
+            str = str.slice(1);
         }
 
-        // return success
+        // Add the current state of exit to path
+        path.push(current);
+
         return {
             path: path,
-            accepted: true,
-        };
+            str: res_string,
+            accepted: this.getState(current).isEnd,
+        }
     }
 
 
@@ -244,6 +246,33 @@ export class DFA extends FSMEngine {
     private verifyStartState() {
         if (this.startState === undefined) {
             throw new Error(`Start State Does not exist`);
+        }
+    }
+
+
+    /**
+     * This function tests if a given dfa is proper.
+     * Check that every state has a transition from every alphabet.
+     * It'll throw an error if something goes wrong, else nothing is returned
+     */
+    private validateDFA() {
+        // Very that a start state exists
+        this.verifyStartState();
+
+        // Get dfa
+        const dfa = this.makeTransitionTable().table;
+
+        // Get language alphabets
+        const alphabets = this.languageAlphabet;
+
+        // for each state verify transition from every alphabet
+        for (const state of this.getStates().keys()) {
+            for (const alph of alphabets) {
+                // Exactly one transition has to exist
+                if (dfa.get(state)?.get(alph)?.length !== 1) {
+                    throw new Error(`State ${this.getState(state).value} must have exactly one transition on alphabet ${alph}`);
+                }
+            }
         }
     }
 }

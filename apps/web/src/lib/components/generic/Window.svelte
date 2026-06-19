@@ -63,7 +63,7 @@
             <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <p
                 onmousedown={() => (mousedown = true)}
-                class="w-full h-8 font-geist text-center select-none leading-8 cursor-move">
+                class="w-full h-8 font-geist text-center select-none leading-8 cursor-move font-bold">
                 {title}
             </p>
             <X class="cursor-pointer" size={17} onclick={closeWindow} />
