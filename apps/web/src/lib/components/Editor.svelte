@@ -37,6 +37,7 @@
     import type { LabelDraw, TransitionDraw } from "../brain/types";
     import Alert from "./Alert.svelte";
     import CustomAlert from "./popus/CustomAlert.svelte";
+    import StringValidator from "./popus/StringValidator.svelte";
 
     const defaultLook = ProjectClass.defaultNodeLook;
     const Nodes = ProjectClass.nodes;
@@ -389,6 +390,7 @@
 <TransitionTable />
 <LangSettings />
 <CustomAlert />
+<StringValidator />
 <!-- Additional Overlays and Popup Windows -->
 
 <!-- Options Dock -->

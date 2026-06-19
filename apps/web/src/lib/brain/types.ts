@@ -71,3 +71,7 @@ export interface LabelDraw {
     labelY: number | undefined,
     on: string | undefined,
 }
+
+
+/********* CONSTANTS *********/
+export const EMPTY_STRING: string = "λ"; 

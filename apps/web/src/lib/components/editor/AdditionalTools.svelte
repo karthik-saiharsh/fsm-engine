@@ -11,6 +11,10 @@
     import Button from "../ui/button/button.svelte";
     import secondary_stores from "../../brain/extras.svelte";
     // import DropdownMenu from "../ui/dropdown-menu/dropdown-menu.svelte";
+
+    function openStringValidator() {
+        secondary_stores.show_string_validator = true;
+    }
 </script>
 
 <DropdownMenu.Root>
@@ -22,8 +26,7 @@
         <DropdownMenu.Group>
             <DropdownMenu.Item
                 class="px-4 py-2 my-0.5"
-                onclick={() =>
-                    secondary_stores.openAlert("info", "Feature Coming Soon!")}
+                onclick={openStringValidator}
                 >Validate a String</DropdownMenu.Item>
 
             <DropdownMenu.Item
