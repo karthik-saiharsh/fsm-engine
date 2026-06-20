@@ -61,8 +61,12 @@
                     isEnd: false,
                 } as State);
 
+                // Set New State Types
                 if (newIsStart) ProjectClass.engine.setStart(currentId);
                 if (newIsEnd) ProjectClass.engine.setEnd(currentId);
+                if (!newIsStart && !newIsEnd) {
+                    ProjectClass.engine.setIntermediate(currentId);
+                }
             }
 
             if (color?.length === 7) {

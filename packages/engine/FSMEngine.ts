@@ -234,6 +234,18 @@ export class FSMEngine {
     }
 
     /**
+     * Mark the provided state as INTERMEDIATE.
+     * Basically remove it as start and/or end
+     * @param id Reference id of the State
+     */
+    setIntermediate(id: number) {
+        this.verifyStateExistance(id);
+
+        this.nodes.get(id)!.isEnd = false;
+        this.nodes.get(id)!.isStart = false;
+    }
+
+    /**
      * Adds a new Transition.
      * In Case you are wondering, a reference number of the state
      * is returned when a new state is added @see addState method

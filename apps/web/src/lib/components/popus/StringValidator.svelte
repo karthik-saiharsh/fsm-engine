@@ -39,6 +39,9 @@
 
     /** Valid the string entered */
     function validateString() {
+        // Clear out any result from previous run
+        show_result = { show: false, result: null };
+
         if ("validateString" in ProjectClass.engine) {
             try {
                 console.log(ProjectClass.engine.languageAlphabet);

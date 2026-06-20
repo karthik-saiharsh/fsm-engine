@@ -23,6 +23,15 @@ export class DFA extends FSMEngine {
     }
 
     /**
+     * Set a state as intermediate state
+     * @param id Reference id of start state
+     */
+    override setIntermediate(id: number): void {
+        super.setIntermediate(id);
+        this.startState = undefined;
+    }
+
+    /**
      * Add new alphabets to the language grammar
      * @param alphs one or more language alphabets passed as arguments (not as list)
      */
@@ -234,6 +243,18 @@ export class DFA extends FSMEngine {
 
     }
 
+
+    /**
+     * Create a new Project
+     */
+    override newProject(): void {
+        super.newProject(); // This already clears nodes and transitions
+
+        // Clear the startState and alphabet set as well
+        this.languageAlphabet.clear();
+        this.startState = undefined;
+    }
+
     /********* HELPER FUNCTIONS *********/
     private verifyAlphExistance(alph: string) {
         if (!this.languageAlphabet.has(alph)) {
@@ -245,6 +266,9 @@ export class DFA extends FSMEngine {
 
     private verifyStartState() {
         if (this.startState === undefined) {
+            throw new Error(`Start State Does not exist`);
+        } else if (!this.getState(this.startState).isStart) {
+            this.startState = undefined;
             throw new Error(`Start State Does not exist`);
         }
     }
