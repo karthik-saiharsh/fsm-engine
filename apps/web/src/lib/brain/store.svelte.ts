@@ -469,13 +469,16 @@ class Project {
         // Let the engine clear its own inner state mechanisms safely
         this.engine.newProject();
 
+        //Get the old machine type
+        const mType: EngineTypes = this.project_details.type;
+
         // Reset project details
         this.project_details = {
             ...this.project_details,
             name: `FSM_Project_${date.toDateString()}`,
             author: "Unnamed Author",
             created: date.toDateString(),
-            type: EngineTypes.FREE,
+            type: mType,
         };
 
         // Make sure engine name matches the reset name

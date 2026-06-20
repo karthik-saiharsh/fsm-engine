@@ -58,7 +58,7 @@
         style:--top-pos={`${y}px`}
         style:--width-val={`${width}px`}
         style:--height-val={`${height}px`}
-        class="absolute flex flex-col z-100 p-2 bg-card border border-border rounded-md overflow-scroll shadow-[0px_0px_50px_0px_#00000085]">
+        class="absolute flex flex-col z-10 p-2 bg-card border border-border rounded-md overflow-scroll shadow-[0px_0px_50px_0px_#00000085]">
         <span class="flex justify-center items-center px-3 mb-3">
             <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <p
