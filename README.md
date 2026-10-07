@@ -318,7 +318,7 @@ Contributions are welcome and greatly appreciated! Here's how to get involved:
 - [x] DFA string validation with path tracing
 - [x] Transition table generation & display
 - [ ] NFA → DFA subset construction
-- [ ] DFA minimization
+- [x] DFA minimization
 - [ ] Undo / Redo
 - [ ] Validation & error hints (unreachable states, dead states)
 - [ ] Regular expression → NFA conversion
