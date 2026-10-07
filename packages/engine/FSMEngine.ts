@@ -142,18 +142,10 @@ export class FSMEngine {
         const from_state = this.nodes.get(from)!;
         const to_state = this.nodes.get(to)!;
 
-        // All transitions of state from
-        const from_trs = from_state.transitions.incoming.union(
-            from_state.transitions.outgoing.union(from_state.transitions.self)
-        );
-
-        // All transitions of state to
-        const to_trs = to_state.transitions.incoming.union(
-            to_state.transitions.outgoing.union(to_state.transitions.self)
-        );
-
         // Return the transitions that exsit for both nodes
-        const common_trs = from_trs.intersection(to_trs);
+        const common_trs = this.getAllTransitionIds(from_state).intersection(
+            this.getAllTransitionIds(to_state)
+        );
 
         return Array.from(common_trs);
     }
@@ -182,12 +174,7 @@ export class FSMEngine {
      * @returns The id of the state (reference value to access this state).
      */
     addState(value: string): number {
-        let id: number = this.nodes.size;
-
-        // If there is a free-to-use id, use that instead
-        if (this.freeIds.size > 0) {
-            id = this.freeIds.poll()!;
-        }
+        const id = this.takeFreeId(this.freeIds, this.nodes.size);
 
         const state: State = {
             id: id,
@@ -261,12 +248,7 @@ export class FSMEngine {
         this.verifyStateExistance(to);
 
         // Add this new transition to store
-        let id: number = this.transitions.size;
-
-        // If there is a free-to-use transition id, use that instead
-        if (this.freeTrIds.size > 0) {
-            id = this.freeTrIds.poll()!;
-        }
+        const id = this.takeFreeId(this.freeTrIds, this.transitions.size);
 
         const transition: Transition = {
             id: id,
@@ -299,16 +281,18 @@ export class FSMEngine {
         // Before deleting a node, delete all assiciated transitions as well
         const state = this.nodes.get(id)!;
 
-        // Get all transitions on this State
-        const transitions = state.transitions.incoming.union(
-            state.transitions.outgoing.union(state.transitions.self)
-        );
-
         // Delete all related transitions
-        for (const tr of transitions) {
-            this.transitions.delete(tr);
+        for (const trId of this.getAllTransitionIds(state)) {
+            const transition = this.transitions.get(trId)!;
+
+            // Detach the transition from the state at the other end, so it
+            // doesn't keep a reference to a transition that no longer exists
+            this.nodes.get(transition.from)?.transitions.outgoing.delete(trId);
+            this.nodes.get(transition.to)?.transitions.incoming.delete(trId);
+
+            this.transitions.delete(trId);
             // Add this id value to freeTrIds
-            this.freeTrIds.add(tr);
+            this.freeTrIds.add(trId);
         }
 
         // Add id to free ids
@@ -350,7 +334,6 @@ export class FSMEngine {
         this.transitions.delete(transition.id);
     }
 
-
     /**
      * Saves Project working state
      * @returns an object that has all working variables of the project
@@ -382,13 +365,15 @@ export class FSMEngine {
                         incoming: Array.from(value.transitions.incoming),
                         outgoing: Array.from(value.transitions.outgoing),
                         self: Array.from(value.transitions.self),
-                    }
-                }
+                    },
+                },
             })),
-            transitions: Array.from(this.transitions.entries()).map(([key, value]) => ({
-                key: key,
-                transition: value
-            }))
+            transitions: Array.from(this.transitions.entries()).map(
+                ([key, value]) => ({
+                    key: key,
+                    transition: value,
+                })
+            ),
         };
 
         return projectData;
@@ -403,12 +388,10 @@ export class FSMEngine {
         this.name = projectData.name;
 
         // Restore free IDs min heaps
-        while (this.freeIds.size > 0) this.freeIds.poll();
+        this.clearFreeIds();
         for (const id of projectData.freeIds) {
             this.freeIds.add(id);
         }
-
-        while (this.freeTrIds.size > 0) this.freeTrIds.poll();
         for (const id of projectData.freeTrIds) {
             this.freeTrIds.add(id);
         }
@@ -416,7 +399,6 @@ export class FSMEngine {
         // Restore Map of nodes and convert Arrays back to Sets
         this.nodes.clear();
         for (const nodeData of projectData.nodes) {
-
             this.nodes.set(nodeData.key, {
                 id: nodeData.state.id,
                 value: nodeData.state.value,
@@ -426,7 +408,7 @@ export class FSMEngine {
                     incoming: new Set(nodeData.state.transitions.incoming),
                     outgoing: new Set(nodeData.state.transitions.outgoing),
                     self: new Set(nodeData.state.transitions.self),
-                }
+                },
             });
         }
 
@@ -446,10 +428,8 @@ export class FSMEngine {
         this.transitions.clear();
 
         // clear track of deleted state and transition ids
-        while (this.freeIds.size > 0) this.freeIds.poll();
-        while (this.freeTrIds.size > 0) this.freeTrIds.poll();
+        this.clearFreeIds();
     }
-
 
     /**
      * Returns the transition table of the FSM
@@ -460,11 +440,11 @@ export class FSMEngine {
          * We'll be using the Transition map to build this
          */
 
-        let transitionTable = new Map<number, Map<string, number[]>>();
+        const transitionTable = new Map<number, Map<string, number[]>>();
 
-        let alphabets = new Set<string>(); // keep track of all alphabets
+        const alphabets = new Set<string>(); // keep track of all alphabets
 
-        for (const [key, value] of this.transitions) {
+        for (const value of this.transitions.values()) {
             const from = value.from;
             const alphabet = value.on;
             const to = value.to;
@@ -481,30 +461,29 @@ export class FSMEngine {
                     nodeCell?.set(alphabet, [to]);
                 }
             } else {
-                let res = new Map<string, number[]>();
+                const res = new Map<string, number[]>();
                 res.set(alphabet, [to]);
                 transitionTable.set(from, res);
             }
         }
 
-        for (const [key, _] of this.nodes) {
+        for (const key of this.nodes.keys()) {
             if (!transitionTable.has(key)) {
-                transitionTable.set(key, new Map<string, number[]>())
+                transitionTable.set(key, new Map<string, number[]>());
             }
         }
 
         return {
             table: transitionTable,
-            alphabets: alphabets
-        }
-
+            alphabets: alphabets,
+        };
     }
 
     /**
      * Returns the transition table of the state machine as a string (csv format)
      */
     getTransitionTableCSV(): string {
-        let result: string[] = [];
+        const result: string[] = [];
 
         const { table, alphabets } = this.makeTransitionTable();
 
@@ -514,52 +493,65 @@ export class FSMEngine {
         // Subsequent rows start with a state(from) and go have other states on an alphabet
         // Check which state a transition goes to from each state
         for (const [key, value] of table) {
-            let row: string[] = [];
-
-            const fromState = this.nodes.get(key);
-
-            if (fromState?.isStart) {
-                row.push((fromState.value) + "(S)"); // Indicate if start state
-            } else if (fromState?.isEnd) {
-                row.push((fromState.value) + "(E)"); // Indicate if end state
-            } else {
-                row.push(fromState?.value ?? "");
-            }
+            const row: string[] = [this.getCsvStateLabel(key)];
 
             // Check every alphabet from each state
             for (const alph of alphabets) {
-
                 if (value.has(alph)) {
-
                     for (const toState of value.get(alph)!) {
-
-                        const state = this.nodes.get(toState);
-
-                        if (state?.isStart) {
-                            row.push((state.value) + "(S)"); // Indicate if start state
-                        } else if (state?.isEnd) {
-                            row.push((state.value) + "(E)"); // Indicate if end state
-                        } else {
-                            row.push(state?.value ?? "");
-                        }
-
+                        row.push(this.getCsvStateLabel(toState));
                     }
-
                 } else {
                     row.push(" ");
                 }
             }
 
             row.push(" ");
-            result.push(row.join(","))
+            result.push(row.join(","));
         }
 
-
         return result.join("\n");
-
     }
 
     /********* HELPER FUNCTIONS *********/
+
+    /**
+     * Collects every transition id attached to a state (incoming, outgoing and self loops)
+     * @param state The State whose transitions are wanted
+     */
+    protected getAllTransitionIds(state: State): Set<number> {
+        return state.transitions.incoming.union(
+            state.transitions.outgoing.union(state.transitions.self)
+        );
+    }
+
+    /**
+     * Picks the next id to use: the smallest recycled id if there is one,
+     * otherwise the current size of the map the id is for.
+     * @param freeIds Heap of recycled ids
+     * @param currentSize Size of the map the id will be added to
+     */
+    private takeFreeId(freeIds: MinHeap<number>, currentSize: number): number {
+        return freeIds.size > 0 ? freeIds.poll()! : currentSize;
+    }
+
+    /** Forget all recycled state and transition ids */
+    private clearFreeIds() {
+        while (this.freeIds.size > 0) this.freeIds.poll();
+        while (this.freeTrIds.size > 0) this.freeTrIds.poll();
+    }
+
+    /**
+     * Name of a state as shown in the CSV export, with (S) / (E) marking start / end states
+     * @param id Reference id of the State
+     */
+    private getCsvStateLabel(id: number): string {
+        const state = this.nodes.get(id);
+
+        if (state?.isStart) return state.value + "(S)";
+        if (state?.isEnd) return state.value + "(E)";
+        return state?.value ?? "";
+    }
 
     /**
      * Check the existance of a State

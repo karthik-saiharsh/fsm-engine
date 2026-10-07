@@ -13,82 +13,66 @@
     import ProjectClass from "../brain/store.svelte";
     import type { Component } from "svelte";
     import type { IconProps } from "@lucide/svelte";
+    import type { Stage } from "svelte-konva";
     import AdditionalTools from "./editor/AdditionalTools.svelte";
-    import Separator from "./ui/separator/separator.svelte";
-    import { DFA, EngineTypes } from "@fsm/engine";
+    import { EngineTypes } from "@fsm/engine";
+    import { zoomStage } from "../brain/zoom";
 
     // Get props from Editor
-    let { stage } = $props();
+    let { stage }: { stage: ReturnType<typeof Stage> | undefined } = $props();
 
-    // Items in the Dock
+    // Items in the Dock. Items with a `mode` are highlighted while that mode is active
     const DockItems: {
         name: string;
         icon: Component<IconProps, {}, "">;
-        active?: DockModes;
-        onClick?: () => void;
+        mode?: DockModes;
+        onClick: () => void;
     }[] = [
         {
             name: "Add",
             icon: Plus,
-            active: DockModes.ADD,
+            mode: DockModes.ADD,
+            onClick: () => handleModeChange(DockModes.ADD),
         },
         {
             name: "Remove",
             icon: Minus,
-            active: DockModes.REMOVE,
+            mode: DockModes.REMOVE,
+            onClick: () => handleModeChange(DockModes.REMOVE),
         },
         {
             name: "Connect",
             icon: Cable,
-            active: DockModes.CONNECT,
+            mode: DockModes.CONNECT,
+            onClick: () => handleModeChange(DockModes.CONNECT),
         },
         {
             name: "Zoom In",
             icon: ZoomIn,
-            onClick: () => zoomCenter(1),
+            onClick: () => zoomCenter(true),
         },
         {
             name: "Zoom Out",
             icon: ZoomOut,
-            onClick: () => zoomCenter(-1),
+            onClick: () => zoomCenter(false),
         },
     ];
 
+    /** Picks a mode, or leaves it if it was already the current one */
     function handleModeChange(mode: DockModes) {
-        if (ProjectClass.current_mode === mode) {
-            // If already set, unset the mode
-            ProjectClass.current_mode = DockModes.NIL;
-        } else {
-            // set the mode otherwise
-            ProjectClass.current_mode = mode;
-        }
+        ProjectClass.current_mode =
+            ProjectClass.current_mode === mode ? DockModes.NIL : mode;
     }
 
-    // Add this new function to zoom at the center of the stage
-    function zoomCenter(direction: 1 | -1) {
+    /** Zoom at the center of the stage */
+    function zoomCenter(zoomIn: boolean) {
         if (!stage?.node) return;
 
-        const oldScale = stage.node.scaleX();
-        const scaleBy = 1.2; // Step Size
-        const newScale =
-            direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-        // Find the center of the stage
         const center = {
             x: stage.node.width() / 2,
             y: stage.node.height() / 2,
         };
-
-        const pointTo = {
-            x: (center.x - stage.node.x()) / oldScale,
-            y: (center.y - stage.node.y()) / oldScale,
-        };
-
-        stage.node.scale({ x: newScale, y: newScale });
-        stage.node.position({
-            x: center.x - pointTo.x * newScale,
-            y: center.y - pointTo.y * newScale,
-        });
+        zoomStage(stage.node, center, zoomIn, 1.2);
     }
 </script>
 
@@ -98,14 +82,10 @@
         class="w-fit bg-secondary border rounded-lg px-2 py-2 flex justify-center items-center gap-2">
         {#each DockItems as DockItem}
             <Button
-                variant={ProjectClass.current_mode === DockItem.active
+                variant={ProjectClass.current_mode === DockItem.mode
                     ? "default"
                     : "outline"}
-                onclick={DockItem.onClick
-                    ? DockItem.onClick
-                    : DockItem.active
-                      ? () => handleModeChange(DockItem.active!)
-                      : () => {}}>
+                onclick={DockItem.onClick}>
                 <p>{DockItem.name}</p>
                 <DockItem.icon />
             </Button>

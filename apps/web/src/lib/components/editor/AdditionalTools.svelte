@@ -10,7 +10,7 @@
     import * as DropdownMenu from "../ui/dropdown-menu/index";
     import Button from "../ui/button/button.svelte";
     import secondary_stores from "../../brain/extras.svelte";
-    // import DropdownMenu from "../ui/dropdown-menu/dropdown-menu.svelte";
+    import ProjectClass from "../../brain/store.svelte";
 
     function openStringValidator() {
         secondary_stores.show_string_validator = true;
@@ -29,11 +29,12 @@
                 onclick={openStringValidator}
                 >Validate a String</DropdownMenu.Item>
 
-            <DropdownMenu.Item
-                class="px-4 py-2 my-0.5"
-                onclick={() =>
-                    secondary_stores.openAlert("info", "Feature Coming Soon!")}
-                >DFA from Regular Expression</DropdownMenu.Item>
+            {#if "minimize" in ProjectClass.engine}
+                <DropdownMenu.Item
+                    class="px-4 py-2 my-0.5"
+                    onclick={() => ProjectClass.minimizeMachine()}
+                    >Minimize a DFA</DropdownMenu.Item>
+            {/if}
         </DropdownMenu.Group>
     </DropdownMenu.Content>
 </DropdownMenu.Root>

@@ -14,24 +14,21 @@ export interface ProjectDetailsType {
     type: EngineTypes; // Type of the State Machine
 }
 
-export enum NodeType {
-    INTERMEDIATE,
-    START,
-    END
+export interface NodeProps {
+    color: string;
+    stroke: string;
+    x: number;
+    y: number;
+    radius: number;
 }
 
-export interface NodeProps {
-    color: string,
-    stroke: string,
-    x: number,
-    y: number,
-    radius: number
-}
+/** The look every node falls back to when it has no custom look of its own */
+export type NodeLook = Pick<NodeProps, "color" | "stroke" | "radius">;
 
 export interface TransitionProps {
-    curvature: number,
-    strokeWidth: number,
-    stroke: string,
+    curvature: number;
+    strokeWidth: number;
+    stroke: string;
 }
 
 export enum DockModes {
@@ -53,25 +50,23 @@ export type ProjectData = {
     backend: ReturnType<FSMEngine["saveProject"]>;
 };
 
-
-export type PartialNodeProps = Partial<NodeProps> & Pick<NodeProps, 'x' | 'y'>
+export type PartialNodeProps = Partial<NodeProps> & Pick<NodeProps, "x" | "y">;
 
 export interface TransitionDraw {
-    stroke: string | undefined,
-    strokeWidth: number | undefined,
-    fill: string | undefined,
-    points: number[],
-    tension: number | undefined,
-    labels: LabelDraw[],
+    stroke: string | undefined;
+    strokeWidth: number | undefined;
+    fill: string | undefined;
+    points: number[];
+    tension: number | undefined;
+    labels: LabelDraw[];
 }
 
 export interface LabelDraw {
-    id: number,
-    labelX: number | undefined,
-    labelY: number | undefined,
-    on: string | undefined,
+    id: number;
+    labelX: number;
+    labelY: number;
+    on: string;
 }
 
-
 /********* CONSTANTS *********/
-export const EMPTY_STRING: string = "λ"; 
+export const EMPTY_STRING: string = "λ";

@@ -4,33 +4,44 @@
  * I would prefer it if you provide credits, in case you use my code for your projects :)
  */
 
-/********* Library Imports *********/
-import { DFA, EngineTypes } from "@fsm/engine";
-/********* Library Imports *********/
-
-/********* Type Imports *********/
-import { DockModes, type NodeProps, type PartialNodeProps, type TransitionProps, type ProjectData } from "./types";
-import { FSMEngine, type State, type Transition } from "@fsm/engine";
+import {
+    DFA,
+    EngineTypes,
+    FSMEngine,
+    type State,
+    type Transition,
+} from "@fsm/engine";
+import dagre from "@dagrejs/dagre";
 import type { KonvaMouseEvent, KonvaDragTransformEvent } from "svelte-konva";
 import { SvelteMap } from "svelte/reactivity";
+import {
+    DockModes,
+    type NodeLook,
+    type PartialNodeProps,
+    type ProjectData,
+    type ProjectDetailsType,
+    type TransitionProps,
+} from "./types";
+import { downloadFromUrl } from "./download";
 import secondary_stores from "./extras.svelte";
-import dagre from "@dagrejs/dagre";
-/********* Type Imports *********/
 
-/** Useful variables **/
 const date = new Date();
-/** Useful variables **/
+
+/** Details of a project that has just been created */
+function createDefaultDetails(type: EngineTypes): ProjectDetailsType {
+    return {
+        name: `FSM_Project_${date.toDateString()}`,
+        author: "Unnamed Author",
+        created: date.toDateString(),
+        type,
+    };
+}
 
 /**
  * This monolithic beast of a class has every detail of the current project.
  */
 class Project {
-    project_details = $state({
-        name: "", // Project name
-        author: "", // Project Author
-        created: "", // Project Created At Date
-        type: EngineTypes.FREE, // Type of the State Machine
-    });
+    project_details = $state(createDefaultDetails(EngineTypes.FREE));
 
     theme = $state<"dark" | "light">("dark"); // UI Theme
 
@@ -45,18 +56,17 @@ class Project {
     });
     /****** TOGGLER VARIABLES ******/
 
-
     /****** STATE MACHINE VARIABLES ******/
     nodes = new SvelteMap<number, State>(); // This stores the actual nodes
     transitions = new SvelteMap<number, Transition>(); // This stores the actual nodes
 
     // This stores the look and feel of the nodes for the frontend
-    get defaultNodeLook(): Partial<NodeProps> {
+    get defaultNodeLook(): NodeLook {
         return {
-            color: (this.theme === "dark" ? "#ffffff80" : "#00000030"),
-            stroke: (this.theme === "dark" ? "#ffffff80" : "#00000080"),
-            radius: 40
-        }
+            color: this.theme === "dark" ? "#ffffff80" : "#00000030",
+            stroke: this.theme === "dark" ? "#ffffff80" : "#00000080",
+            radius: 40,
+        };
     }
     node_properties = new SvelteMap<number, PartialNodeProps>();
     transition_properties = new SvelteMap<number, TransitionProps>();
@@ -70,16 +80,16 @@ class Project {
      * Create a new project
      */
     constructor() {
-        this.project_details = {
-            ...this.project_details,
-            name: `FSM_Project_${date.toDateString()}`,
-            author: "Unnamed Author",
-            created: date.toDateString(),
-        };
-
         this.engine = new FSMEngine(this.project_details.name);
+        this.bindEngineStores();
+    }
 
-        // Set nodes Map to be used instead as node store
+    /**
+     * Makes the engine use this class's Svelte maps as its stores, so that
+     * changes made by the engine are picked up by the UI.
+     * This has to be done again every time a new engine is created.
+     */
+    private bindEngineStores() {
         this.engine.setNodes(this.nodes);
         this.engine.setTransitions(this.transitions);
     }
@@ -94,17 +104,15 @@ class Project {
         document.getElementById("body")?.classList.toggle("dark");
     }
 
-
     /************** BACKEND AND LOGIC RELATED METHODS  **************/
 
     /**
      * Change Project Details
      */
     saveProjectDetails(project_details: typeof this.project_details) {
-
-        if (this.project_details.name != project_details.name) {
+        if (this.project_details.name !== project_details.name) {
             // Update the name of the project if it has changed in the engine
-            this.engine.name = project_details.name
+            this.engine.name = project_details.name;
         }
 
         // Apply new project metadata values
@@ -120,7 +128,7 @@ class Project {
     syncNodePropStore() {
         for (const key of this.node_properties.keys()) {
             if (!this.nodes.has(key)) {
-                this.node_properties.delete(key)
+                this.node_properties.delete(key);
             }
         }
     }
@@ -144,24 +152,27 @@ class Project {
                     ...this.project_details,
                 },
                 theme: this.theme,
-                nodes_properties: Array.from(this.node_properties.entries()).map(
-                    ([id, props]) => [id, { ...props }] as [number, PartialNodeProps]
+                nodes_properties: Array.from(
+                    this.node_properties.entries()
+                ).map(
+                    ([id, props]) =>
+                        [id, { ...props }] as [number, PartialNodeProps]
                 ),
-                transition_properties: Array.from(this.transition_properties.entries()).map(
-                    ([id, props]) => [id, { ...props }] as [number, TransitionProps]
+                transition_properties: Array.from(
+                    this.transition_properties.entries()
+                ).map(
+                    ([id, props]) =>
+                        [id, { ...props }] as [number, TransitionProps]
                 ),
             },
             backend: this.engine.saveProject(),
         };
 
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+        });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${this.project_details.name || "project"}.fsm`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        downloadFromUrl(url, `${this.project_details.name || "project"}.fsm`);
         URL.revokeObjectURL(url);
     }
 
@@ -170,50 +181,46 @@ class Project {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = ".fsm,application/json";
-        input.onchange = (e: Event) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
+        input.onchange = async () => {
+            const file = input.files?.[0];
             if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = (event: ProgressEvent<FileReader>) => {
-                try {
-                    const data = JSON.parse(event.target?.result as string) as ProjectData;
+            try {
+                const data = JSON.parse(await file.text()) as ProjectData;
 
-                    this.engine.loadProject(data.backend);
+                this.engine.loadProject(data.backend);
 
-                    this.project_details = {
-                        ...data.frontend.project_details,
-                    };
-                    this.theme = data.frontend.theme;
+                this.project_details = {
+                    ...data.frontend.project_details,
+                };
+                this.theme = data.frontend.theme;
 
-                    this.node_properties.clear();
-                    for (const [id, props] of data.frontend.nodes_properties) {
-                        this.node_properties.set(id, { ...props });
-                    }
-
-                    this.transition_properties.clear();
-                    for (const [id, props] of data.frontend.transition_properties) {
-                        this.transition_properties.set(id, { ...props });
-                    }
-
-                    // Keep UI + look-and-feel stores aligned with engine maps after load.
-                    this.syncNodePropStore();
-                    this.syncTrPropStore();
-
-                    document.getElementById("body")?.classList.toggle("dark", this.theme === "dark");
-                } catch (error) {
-                    console.error("Failed to parse project file", error);
-                    secondary_stores.openAlert("info", "Invalid project file.");
+                this.node_properties.clear();
+                for (const [id, props] of data.frontend.nodes_properties) {
+                    this.node_properties.set(id, { ...props });
                 }
-            };
-            reader.readAsText(file);
+
+                this.transition_properties.clear();
+                for (const [id, props] of data.frontend.transition_properties) {
+                    this.transition_properties.set(id, { ...props });
+                }
+
+                // Keep UI + look-and-feel stores aligned with engine maps after load.
+                this.syncNodePropStore();
+                this.syncTrPropStore();
+
+                document
+                    .getElementById("body")
+                    ?.classList.toggle("dark", this.theme === "dark");
+            } catch (error) {
+                console.error("Failed to parse project file", error);
+                secondary_stores.openAlert("info", "Invalid project file.");
+            }
         };
         input.click();
     }
 
-
     /************** KONVA AND FRONTEND RELATED METHODS  **************/
-
 
     /** What should be done when the Konva Stage is Clicked ? */
     onStageClick(e: KonvaMouseEvent) {
@@ -221,18 +228,17 @@ class Project {
          * If the editor is in add mode, then add a new state
          */
         if (this.current_mode === DockModes.ADD) {
-            // Add New Node to Store
-            const id = this.engine.addState(`q${secondary_stores.deleted_state_names.shift() ?? this.nodes.size}`);
-
             // get the mouse click position
             const mouse = e.target.getStage()?.getPointerPosition();
+            if (!mouse) return;
+
+            // Add New Node to Store
+            const id = this.engine.addState(
+                `q${secondary_stores.deleted_state_names.shift() ?? this.nodes.size}`
+            );
 
             // Add an entry to keep track of the node's look and feel
-            const nodeProps: PartialNodeProps = {
-                x: mouse?.x!,
-                y: mouse?.y!,
-            }
-            this.node_properties.set(id, nodeProps)
+            this.node_properties.set(id, { x: mouse.x, y: mouse.y });
         } else {
             // If it's nothing, remove focus from any selected states
             if (secondary_stores.current_select !== null) {
@@ -245,112 +251,46 @@ class Project {
     onNodeClick(e: KonvaMouseEvent, id: number) {
         e.evt.preventDefault();
 
-        if (this.current_mode === DockModes.REMOVE && e.evt.button === 0) {
-            // Handle Node Deletion
-            this.engine.deleteState(id);
+        const isLeftClick = e.evt.button === 0;
 
-            // Sync node, transition properties to nodes and transitions store
-            this.syncNodePropStore();
-            this.syncTrPropStore();
-
-            // Make this name available for reuse
-            secondary_stores.deleted_state_names.push(id);
-
-            // sort so that the smaller number is used before a larger one
-            // i could've used a priority que here, but again, 
-            // the array isn't going to be that large anyways, so i'll let sort do the job for now :)
-            secondary_stores.deleted_state_names.sort();
-
-            // Make sure this isn't a selected State
-            if (secondary_stores.current_select === id) {
-                secondary_stores.current_select = null;
-            }
+        if (this.current_mode === DockModes.REMOVE && isLeftClick) {
+            this.removeNode(id);
             return;
         }
 
-        if (this.current_mode === DockModes.CONNECT && e.evt.button === 0) {
-            // new transition ? keep the first clicked node in memory
-            if (secondary_stores.from_node === null) {
-                secondary_stores.from_node = id;
-                return;
-
-            } else {
-                // Add a new transition
-                const from = secondary_stores.from_node
-                const to = id;
-                let tr_id: number;
-
-                /**
-                 * If not in Free Style mode, first add a transition automatically, then let user change the alphabet
-                 */
-                if ("addAutoTransition" in ProjectClass.engine) {
-                    const result = ProjectClass.engine.addAutoTransition(from, to);
-
-                    if (result.success) {
-                        tr_id = result.tr_id!;
-                    } else {
-                        secondary_stores.openAlert("info", result.error ?? "");
-                        secondary_stores.from_node = null;
-                        return;
-                    }
-                }
-                else { tr_id = this.engine.addTransition(from, to, "..."); }
-
-                // Add Details of this pransition to Transition Props
-                const fromNodeProps = this.node_properties.get(from)!;
-                const toNodeProps = this.node_properties.get(to)!;
-
-                const start = [fromNodeProps.x!, fromNodeProps.y!];
-                const end = [toNodeProps.x!, toNodeProps.y!];
-
-                this.transition_properties.set(tr_id, {
-                    curvature: 0.5,
-                    strokeWidth: 2,
-                    stroke: (this.theme === "dark" ? "#ffffff80" : "#00000080"),
-                })
-
-                // Clear memory
-                secondary_stores.from_node = null;
-                return;
-            }
+        if (this.current_mode === DockModes.CONNECT && isLeftClick) {
+            this.connectNode(id);
+            return;
         }
 
         // Keep track of current selected State
-        if (e.evt.button === 0 /* Left click select */) {
-            if (secondary_stores.current_select === id) {
-                secondary_stores.current_select = null;
-            } else {
-                secondary_stores.current_select = id;
-            }
+        if (isLeftClick) {
+            secondary_stores.current_select =
+                secondary_stores.current_select === id ? null : id;
         }
 
         if (e.evt.button === 2 /* Right click option menu */) {
             // Set current selected to this node
             secondary_stores.current_select = id;
 
-            ProjectClass.togglers.show_node_customizer =
-                !ProjectClass.togglers.show_node_customizer;
+            this.togglers.show_node_customizer =
+                !this.togglers.show_node_customizer;
         }
     }
 
     /** What should be done when a Node is Dragged ? */
     onNodeDrag(e: KonvaDragTransformEvent, id: number) {
         // Position of the node would have changed, this has to be updated in it's properties
-        const currentProps = this.node_properties.get(id);
-
         this.node_properties.set(id, {
-            ...currentProps,
+            ...this.node_properties.get(id),
             x: e.currentTarget.attrs.x,
             y: e.currentTarget.attrs.y,
-        } as PartialNodeProps);
-
-        // Update any linked Transition Positions
+        });
     }
 
     /** What should be done when a Transition is Clicked ? */
     onTransitionClick(e: KonvaMouseEvent, id: number) {
-
-        if (ProjectClass.current_mode === DockModes.REMOVE && e.evt.button === 0) {
+        if (this.current_mode === DockModes.REMOVE && e.evt.button === 0) {
             // Delete this transition
             this.engine.deleteTransition(id);
 
@@ -362,45 +302,117 @@ class Project {
 
         if (e.evt.button === 0) {
             secondary_stores.current_tr = id;
-            ProjectClass.togglers.show_tr_customizer = true;
+            this.togglers.show_tr_customizer = true;
         }
+    }
+
+    /** The look of a transition that has not been customized */
+    private createTransitionProps(): TransitionProps {
+        return {
+            curvature: 0.5,
+            strokeWidth: 2,
+            stroke: this.defaultNodeLook.stroke,
+        };
+    }
+
+    /** Deletes a node, and everything that was attached to it */
+    private removeNode(id: number) {
+        this.engine.deleteState(id);
+
+        // Sync node, transition properties to nodes and transitions store
+        this.syncNodePropStore();
+        this.syncTrPropStore();
+
+        // Make this name available for reuse
+        secondary_stores.deleted_state_names.push(id);
+
+        // sort so that the smaller number is used before a larger one
+        // i could've used a priority que here, but again,
+        // the array isn't going to be that large anyways, so i'll let sort do the job for now :)
+        secondary_stores.deleted_state_names.sort();
+
+        // Make sure this isn't a selected State
+        if (secondary_stores.current_select === id) {
+            secondary_stores.current_select = null;
+        }
+    }
+
+    /**
+     * Connect mode: the first clicked node starts a transition,
+     * the second one finishes it.
+     */
+    private connectNode(id: number) {
+        const from = secondary_stores.from_node;
+
+        // new transition ? keep the first clicked node in memory
+        if (from === null) {
+            secondary_stores.from_node = id;
+            return;
+        }
+
+        let trId: number;
+
+        /**
+         * If not in Free Style mode, first add a transition automatically, then let user change the alphabet
+         */
+        if ("addAutoTransition" in this.engine) {
+            const result = this.engine.addAutoTransition(from, id);
+
+            if (!result.success) {
+                secondary_stores.openAlert("info", result.error ?? "");
+                secondary_stores.from_node = null;
+                return;
+            }
+            trId = result.tr_id!;
+        } else {
+            trId = this.engine.addTransition(from, id, "...");
+        }
+
+        // Add Details of this transition to Transition Props
+        this.transition_properties.set(trId, this.createTransitionProps());
+
+        // Clear memory
+        secondary_stores.from_node = null;
     }
 
     /** Automatically calculate a good layout for the FSM on screen */
     autoLayout() {
+        this.animateNodesTo(this.calculateLayout());
+    }
+
+    /**
+     * Uses dagre to work out where every node should go so that the graph is laid out
+     * neatly and centered on screen.
+     * @returns The new position of every node, by node id
+     */
+    private calculateLayout(): Map<number, { x: number; y: number }> {
         const graph = new dagre.graphlib.Graph();
 
         // Set an object for the graph label
         graph.setGraph({
-            rankdir: 'LR',     // L-to-R flow (use 'TB' for Top-to-Bottom)
-            nodesep: 80,       // Vertical spacing between nodes
-            ranksep: 150,      // Horizontal spacing between layers
-            marginx: 50,       // Graph margins
-            marginy: 50
+            rankdir: "LR", // L-to-R flow (use 'TB' for Top-to-Bottom)
+            nodesep: 80, // Vertical spacing between nodes
+            ranksep: 150, // Horizontal spacing between layers
+            marginx: 50, // Graph margins
+            marginy: 50,
         });
 
         // Default configuration for edges
         graph.setDefaultEdgeLabel(() => ({}));
 
-        //Feed States into Dagre
+        // Feed States into Dagre
         // Dagre uses width and height. For Konva circles, this is radius * 2.
+        const defaultRadius = this.defaultNodeLook.radius;
         for (const key of this.nodes.keys()) {
-            const NodeProp = this.node_properties.get(key);
-            const defaultprops = this.defaultNodeLook;
-
-            graph.setNode(`${key}`, {
-                width: (NodeProp?.radius ?? defaultprops.radius ?? 0) * 2,
-                height: (NodeProp?.radius ?? defaultprops.radius ?? 0) * 2
-            });
+            const size =
+                (this.node_properties.get(key)?.radius ?? defaultRadius) * 2;
+            graph.setNode(`${key}`, { width: size, height: size });
         }
 
         // Feed transitions into dagre
-        for (const key of this.transitions.keys()) {
-            const Transition = this.transitions.get(key);
-
-            graph.setEdge(`${Transition?.from}`, `${Transition?.to}`)
+        for (const { from, to } of this.transitions.values()) {
+            graph.setEdge(`${from}`, `${to}`);
         }
-
 
         // Calculate positions
         dagre.layout(graph);
@@ -409,27 +421,28 @@ class Project {
         const graphWidth = graph.graph().width ?? 0;
         const graphHeight = graph.graph().height ?? 0;
 
-        // Adjust `window.innerWidth`
         const offsetX = (window.innerWidth - graphWidth) / 2;
-        // Adjust for TopBar height
         const offsetY = (window.innerHeight - graphHeight) / 2;
 
-        const animations = new Map<number, { startX: number, startY: number, endX: number, endY: number }>()
-
-
+        const positions = new Map<number, { x: number; y: number }>();
         for (const key of this.nodes.keys()) {
-            const currentProps = this.node_properties.get(key)!;
-            const targetPos = graph.node(`${key}`);
-
-            animations.set(key, {
-                startX: currentProps.x ?? 0,
-                startY: currentProps.y ?? 0,
-                endX: targetPos.x + offsetX,
-                endY: targetPos.y + offsetY
+            const laidOut = graph.node(`${key}`);
+            positions.set(key, {
+                x: laidOut.x + offsetX,
+                y: laidOut.y + offsetY,
             });
         }
+        return positions;
+    }
 
-        // Animation Loop
+    /** Smoothly slides every node from where it is now to its target position */
+    private animateNodesTo(targets: Map<number, { x: number; y: number }>) {
+        const starts = new Map<number, { x: number; y: number }>();
+        for (const key of targets.keys()) {
+            const currentProps = this.node_properties.get(key)!;
+            starts.set(key, { x: currentProps.x ?? 0, y: currentProps.y ?? 0 });
+        }
+
         const duration = 600; // ms
         const startTime = performance.now();
 
@@ -438,13 +451,13 @@ class Project {
             // Cubic ease-out function for smooth decelertion
             const progress = 1 - Math.pow(1 - timeFraction, 3);
 
-            for (const [key, vectors] of animations.entries()) {
-                const NodeProp = this.node_properties.get(key)!;
+            for (const [key, end] of targets) {
+                const start = starts.get(key)!;
                 this.node_properties.set(key, {
-                    ...NodeProp,
-                    x: vectors.startX + (vectors.endX - vectors.startX) * progress,
-                    y: vectors.startY + (vectors.endY - vectors.startY) * progress,
-                } as PartialNodeProps);
+                    ...this.node_properties.get(key)!,
+                    x: start.x + (end.x - start.x) * progress,
+                    y: start.y + (end.y - start.y) * progress,
+                });
             }
 
             if (timeFraction < 1) {
@@ -455,6 +468,48 @@ class Project {
         requestAnimationFrame(animate);
     }
 
+    /**
+     * Replaces the machine by the smallest one that accepts the same language.
+     * The minimized machine has brand new states, so their look is rebuilt and
+     * the layout is calculated again.
+     */
+    minimizeMachine() {
+        if (!("minimize" in this.engine)) return;
+
+        try {
+            this.engine.minimize(true);
+        } catch (error) {
+            secondary_stores.openAlert(
+                "info",
+                error instanceof Error
+                    ? error.message
+                    : "Could not minimize the machine."
+            );
+            return;
+        }
+
+        // The old states are gone, so everything keyed by their ids is out of date
+        secondary_stores.deleted_state_names = [];
+        secondary_stores.current_select = null;
+        secondary_stores.current_tr = null;
+        secondary_stores.from_node = null;
+
+        // Start every new state in the middle of the screen, the layout then spreads them out
+        this.node_properties.clear();
+        for (const id of this.nodes.keys()) {
+            this.node_properties.set(id, {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+            });
+        }
+
+        this.transition_properties.clear();
+        for (const id of this.transitions.keys()) {
+            this.transition_properties.set(id, this.createTransitionProps());
+        }
+
+        this.autoLayout();
+    }
 
     /**
      * Creates a new project, and initializes all necessary variables to empty state
@@ -469,17 +524,8 @@ class Project {
         // Let the engine clear its own inner state mechanisms safely
         this.engine.newProject();
 
-        //Get the old machine type
-        const mType: EngineTypes = this.project_details.type;
-
-        // Reset project details
-        this.project_details = {
-            ...this.project_details,
-            name: `FSM_Project_${date.toDateString()}`,
-            author: "Unnamed Author",
-            created: date.toDateString(),
-            type: mType,
-        };
+        // Reset project details, keeping the old machine type
+        this.project_details = createDefaultDetails(this.project_details.type);
 
         // Make sure engine name matches the reset name
         this.engine.name = this.project_details.name;
@@ -491,7 +537,6 @@ class Project {
         secondary_stores.from_node = null;
     }
 
-
     /**
      * Change the type of State Machines
      * @param projType Type of State Machine
@@ -501,18 +546,13 @@ class Project {
 
         this.project_details.type = projType;
         this.engine = new DFA(this.project_details.name);
-
-
-        // Set nodes Map to be used instead as node store
-        this.engine.setNodes(this.nodes);
-        this.engine.setTransitions(this.transitions);
+        this.bindEngineStores();
 
         // Open Machine Settings Window if not in FREE mode
         if (projType !== EngineTypes.FREE) {
             secondary_stores.show_lang_settings = true;
         }
     }
-
 
     /************** KONVA AND FRONTEND RELATED METHODS  **************/
 }

@@ -7,15 +7,14 @@
 -->
 
 <script lang="ts">
-    import * as Card from "../ui/card/index";
+    import Popup from "../generic/Popup.svelte";
     import Button from "../ui/button/button.svelte";
     import Label from "../ui/label/label.svelte";
     import Input from "../ui/input/input.svelte";
-    import { X, CircleCheck, CircleX } from "@lucide/svelte";
+    import { CircleCheck, CircleX } from "@lucide/svelte";
     import secondary_stores from "../../brain/extras.svelte";
     import ProjectClass from "../../brain/store.svelte";
     import { DFA, EngineTypes } from "@fsm/engine";
-    import ProjectDetailsPopup from "./ProjectDetailsPopup.svelte";
 
     let alphabetInput: string = $state("");
 
@@ -30,26 +29,19 @@
      * Collects language alphabets as comma seperated values
      */
     function collectLanguageAlphabets() {
-        let alphabets = alphabetInput.split(",");
-        alphabets = alphabets.map((alph) => alph.trim());
+        const alphabets = alphabetInput.split(",").map((alph) => alph.trim());
 
-        if (alphabets.join("").trim().length > 0) {
-            if (ProjectClass.engine instanceof DFA) {
-                // First clear all alphabets
-                ProjectClass.engine.removeAlphabets(
-                    ...ProjectClass.engine.getAlphabets()
-                );
-                ProjectClass.engine.addAlphabets(...alphabets);
-                console.log(
-                    "Alphabets right now: ",
-                    ProjectClass.engine.languageAlphabet
-                );
-            }
-        } else {
+        if (alphabets.join("").length === 0) {
             secondary_stores.openAlert(
                 "info",
                 "You have to enter atleast one alphabet!"
             );
+        } else if (ProjectClass.engine instanceof DFA) {
+            // First clear all alphabets
+            ProjectClass.engine.removeAlphabets(
+                ...ProjectClass.engine.getAlphabets()
+            );
+            ProjectClass.engine.addAlphabets(...alphabets);
         }
 
         handleCancel();
@@ -57,42 +49,29 @@
 </script>
 
 {#if secondary_stores.show_lang_settings}
-    <main
-        class="absolute top-0 left-0 z-20 flex justify-center items-center w-screen h-screen bg-background/10 backdrop-blur">
-        <Card.Root
-            class={`-my-4 w-full max-w-sm shadow-[0px_0px_50px_0px_#000000${ProjectClass.theme === "dark" ? "85" : "25"}]`}>
-            <Card.Header>
-                <Card.Title class="font-geist">Machine Settings</Card.Title>
-                <Card.Description class="font-geist"
-                    >Configure Settings Specific to Machine Type</Card.Description>
-                <Card.Action onclick={handleCancel}>
-                    <Button variant="link" size="icon"><X /></Button>
-                </Card.Action>
-            </Card.Header>
+    <Popup
+        title="Machine Settings"
+        description="Configure Settings Specific to Machine Type"
+        onClose={handleCancel}>
+        <span class="w-full flex flex-col gap-2">
+            <Label for="name"
+                >Enter Language Alphabets for {EngineTypes[
+                    ProjectClass.project_details.type
+                ]}</Label>
+            <Input
+                id="name"
+                type="text"
+                placeholder="Enter Comma Seperated Alphabets..."
+                bind:value={alphabetInput} />
+        </span>
 
-            <Card.Content
-                class="flex flex-col justify-center items-center gap-5">
-                <span class="w-full flex flex-col gap-2">
-                    <Label for="name"
-                        >Enter Language Alphabets for {EngineTypes[
-                            ProjectClass.project_details.type
-                        ]}</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        placeholder="Enter Comma Seperated Alphabets..."
-                        bind:value={alphabetInput} />
-                </span>
-            </Card.Content>
-
-            <Card.Footer class="flex justify-center items-center gap-5">
-                <Button onclick={handleCancel} variant="secondary">
-                    <CircleX />
-                    Cancel</Button>
-                <Button onclick={collectLanguageAlphabets}>
-                    <CircleCheck />
-                    Save</Button>
-            </Card.Footer>
-        </Card.Root>
-    </main>
+        {#snippet footer()}
+            <Button onclick={handleCancel} variant="secondary">
+                <CircleX />
+                Cancel</Button>
+            <Button onclick={collectLanguageAlphabets}>
+                <CircleCheck />
+                Save</Button>
+        {/snippet}
+    </Popup>
 {/if}

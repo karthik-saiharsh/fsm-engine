@@ -9,44 +9,33 @@
 <script lang="ts">
     import Window from "../generic/Window.svelte";
     import secondary_stores from "../../brain/extras.svelte";
-    import { EngineTypes } from "@fsm/engine";
+    import { EngineTypes, type DFA } from "@fsm/engine";
     import ProjectClass from "../../brain/store.svelte";
     import Input from "../ui/input/input.svelte";
     import Button from "../ui/button/button.svelte";
     import { EMPTY_STRING } from "../../brain/types";
 
-    /****** REACTIVE VARIABLES ******/
     let inputString: string = $state("");
-    let show_result: {
-        show: boolean;
-        result: null | {
-            path: number[];
-            str: null | string;
-            accepted: boolean;
-        };
-    } = $state({ show: false, result: null });
+    // Outcome of the last validation, null while there is nothing to show
+    let result: ReturnType<DFA["validateString"]> | null = $state(null);
 
-    /****** HELPER METHODS ******/
     /**
-     * Function to handle Closing of the Transition table window
+     * Function to handle Closing of the String Validator window
      */
     function closeWindow() {
         secondary_stores.show_string_validator = false;
         inputString = ""; // reset input
-        // reset result object
-        show_result = { show: false, result: null };
+        result = null;
     }
 
     /** Valid the string entered */
     function validateString() {
         // Clear out any result from previous run
-        show_result = { show: false, result: null };
+        result = null;
 
         if ("validateString" in ProjectClass.engine) {
             try {
-                console.log(ProjectClass.engine.languageAlphabet);
-                const res = ProjectClass.engine.validateString(inputString);
-                show_result = { show: true, result: res };
+                result = ProjectClass.engine.validateString(inputString);
             } catch (err) {
                 if (err instanceof Error)
                     secondary_stores.openAlert("info", err.message);
@@ -76,17 +65,14 @@
             <Button onclick={validateString}>Validate</Button>
         </span>
 
-        {#if show_result.show}
-            {#if show_result.result?.accepted}
-                <p class="text-balance font-bold">String Accepted</p>
-            {:else}
-                <p class="text-balance font-bold">String Rejected</p>
-            {/if}
+        {#if result}
+            <p class="text-balance font-bold">
+                {result.accepted ? "String Accepted" : "String Rejected"}
+            </p>
 
-            {#each show_result.result?.path as state, index}
+            {#each result.path as state, index}
                 {@const stateName = ProjectClass.engine.getState(state).value}
-                {@const remainingString =
-                    show_result.result?.str?.slice(index) ?? ""}
+                {@const remainingString = result.str?.slice(index) ?? ""}
                 <p>
                     = ({stateName}, {remainingString.length === 0
                         ? EMPTY_STRING

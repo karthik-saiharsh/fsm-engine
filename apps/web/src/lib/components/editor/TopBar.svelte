@@ -35,9 +35,7 @@
      * Toggle Grid Display
      */
     function toggleGrid() {
-        secondary_stores.grid_shown = secondary_stores.grid_shown
-            ? false
-            : true;
+        secondary_stores.grid_shown = !secondary_stores.grid_shown;
     }
 
     /**
@@ -49,9 +47,9 @@
     }
 
     /**
-     * Toggle the save window
+     * Show the save window
      */
-    function toggleSaveWindow() {
+    function openSaveWindow() {
         secondary_stores.show_save_dialog = true;
     }
 
@@ -82,7 +80,7 @@
     </Button>
 
     <!-- Project Save  -->
-    <Button variant="outline" onclick={toggleSaveWindow}>
+    <Button variant="outline" onclick={openSaveWindow}>
         <Save />
         <p class="font-geist">Save</p>
     </Button>
@@ -93,11 +91,6 @@
         <p class="font-geist">Open</p>
     </Button>
 
-    <!-- Bind this input directly to the project name -->
-    <!-- <Input
-        class="w-1/6 text-center font-geist"
-        placeholder="Project Name..."
-        bind:value={projectData.name} /> -->
     <p
         class="w-[24ch] font-geist font-semi-bold border py-1 px-2 rounded-md truncate">
         {ProjectClass.project_details.name}

@@ -10,16 +10,24 @@
     import { EngineTypes } from "@fsm/engine";
     import secondary_stores from "../../brain/extras.svelte";
 
-    const frameworks: { value: string; label: string; typ?: EngineTypes }[] = [
+    const frameworks: {
+        value: string;
+        label: string;
+        typ?: EngineTypes;
+        /** Whether the engine can already work with this kind of machine */
+        available?: boolean;
+    }[] = [
         {
             value: "FREESTYLE",
             label: "Free Style",
             typ: EngineTypes.FREE,
+            available: true,
         },
         {
             value: "DFA",
             label: "DFA",
             typ: EngineTypes.DFA,
+            available: true,
         },
         {
             value: "NFA",
@@ -59,14 +67,14 @@
     // We want to refocus the trigger button when the user selects
     // an item from the list so users can continue navigating the
     // rest of the form with the keyboard.
-    function closeAndFocusTrigger(index: number) {
+    function closeAndFocusTrigger(framework: (typeof frameworks)[number]) {
         open = false;
         tick().then(() => {
             triggerRef.focus();
         });
 
         // Alert if un available state chosen
-        if (index > 1) {
+        if (!framework.available) {
             secondary_stores.openAlert(
                 "info",
                 "Only DFA mode is available for now. I am working on implementing the other machines as well. Hang on, give me some time."
@@ -75,12 +83,10 @@
         }
 
         // Set new value
-        value = frameworks[index].value;
+        value = framework.value;
 
         // Call the backend to change Machine Type
-        ProjectClass.changeProjectType(
-            frameworks[index].typ ?? EngineTypes.FREE
-        );
+        ProjectClass.changeProjectType(framework.typ ?? EngineTypes.FREE);
     }
 </script>
 
@@ -104,12 +110,10 @@
             <Command.List>
                 <Command.Empty>No framework found.</Command.Empty>
                 <Command.Group value="frameworks">
-                    {#each frameworks as framework, index}
+                    {#each frameworks as framework}
                         <Command.Item
                             value={framework.value}
-                            onSelect={() => {
-                                closeAndFocusTrigger(index);
-                            }}>
+                            onSelect={() => closeAndFocusTrigger(framework)}>
                             <CheckIcon
                                 class={cn(
                                     value !== framework.value &&
