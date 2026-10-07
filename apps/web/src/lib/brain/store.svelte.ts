@@ -306,6 +306,15 @@ class Project {
         }
     }
 
+    /** The look of a transition that has not been customized */
+    private createTransitionProps(): TransitionProps {
+        return {
+            curvature: 0.5,
+            strokeWidth: 2,
+            stroke: this.defaultNodeLook.stroke,
+        };
+    }
+
     /** Deletes a node, and everything that was attached to it */
     private removeNode(id: number) {
         this.engine.deleteState(id);
@@ -360,11 +369,7 @@ class Project {
         }
 
         // Add Details of this transition to Transition Props
-        this.transition_properties.set(trId, {
-            curvature: 0.5,
-            strokeWidth: 2,
-            stroke: this.defaultNodeLook.stroke,
-        });
+        this.transition_properties.set(trId, this.createTransitionProps());
 
         // Clear memory
         secondary_stores.from_node = null;
@@ -461,6 +466,49 @@ class Project {
         };
 
         requestAnimationFrame(animate);
+    }
+
+    /**
+     * Replaces the machine by the smallest one that accepts the same language.
+     * The minimized machine has brand new states, so their look is rebuilt and
+     * the layout is calculated again.
+     */
+    minimizeMachine() {
+        if (!("minimize" in this.engine)) return;
+
+        try {
+            this.engine.minimize(true);
+        } catch (error) {
+            secondary_stores.openAlert(
+                "info",
+                error instanceof Error
+                    ? error.message
+                    : "Could not minimize the machine."
+            );
+            return;
+        }
+
+        // The old states are gone, so everything keyed by their ids is out of date
+        secondary_stores.deleted_state_names = [];
+        secondary_stores.current_select = null;
+        secondary_stores.current_tr = null;
+        secondary_stores.from_node = null;
+
+        // Start every new state in the middle of the screen, the layout then spreads them out
+        this.node_properties.clear();
+        for (const id of this.nodes.keys()) {
+            this.node_properties.set(id, {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+            });
+        }
+
+        this.transition_properties.clear();
+        for (const id of this.transitions.keys()) {
+            this.transition_properties.set(id, this.createTransitionProps());
+        }
+
+        this.autoLayout();
     }
 
     /**
