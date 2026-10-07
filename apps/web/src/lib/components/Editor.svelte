@@ -17,38 +17,33 @@
         Arrow,
         Label,
         Tag,
+        type KonvaWheelEvent,
     } from "svelte-konva";
     import TopBar from "./editor/TopBar.svelte";
     import ProjectDetailsPopup from "./popus/ProjectDetailsPopup.svelte";
     import Dock from "./Dock.svelte";
     import NodeCustomizer from "./popus/NodeCustomizer.svelte";
+    import TransitionCustomizer from "./popus/TransitionCustomizer.svelte";
+    import SaveDialog from "./popus/SaveDialog.svelte";
+    import TransitionTable from "./popus/TransitionTable.svelte";
+    import LangSettings from "./popus/LangSettings.svelte";
+    import CustomAlert from "./popus/CustomAlert.svelte";
+    import StringValidator from "./popus/StringValidator.svelte";
     /******** COMPONENT IMPORTS ********/
 
     /****** BACKEND IMPORTS ******/
     import secondary_stores from "../brain/extras.svelte";
     import ProjectClass from "../brain/store.svelte";
-    import TransitionCustomizer from "./popus/TransitionCustomizer.svelte";
-    import Window from "./generic/Window.svelte";
-    import type { KonvaWheelEvent } from "svelte-konva";
-    import SaveDialog from "./popus/SaveDialog.svelte";
-    import TransitionTable from "./popus/TransitionTable.svelte";
-    import LangSettings from "./popus/LangSettings.svelte";
-    import { render } from "svelte/server";
     import type { LabelDraw, TransitionDraw } from "../brain/types";
-    import Alert from "./Alert.svelte";
-    import CustomAlert from "./popus/CustomAlert.svelte";
-    import StringValidator from "./popus/StringValidator.svelte";
+    import { zoomStage } from "../brain/zoom";
 
     const defaultLook = ProjectClass.defaultNodeLook;
-    const Nodes = ProjectClass.nodes;
-    const NodeProps = ProjectClass.node_properties;
+    const nodes = ProjectClass.nodes;
+    const nodeProps = ProjectClass.node_properties;
 
-    const Transitions = ProjectClass.transitions;
-    const TransitionProps = ProjectClass.transition_properties;
+    const transitions = ProjectClass.transitions;
+    const transitionProps = ProjectClass.transition_properties;
     /****** BACKEND IMPORTS ******/
-
-    /******** LUCIDE ICON IMPORTS ********/
-    /******** LUCIDE ICON IMPORTS ********/
 
     /******** REACTIVE VARIABLES ********/
     let width: number = $state(0); // Width of Konav Stage
@@ -64,17 +59,18 @@
          * I tested it with a couple of values, and settled on whatever looked good.
          * So all the sum and product constants you see further down are arbitrary choices
          */
-        const start = NodeProps.get(Transitions.get(id)?.from!)!;
-        const end = NodeProps.get(Transitions.get(id)?.to!)!;
+        const transition = transitions.get(id)!;
+        const start = nodeProps.get(transition.from)!;
+        const end = nodeProps.get(transition.to)!;
 
-        const StartR = start.radius ?? ProjectClass.defaultNodeLook.radius;
-        const EndR = end.radius ?? ProjectClass.defaultNodeLook.radius;
+        const startRadius = start.radius ?? defaultLook.radius;
+        const endRadius = end.radius ?? defaultLook.radius;
 
         const delx = end.x - start.x;
         const dely = end.y - start.y;
 
         if (delx === 0 && dely === 0) {
-            const nodeRadius = Math.max(StartR!, EndR!);
+            const nodeRadius = Math.max(startRadius, endRadius);
             const loopLift = Math.max(30, nodeRadius * 1.8);
             const loopWidth = Math.max(36, nodeRadius * 2.2);
 
@@ -90,32 +86,30 @@
 
             return [
                 [...startPoint, ...control, ...endPoint],
-                [control[0] - Transitions.get(id)?.on.length!, control[1] - 10],
+                [control[0]! - transition.on.length, control[1]! - 10],
             ];
         }
 
         const theta = Math.atan2(dely, delx);
 
         const start2 = [
-            start.x + StartR! * Math.cos(theta),
-            start.y + StartR! * Math.sin(theta) - Math.sign(delx) * 10,
+            start.x + startRadius * Math.cos(theta),
+            start.y + startRadius * Math.sin(theta) - Math.sign(delx) * 10,
         ];
 
         const end2 = [
-            end.x - EndR! * Math.cos(theta),
-            end.y - EndR! * Math.sin(theta) - Math.sign(delx) * 10,
+            end.x - endRadius * Math.cos(theta),
+            end.y - endRadius * Math.sin(theta) - Math.sign(delx) * 10,
         ];
 
-        const perpendicular = [-dely, delx];
-        const vec_len = Math.sqrt(
-            perpendicular[0] ** 2 + perpendicular[1] ** 2
-        );
+        // The control point sits on the line perpendicular to the transition
+        const length = Math.hypot(delx, dely);
 
-        const xmid = (start2[0] + end2[0]) / 2;
-        const ymid = (start2[1] + end2[1]) / 2;
+        const xmid = (start2[0]! + end2[0]!) / 2;
+        const ymid = (start2[1]! + end2[1]!) / 2;
 
-        const xControl = xmid + (-dely / vec_len) * 5;
-        const yControl = ymid + (-delx / vec_len) * 50;
+        const xControl = xmid + (-dely / length) * 5;
+        const yControl = ymid + (-delx / length) * 50;
 
         return [
             [...start2, xControl, yControl, ...end2],
@@ -123,47 +117,34 @@
         ];
     }
 
-    /** Zoom the Canvas, got it from konva documentation */
+    /** Zoom the Canvas with the mouse wheel, anchored at the mouse pointer */
     function handleScroll(e: KonvaWheelEvent) {
         e.evt.preventDefault();
 
         if (!stage?.node) return;
 
-        // const stage = stageRef.current;
-        const oldScale = stage.node.scaleX();
         const pointer = stage.node.getPointerPosition();
-
         if (!pointer) return;
 
-        const mousePointTo = {
-            x: (pointer.x - stage.node.x()) / oldScale,
-            y: (pointer.y - stage.node.y()) / oldScale,
-        };
+        // Scrolling down zooms in. When we zoom on trackpad, e.evt.ctrlKey is true
+        // and in that case the direction is the other way around
+        const zoomIn = (e.evt.deltaY > 0) !== e.evt.ctrlKey;
 
-        // how to scale? Zoom in? Or zoom out?
-        let direction = e.evt.deltaY > 0 ? 1 : -1;
+        zoomStage(stage.node, pointer, zoomIn, 1.01);
+    }
 
-        // when we zoom on trackpad, e.evt.ctrlKey is true
-        // in that case lets revert direction
-        if (e.evt.ctrlKey) {
-            direction = -direction;
-        }
-
-        const scaleBy = 1.01;
-        const newScale =
-            direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-        stage.node.scale({ x: newScale, y: newScale });
-
-        const newPos = {
-            x: pointer.x - mousePointTo.x * newScale,
-            y: pointer.y - mousePointTo.y * newScale,
-        };
-        stage.node.position(newPos);
+    /** A node's name shortened so that it fits inside the node */
+    function shortenName(name: string): string {
+        return name.length > 10 ? name.substring(0, 7) + "..." : name;
     }
     /********* FUNCTIONS *********/
 
     /********* DERIVED STATES *********/
+    /** Text color for anything drawn on top of a node */
+    const nodeTextColor = $derived(
+        ProjectClass.theme === "dark" ? "#ffffff" : "#00000090"
+    );
+
     /**
      * Basically, 2 states can multiple transitions between them. But we only want to draw a single arrow between two states.
      * To display multiple transitions here the labels get stacked on top.
@@ -172,57 +153,43 @@
      * It maintains a map primary with `from` state id as key and has another map with `to` state as id and
      * a Object which defines the display elements of that particular transition from `from` to `to`
      */
-    let drawTransitions = $derived.by(() => {
-        let transitions = new Map<number, Map<number, TransitionDraw>>();
+    const drawTransitions = $derived.by(() => {
+        const drawn = new Map<number, Map<number, TransitionDraw>>();
 
-        for (const [id, value] of Transitions) {
-            const from = value.from;
-            const to = value.to;
-            const on = value.on;
-            const transitionMathData = getTransitionPoints(id);
+        for (const [id, { from, to, on }] of transitions) {
+            const [points, labelAnchor] = getTransitionPoints(id);
 
-            if (transitions.has(from) && transitions.get(from)?.has(to)) {
-                const lastLabel = transitions.get(from)?.get(to)?.labels.at(-1);
+            const arrowsFromHere =
+                drawn.get(from) ?? new Map<number, TransitionDraw>();
+            drawn.set(from, arrowsFromHere);
 
-                const labelProperties: LabelDraw = {
+            const existing = arrowsFromHere.get(to);
+            const labelX = labelAnchor[0]! - on.length ** 1.5;
+
+            if (existing) {
+                // Stack this label on top of the ones already there
+                const lastLabel = existing.labels.at(-1)!;
+                existing.labels.push({
                     id,
-                    labelX: transitionMathData[1][0] - on.length ** 1.5,
-                    labelY: lastLabel?.labelY! - 30,
+                    labelX,
+                    labelY: lastLabel.labelY - 30,
                     on,
-                };
-
-                transitions.get(from)?.get(to)?.labels.push(labelProperties);
+                });
             } else {
-                const labelProperties: LabelDraw = {
-                    id,
-                    labelX: transitionMathData[1][0] - on.length ** 1.5,
-                    labelY: transitionMathData[1][1] - 10,
-                    on,
-                };
+                const props = transitionProps.get(id);
 
-                const drawingProperties: TransitionDraw = {
-                    stroke: TransitionProps.get(id)?.stroke,
-                    strokeWidth: TransitionProps.get(id)?.strokeWidth,
-                    fill: TransitionProps.get(id)?.stroke,
-                    points: transitionMathData[0],
-                    tension: TransitionProps.get(id)?.curvature,
-                    labels: [labelProperties],
-                };
-
-                if (transitions.has(from)) {
-                    transitions.get(from)?.set(to, drawingProperties);
-                } else {
-                    transitions.set(
-                        from,
-                        new Map<number, TransitionDraw>([
-                            [to, drawingProperties],
-                        ])
-                    );
-                }
+                arrowsFromHere.set(to, {
+                    stroke: props?.stroke,
+                    strokeWidth: props?.strokeWidth,
+                    fill: props?.stroke,
+                    points,
+                    tension: props?.curvature,
+                    labels: [{ id, labelX, labelY: labelAnchor[1]! - 10, on }],
+                });
             }
         }
 
-        return transitions;
+        return drawn;
     });
     /********* DERIVED STATES *********/
 </script>
@@ -248,61 +215,51 @@
             onwheel={(e) => handleScroll(e)}
             bind:this={stage}>
             <Layer>
-                {#each ProjectClass.node_properties.keys() as id}
+                {#each nodeProps.keys() as id (id)}
+                    {@const node = nodes.get(id)!}
+                    {@const props = nodeProps.get(id)}
+                    {@const radius = props?.radius ?? defaultLook.radius}
+                    {@const nodeStroke = props?.stroke ?? defaultLook.stroke}
                     <Group
                         onclick={(e) => {
                             ProjectClass.onNodeClick(e, id);
                         }}
-                        x={NodeProps.get(id)?.x}
-                        y={NodeProps.get(id)?.y}
+                        x={props?.x}
+                        y={props?.y}
                         draggable
                         ondragmove={(e) => ProjectClass.onNodeDrag(e, id)}>
                         <Circle
-                            radius={NodeProps.get(id)?.radius ??
-                                defaultLook.radius}
-                            fill={NodeProps.get(id)?.color ?? defaultLook.color}
+                            {radius}
+                            fill={props?.color ?? defaultLook.color}
                             stroke={secondary_stores.current_select === id
                                 ? "#0396c7"
-                                : (NodeProps.get(id)?.stroke ??
-                                  defaultLook.stroke)} />
+                                : nodeStroke} />
 
                         <!-- The calculations for attributes x,y were obtained empirically. So don't try to make logical sense of them; these practical calculations just seem to work well -->
                         <Text
-                            fill={ProjectClass.theme === "dark"
-                                ? "#ffffff"
-                                : "#00000090"}
+                            fill={nodeTextColor}
                             fontSize={18}
-                            text={Nodes.get(id)!.value.length > 10
-                                ? Nodes.get(id)?.value.substring(0, 7) + "..."
-                                : Nodes.get(id)?.value}
-                            x={-(
-                                (Nodes.get(id)!.value.length > 10
-                                    ? 10
-                                    : (Nodes.get(id)?.value.length ?? 0)) * 9
-                            ) / 2}
+                            text={shortenName(node.value)}
+                            x={-(Math.min(node.value.length, 10) * 9) / 2}
                             y={-9}
                             align="center"
                             verticalAlign="middle"
                             fontFamily="Sans" />
 
-                        {#if Nodes.get(id)?.isStart}
-                            {@const radius =
-                                NodeProps.get(id)?.radius ?? defaultLook.radius}
+                        {#if node.isStart}
                             <Arrow
                                 x={0}
                                 y={0}
                                 points={[
-                                    Math.cos(startAngle) * (radius! + 40),
-                                    Math.sin(startAngle) * (radius! + 40),
-                                    Math.cos(startAngle) * (radius! + 4),
-                                    Math.sin(startAngle) * (radius! + 4),
+                                    Math.cos(startAngle) * (radius + 40),
+                                    Math.sin(startAngle) * (radius + 40),
+                                    Math.cos(startAngle) * (radius + 4),
+                                    Math.sin(startAngle) * (radius + 4),
                                 ]}
                                 pointerLength={10}
                                 pointerWidth={10}
-                                fill={NodeProps.get(id)?.stroke ??
-                                    defaultLook.stroke}
-                                stroke={NodeProps.get(id)?.stroke ??
-                                    defaultLook.stroke}
+                                fill={nodeStroke}
+                                stroke={nodeStroke}
                                 strokeWidth={2}
                                 tension={0}
                                 draggable
@@ -321,17 +278,13 @@
                                 }} />
                         {/if}
 
-                        {#if Nodes.get(id)?.isEnd}
+                        {#if node.isEnd}
                             <Circle
-                                radius={(NodeProps.get(id)?.radius ??
-                                    defaultLook.radius)! + 6}
+                                radius={radius + 6}
                                 fill="#00000000"
                                 stroke={secondary_stores.current_select === id
-                                    ? ProjectClass.theme === "dark"
-                                        ? "#ffffff"
-                                        : "#00000090"
-                                    : (NodeProps.get(id)?.stroke ??
-                                      defaultLook.stroke)}
+                                    ? nodeTextColor
+                                    : nodeStroke}
                                 strokeWidth={2} />
                         {/if}
                     </Group>
@@ -347,7 +300,7 @@
                             {points}
                             {tension} />
 
-                        {#each labels as label}
+                        {#each labels as label (label.id)}
                             {@const {id, labelX, labelY, on}: LabelDraw = label}
                             <Label
                                 onclick={(e) =>
