@@ -15,6 +15,17 @@
     function openStringValidator() {
         secondary_stores.show_string_validator = true;
     }
+
+    function getRegex() {
+        if ("toRegex" in ProjectClass.engine) {
+            try {
+                const regex = ProjectClass.engine.toRegex();
+                secondary_stores.openAlert("info", "Regular Expression of your DFA: " + regex);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
 </script>
 
 <DropdownMenu.Root>
@@ -34,6 +45,11 @@
                     class="px-4 py-2 my-0.5"
                     onclick={() => ProjectClass.minimizeMachine()}
                     >Minimize a DFA</DropdownMenu.Item>
+            {/if}
+
+            {#if "toRegex" in ProjectClass.engine}
+                <DropdownMenu.Item class="px-4 py-2 my-0.5" onclick={getRegex}
+                    >Regular Expression from DFA</DropdownMenu.Item>
             {/if}
         </DropdownMenu.Group>
     </DropdownMenu.Content>

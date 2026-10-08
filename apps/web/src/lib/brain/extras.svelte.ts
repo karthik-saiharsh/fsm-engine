@@ -8,26 +8,25 @@
  * @fileoverview This class contains global stores that aren't
  * as important and so needn't belong in ProjectClass */
 
-
 /**
  * Describes the parameters of the alert window popup
  */
 export interface AlertParams {
     /** Should the Window be visible */
-    visible: boolean,
+    visible: boolean;
     /** What kind of a window is it ? Info only shows info
      * confirm has a yes/no button that the user has to acknowledge
      */
-    type: "info" | "confirm",
+    type: "info" | "confirm";
     /** What message should be displayed */
-    message: string | null,
+    message: string | null;
 
     /** If type is confirm, what has to be done on accept */
-    onAccept: null | (() => void),
+    onAccept: null | (() => void);
 
     /** What to do on cancel if type is confirm*/
-    onReject: null | (() => void),
-};
+    onReject: null | (() => void);
+}
 
 class SecondaryStores {
     // should grid be shown ?
@@ -39,7 +38,7 @@ class SecondaryStores {
     // names available for reuse when making a new state
     deleted_state_names = $state<number[]>([]);
 
-    // When connecting 2 states, this keeps track of the from state 
+    // When connecting 2 states, this keeps track of the from state
     from_node = $state<number | null>(null);
 
     // Keep track of currently selected Transition
@@ -55,8 +54,7 @@ class SecondaryStores {
     show_lang_settings = $state(false);
 
     // String Validator Popup Window
-    show_string_validator = $state(false)
-
+    show_string_validator = $state(false);
 
     // Custom Alert Window
     alert_popup: AlertParams = $state({
@@ -71,28 +69,40 @@ class SecondaryStores {
      * Opens a new Alert Window
      * @param alert_params parameters of the alert window. see @interface AlertParams
      */
-    openAlert(type: "info" | "confirm", message: string, onAccept?: () => void, onReject?: () => void) {
-
-        // Define a fallback default onRejectFunction that simple closes the alert again
+    openAlert(
+        type: "info" | "confirm",
+        message: string,
+        onAccept?: () => void,
+        onReject?: () => void
+    ) {
+        // Define a fallback default onRejectFunction that simply closes the alert again
         const defaultClose = () => {
             this.alert_popup = { ...this.alert_popup, visible: false };
-        }
-
+        };
 
         if (type === "info") {
-            this.alert_popup = { visible: true, type, message, onAccept: null, onReject: defaultClose };
-        } else {
-
             this.alert_popup = {
                 visible: true,
                 type,
                 message,
-                onAccept: onAccept ? () => { defaultClose(); onAccept() } : defaultClose, // After the onAccept function runs, the alert must close again, hence defaultClose is called before onAccept to close the alert popup
-                onReject: onReject ?? defaultClose
-            }
+                onAccept: null,
+                onReject: defaultClose,
+            };
+        } else {
+            this.alert_popup = {
+                visible: true,
+                type,
+                message,
+                onAccept: onAccept
+                    ? () => {
+                          defaultClose();
+                          onAccept();
+                      }
+                    : defaultClose, // After the onAccept function runs, the alert must close again, hence defaultClose is called before onAccept to close the alert popup
+                onReject: onReject ?? defaultClose,
+            };
         }
     }
-
 }
 
 const secondary_stores = new SecondaryStores();
